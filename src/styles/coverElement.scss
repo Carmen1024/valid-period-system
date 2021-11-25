@@ -1,0 +1,11 @@
+
+// 覆盖
+.el-button--primary:focus, .el-button--primary:hover {
+    background: $cbdBlue;
+    border-color: $cbdBlue;
+}
+.el-button--primary {
+    background-color: $cbdBlue;
+    border-color: $cbdBlue;
+}
+
