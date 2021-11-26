@@ -1,13 +1,20 @@
 <template>
   <div>
-    <el-form 
-      :ref='ruleForm' 
-      :label-width='labelWidth'
-      :class='className'
-      :model='formModel'
-      :rules="formRule"
-      >
-        <!-- <template v-for="(item, index) in formData"> -->
+    <!-- <el-button type="text" @click="centerDialogVisible = true">点击打开 Dialog</el-button> -->
+
+    <el-dialog
+      :title="title"
+      :visible="dialogVisible"
+      :before-close="handleClose"
+      width="50%"
+      center>
+      <el-form 
+        :ref='ruleForm' 
+        :label-width='labelWidth'
+        :class='className'
+        :model='formModel'
+        :rules="formRule"
+        >
           <!-- 
             type:
             label:
@@ -41,12 +48,13 @@
               </el-option>
             </el-select>
           </el-form-item>
-        <!-- </template> -->
-        <el-form-item>
-          <el-button type="primary" @click="selectForm">搜索</el-button>
-          <el-button @click="addItem">新增</el-button>
-        </el-form-item>
-    </el-form>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm">提交</el-button>
+            <el-button @click="cancel">取消</el-button>
+          </el-form-item>
+      </el-form>
+
+    </el-dialog>
   </div>
 </template>
 
@@ -68,16 +76,20 @@ export default {
       labelWidth:{
         type:String,
         default:'120px'
-      }
+      },
+      title:{
+        type:String,
+        default:''
+      },
+        formModel : {
+          name:'11',name2:'222'},
+      
     },
     data(){
       return {
-        formModel : {name:'11',name2:'222'},
+        dialogVisible:false,
         formRule : {
-            // name2:[
-            //   { required: true, message: '请输入名称', trigger: 'blur' },
-            //   { required: true,min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-            // ]
+            
           }
       }
     },
@@ -85,47 +97,55 @@ export default {
       // formData 
       // type：
       formData:{
-        handler: function (val, oldVal) {
+        handler: function (val,oldVal) {
 
         },
         deep: true
-      }
+      },
+      title:{
+        handler: function (val,oldVal) {
+
+        },
+        deep: true
+      },
     },
     created() {
       this.formData.map(item=> this.formModel[item.prop] = item.model );
     },
     methods: {
-      addItem(){
-        console.log("我告诉你要新增");
-        this.$emit("addFun");
+      cancel(){
+         this.dialogVisible = false;
       },
-      selectForm(){
-        console.log("我告诉你要搜索");
+      submitForm(){
+        console.log("我告诉你要保存");
         const _this = this;
         this.$refs[this.ruleForm].validate((valid) => {
           if (valid) {
-            console.log(JSON.stringify(_this.formModel))
-            this.$emit("selectFun",JSON.stringify(_this.formModel));
+            this.$emit("submitForm",_this.formModel);
           } else {
-            console.log('error submit!!');
+            console.log('数据有问题，请重新填入!!');
             return false;
           }
         });
+      },
+      handleClose(){
+         this.dialogVisible = false;
       }
     }
 }
 </script>
 
-<style scop lang='scss'>
+<style scoped lang='scss'>
   .el-form{
 
     display: -webkit-flex;
     display: flex;
+    // justify-content: space-between;
+    flex-wrap: wrap;
 
     .el-form-item{
 
-      width: 30%;
-      justify-content: space-between;
+      width: 50%;
 
     }
   }

@@ -1,79 +1,170 @@
 <template>
   <div class="app-container">
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row
-    >
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
+    <my-form
+      ruleForm="test"
+      :formData="formData"
+      :formModel="formModel"
+      @addFun="addMaterials"
+      @selectFun="selectMaterials"
+     />
+     <add-form 
+      ref='operateMaterials'
+      :title='operateTitle'
+      :formData=operateFormData
+      :formModel=operateModel
+      @submitForm="submitForm"
+     />
+    <my-table 
+      :tableData=list 
+      :columnList=columnList 
+      @handleMethod = "handleMethod"
+    />
   </div>
 </template>
 
 <script>
+import myForm from '@/components/myForm';
+import addForm from '@/components/myForm/addForm';
+import myTable from '@/components/myTable';
 import { getList } from '@/api/table'
 
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
+  components:{
+    myForm,
+    addForm,
+    myTable
   },
   data() {
     return {
       list: null,
-      listLoading: true
+      listLoading: true,
+      formModel : {ID: '', name: '', createTime: '', status: null},
+      formData:[
+        {
+          prop:'ID',
+          type:"input",
+          label:"ID"
+        },
+        {
+          prop:'name',
+          type:"input",
+          label:"物料名",
+          rules:[
+            { required: true, message: '请输入名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+          ]
+        },
+        {
+          prop:'name',
+          type:"input",
+          label:"归属分类",
+          options:[{label:'糖浆',value:0},{label:'奶油',value:1},{label:'芋圆',value:-1}],
+          rules:[
+            { required: true, message: '请输入名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+          ]
+        },
+        {
+          prop:'createTime',
+          type:"date",
+          label:"创建时间",
+        },
+        {
+          prop:'status',
+          type:"select",
+          options:[{label:'全部',value:0},{label:'有效',value:1},{label:'无效',value:-1}],
+          label:"状态",
+        }
+      ],
+      operateTitle:'新增分类',
+      operateModel:{name:''},
+      operateFormData:[{
+          prop:'name',
+          type:"input",
+          label:"分类名",
+          rules:[
+            { required: true, message: '请输入名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          ]
+        }],
+      list: null,
+      columnList:[
+        {type:'name',label:'名称'},
+        {type:'status',label:'状态'},
+        {type:'createTime',label:'创建时间'},
+      ]
     }
   },
   created() {
-    this.fetchData()
+    this.fetchData();
   },
   methods: {
+    // 获取表格数据
     fetchData() {
-      this.listLoading = true
       getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
+        this.list = response.data.items;
+        console.log(this.list);
       })
-    }
+    },
+    // 新增
+    addMaterials(){
+      console.log("响应新增，弹出弹框");
+      this.$refs.operateMaterials.dialogVisible = true;
+      this.operateTitle='新增分类';
+    },
+    editMaterials(item){
+      console.log("响应编辑，弹出弹框");
+      this.operateModel = item;
+      console.log(item)
+      this.$refs.operateMaterials.dialogVisible = true;
+      this.operateTitle='编辑分类';
+    },
+    deleteMaterials(item){
+      this.$confirm('确定删除该物料?','提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // this.$message({
+          //   type: 'success',
+          //   message: '删除成功!'
+          // });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    // 表格操作：编辑 删除
+    handleMethod(type,index,item){
+      item = JSON.parse(JSON.stringify(item));
+      console.log(type,index,item);
+      if(type==='edit'){
+        this.editMaterials(item); 
+      }
+      if(type==='delete'){
+        this.deleteMaterials(item);
+      }
+    },
+    // 搜索
+    selectMaterials(selectModel){
+      console.log(selectModel);
+      console.log("响应搜索，发送请求ing");
+    },
+    // 提交
+    submitForm(model){
+      console.log(JSON.parse(JSON.stringify(model)));
+      this.$refs.operateMaterials.dialogVisible = false;
+      console.log("保存成功！");
+      this.$message({
+        type: 'success',
+        message: '保存成功！!'
+      });
+    },
+
   }
 }
-</script>
+</script><style scoped lang='scss'>
+
+</style>
