@@ -7,47 +7,79 @@
       :model='formModel'
       :rules="formRule"
       >
-        <!-- <template v-for="(item, index) in formData"> -->
+        <!-- 
+          type:
+          label:
+          rules:[] 校验规则
+          model:
+        -->
+        <el-form-item 
+          v-for="item in formData"
+          :key="item.prop" 
+          :prop="item.prop"
+          :label="item.label || ''" 
+          :rules="item.rules"
+          >
           <!-- 
-            type:
-            label:
-            rules:[]
-            model:
+            输入框：
+            type：input
           -->
-          <el-form-item 
-            v-for="item in formData"
-            :key="item.prop" 
-            :prop="item.prop"
-            :label="item.label || ''" 
-            :rules="item.rules"
+          <el-input v-if="item.type==='input'" v-model="formModel[item.prop]"></el-input>
+          <!-- 
+            下拉框：
+            type:select
+            options:[{label,value}]
+          -->
+          <el-select v-if="item.type==='select'" v-model="formModel[item.prop]" placeholder="请选择">
+            <el-option 
+              v-for="(optionItem, optionIndex) in item.options"
+              :key="optionIndex"
+              :label="optionItem.label || ''" 
+              :value="optionItem.value || ''"
+              clearable
             >
-            <!-- 
-              输入框：
-              type：input
+            </el-option>
+          </el-select>
+          <!-- 
+            可搜索的下拉框：
+            type:cascader
+            options: [{
+              value: '0',
+              label: '全部',
+              children: [{}]
+            }]
             -->
-            <el-input v-if="item.type==='input'" v-model="formModel[item.prop]"></el-input>
-            <!-- 
-              下拉框：
-              type:select
-              options:[{label,value}]
-            -->
-            <el-select v-if="item.type==='select'" v-model="formModel[item.prop]" placeholder="请选择">
-              <el-option 
-                v-for="(optionItem, optionIndex) in item.options"
-                :key="optionIndex"
-                :label="optionItem.label || ''" 
-                :value="optionItem.value || ''"
-              >
-              </el-option>
-            </el-select>
-            <el-date-picker 
-              v-if="item.type==='datetime'"
-              v-model="formModel[item.prop]"
-              type="datetime"
-              placeholder="选择日期时间">
-            </el-date-picker>
-          </el-form-item>
-        <!-- </template> -->
+          <el-cascader
+            v-if="item.type==='cascader'"
+            placeholder="试试搜索：全部"
+            :options="item.options"
+            filterable>
+          </el-cascader>
+          <!-- 
+            日期时间：
+            type:datetime
+            options:[{label,value}]
+          -->
+          <el-date-picker 
+            v-if="item.type==='datetime'"
+            v-model="formModel[item.prop]"
+            type="datetime"
+            :default-time="item.defaultTime || ''"
+            placeholder="选择日期时间">
+          </el-date-picker>
+          <!-- 
+            日期时间：
+            type:date
+            options:[{label,value}]
+          -->
+          <el-date-picker 
+            v-if="item.type==='date'"
+            v-model="formModel[item.prop]"
+            type="date"
+            :default-time="item.defaultTime || ''"
+            placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="selectForm">搜索</el-button>
           <el-button @click="addItem">新增</el-button>
@@ -113,8 +145,7 @@ export default {
     },
     methods: {
       setFormModel(){
-        this.formData.map(item=> this.formModel[item.prop] = item.value );
-        console.log(this.formModel);
+
       },
       addItem(){
         console.log("我告诉你要新增");

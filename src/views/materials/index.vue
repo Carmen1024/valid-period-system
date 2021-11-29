@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <my-form
-      ruleForm="test"
+      ruleForm="selectMaterials"
       :formData="formData"
       :formModel="formModel"
       @addFun="addMaterials"
@@ -38,7 +38,7 @@ export default {
     return {
       list: null,
       listLoading: true,
-      formModel : {ID: '', name: '', createTime: '', status: null},
+      formModel : {ID: '', name: '', sort:null, createTime: '', status: null},
       formData:[
         {
           prop:'ID',
@@ -48,25 +48,17 @@ export default {
         {
           prop:'name',
           type:"input",
-          label:"物料名",
-          rules:[
-            { required: true, message: '请输入名称', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ]
+          label:"物料名"
         },
         {
-          prop:'name',
+          prop:'sort',
           type:"input",
           label:"归属分类",
-          options:[{label:'糖浆',value:0},{label:'奶油',value:1},{label:'芋圆',value:-1}],
-          rules:[
-            { required: true, message: '请输入名称', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ]
+          options:[{label:'糖浆',value:0},{label:'奶油',value:1},{label:'芋圆',value:-1}]
         },
         {
           prop:'createTime',
-          type:"date",
+          type:"datetime",
           label:"创建时间",
         },
         {
@@ -103,7 +95,6 @@ export default {
     fetchData() {
       getList().then(response => {
         this.list = response.data.items;
-        console.log(this.list);
       })
     },
     // 新增
@@ -137,9 +128,9 @@ export default {
         });
     },
     // 表格操作：编辑 删除
-    handleMethod(type,index,item){
+    handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
-      console.log(type,index,item);
+      console.log(type,item);
       if(type==='edit'){
         this.editMaterials(item); 
       }

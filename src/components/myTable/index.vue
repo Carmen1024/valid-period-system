@@ -15,11 +15,30 @@
       </el-table-column>
       
       <el-table-column
-        v-for="item in columnList"
-        :key='item.type'
+        v-for="(item,index) in columnList"
+        :key='item.type + index'
         :prop="item.type"
         :label="item.label"
-        :width="item.width || 180">
+        :width="item.width || 180" 
+        align="center"
+        >
+          <template slot-scope="scope">
+            <!-- 开关 switch-->
+            <el-switch 
+              v-if="item.type=='status'" 
+              v-model="scope.row.status"
+              active-text='有效'
+              inactive-text='无效'
+              active-value='1'
+              inactive-value='-1'
+              @change="handle('switch',scope.row)"
+              >
+            </el-switch>
+            <!-- 其他 -->
+            <span v-else>
+              {{scope.row[item.type]}}
+            </span>
+        </template>
       </el-table-column>
       <el-table-column label="操作" v-if='handles && handles.length > 0'>
         <template slot-scope="scope">
@@ -27,7 +46,7 @@
             v-for='item in handles'
             :key=item.type
             size="mini"
-            @click="handle(item.type,scope.$index, scope.row)">{{item.label}}</el-button>
+            @click="handle(item.type,scope.row)">{{item.label}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -75,9 +94,9 @@ export default {
     
   },
   methods: {
-    handle(type,index,item){
+    handle(type,item){
       // console.log(type,index,item);
-      this.$emit("handleMethod",type,index,item);
+      this.$emit("handleMethod",type,item);
       
     }
   }

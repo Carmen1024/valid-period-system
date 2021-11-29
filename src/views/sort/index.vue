@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <my-form
-      ruleForm="test"
+      ruleForm="selectSort"
       :formData="formData"
       :formModel="formModel"
       @addFun="addSort"
@@ -48,11 +48,7 @@ export default {
         {
           prop:'name',
           type:"input",
-          label:"分类名",
-          rules:[
-            { required: true, message: '请输入名称', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-          ]
+          label:"分类名"
         },
         {
           prop:'createTime',
@@ -61,7 +57,7 @@ export default {
         },
         {
           prop:'status',
-          type:"select",
+          type:"cascader",
           options:[{label:'全部',value:0},{label:'有效',value:1},{label:'无效',value:-1}],
           label:"状态",
         }
@@ -93,7 +89,6 @@ export default {
     fetchData() {
       getList().then(response => {
         this.list = response.data.items;
-        console.log(this.list);
       })
     },
     // 新增
@@ -127,9 +122,9 @@ export default {
         });
     },
     // 表格操作：编辑 删除
-    handleMethod(type,index,item){
+    handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
-      console.log(type,index,item);
+      console.log(type,item);
       if(type==='edit'){
         this.editSort(item); 
       }

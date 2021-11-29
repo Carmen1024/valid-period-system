@@ -18,12 +18,12 @@
           <!-- 
             type:
             label:
-            rules:[]
+            rules:[] 校验规则
             model:
           -->
           <el-form-item 
-            v-for="(item, index) in formData"
-            :key="index" 
+            v-for="item in formData"
+            :key="item.prop" 
             :prop="item.prop"
             :label="item.label || ''" 
             :rules="item.rules"
@@ -44,9 +44,49 @@
                 :key="optionIndex"
                 :label="optionItem.label || ''" 
                 :value="optionItem.value || ''"
+                clearable
               >
               </el-option>
             </el-select>
+            <!-- 
+              可搜索的下拉框：
+              type:cascader
+              options: [{
+                value: '0',
+                label: '全部',
+                children: [{}]
+              }]
+              -->
+            <el-cascader
+              v-if="item.type==='cascader'"
+              placeholder="试试搜索：全部"
+              :options="item.options"
+              filterable>
+            </el-cascader>
+            <!-- 
+              日期时间：
+              type:datetime
+              options:[{label,value}]
+            -->
+            <el-date-picker 
+              v-if="item.type==='datetime'"
+              v-model="formModel[item.prop]"
+              type="datetime"
+              :default-time="item.defaultTime || ''"
+              placeholder="选择日期时间">
+            </el-date-picker>
+            <!-- 
+              日期时间：
+              type:date
+              options:[{label,value}]
+            -->
+            <el-date-picker 
+              v-if="item.type==='date'"
+              v-model="formModel[item.prop]"
+              type="date"
+              :default-time="item.defaultTime || ''"
+              placeholder="选择日期">
+            </el-date-picker>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm">提交</el-button>

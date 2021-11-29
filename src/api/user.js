@@ -2,17 +2,17 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/valid-period-system/user/login',
+    url: '/login/login_with_admin',
     method: 'post',
     data
   })
 }
 
-export function getInfo(token) {
+export function getInfo(data) {
   return request({
     url: '/valid-period-system/user/info',
-    method: 'get',
-    params: { token }
+    method: 'post',
+    data
   })
 }
 
