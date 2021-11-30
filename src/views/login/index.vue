@@ -6,46 +6,47 @@
         <h3 class="title">{{ LoginFormTitle }}</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="u_phone">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          ref="u_phone"
+          v-model="loginForm.u_phone"
+          placeholder="手机号"
+          name="u_phone"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="u_pass">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="u_pass" />
         </span>
         <el-input
           :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
+          ref="u_pass"
+          v-model="loginForm.u_pass"
           :type="passwordType"
-          placeholder="Password"
-          name="password"
+          placeholder="密码"
+          name="u_pass"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="passwordType === 'u_pass' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <router-link to="/register">我要注册</router-link>
+        <!-- <span style="margin-right:20px;">u_phone: admin</span> -->
+        <!-- <span> u_pass: any</span> -->
       </div>
 
     </el-form>
@@ -53,13 +54,13 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { validPhone } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+    const validatePhone = (rule, value, callback) => {
+      if (!validPhone(value)) {
         callback(new Error('Please enter the correct user name'))
       } else {
         callback()
@@ -67,22 +68,25 @@ export default {
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
-        callback(new Error('The password can not be less than 3 digits'))
+        callback(new Error('The u_pass can not be less than 3 digits'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: '17828019562',
-        password: '123'
+        u_phone: '17828019562',
+        u_pass: '123'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        u_phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { required: true,min: 11, max: 11, message: '请输入正确的手机号',validator:validatePhone, trigger: 'change' }
+        ],
+        u_pass: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
-      passwordType: 'password',
+      passwordType: 'u_pass',
       redirect: undefined
     }
   },
@@ -101,20 +105,19 @@ export default {
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'password') {
+      if (this.passwordType === 'u_pass') {
         this.passwordType = ''
       } else {
-        this.passwordType = 'password'
+        this.passwordType = 'u_pass'
       }
       this.$nextTick(() => {
-        this.$refs.password.focus()
+        this.$refs.u_pass.focus()
       })
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          // const loginEq = {"#eq":this.loginForm};
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
@@ -132,8 +135,6 @@ export default {
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
 $light_gray:#fff;
@@ -202,6 +203,8 @@ $light_gray:#eee;
     font-size: 14px;
     color: #fff;
     margin-bottom: 10px;
+    text-align: right;
+    text-decoration: underline;
 
     span {
       &:first-of-type {

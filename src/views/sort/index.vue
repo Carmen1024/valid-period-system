@@ -26,7 +26,7 @@
 import myForm from '@/components/myForm';
 import addForm from '@/components/myForm/addForm';
 import myTable from '@/components/myTable';
-import { getList } from '@/api/table'
+import { classifyQuery } from '@/api/sort';
 
 export default {
   components:{
@@ -82,12 +82,12 @@ export default {
     }
   },
   created() {
-    this.fetchData();
+    this.classifyQuery();
   },
   methods: {
     // 获取表格数据
-    fetchData() {
-      getList().then(response => {
+    classifyQuery() {
+      classifyQuery(this.formModel).then(response => {
         this.list = response.data.items;
       })
     },
