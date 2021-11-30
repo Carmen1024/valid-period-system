@@ -15,17 +15,15 @@ service.interceptors.request.use(
   config => {
     // do something before request is sent
 
-    config.data = {"#content":config.data};
+    config.data = config.data ? (config.data["#content"]!=undefined ? config.data : {"#content":config.data}) : {"#content":{}};
+    // config.data = {"#content":config.data};
 
     if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken();
-      config.data.token = getToken();
+      // config.headers['token'] = getToken(); 暂时没有用
+      config.data["#token"] = getToken();
     }
 
-    console.log(config);
+    // console.log(config);
     return config
   },
   error => {
@@ -53,7 +51,7 @@ service.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     const code = res["#code"];
     const message = res["#desc"] || 'Error';
-    const data = res["#content"];
+    // const data = res["#content"];
     if (code !== "0000") {
       Message({
         message: message,
@@ -76,13 +74,13 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(message));
     } else {
-      return data
+      return res
     }
   },
   error => {
     console.log('err' + error) // for debug
     Message({
-      message: message,
+      message: error,
       type: 'error',
       duration: 5 * 1000
     })

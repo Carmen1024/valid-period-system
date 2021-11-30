@@ -8,11 +8,11 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID" width="95">
+      <!-- <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       
       <el-table-column
         v-for="(item,index) in columnList"
@@ -25,12 +25,10 @@
           <template slot-scope="scope">
             <!-- 开关 switch-->
             <el-switch 
-              v-if="item.type=='status'" 
-              v-model="scope.row.status"
+              v-if="item.switch==true" 
+              v-model="scope.row[item.type]"
               active-text='有效'
               inactive-text='无效'
-              active-value='1'
-              inactive-value='-1'
               @change="handle('switch',scope.row)"
               >
             </el-switch>

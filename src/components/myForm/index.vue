@@ -30,12 +30,13 @@
             type:select
             options:[{label,value}]
           -->
-          <el-select v-if="item.type==='select'" v-model="formModel[item.prop]" placeholder="请选择">
+          <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
+            v-model="formModel[item.prop]" placeholder="请选择">
             <el-option 
               v-for="(optionItem, optionIndex) in item.options"
               :key="optionIndex"
               :label="optionItem.label || ''" 
-              :value="optionItem.value || ''"
+              :value="optionItem.value || false"
               clearable
             >
             </el-option>
@@ -49,12 +50,8 @@
               children: [{}]
             }]
             -->
-          <el-cascader
-            v-if="item.type==='cascader'"
-            placeholder="试试搜索：全部"
-            :options="item.options"
-            filterable>
-          </el-cascader>
+          <el-cascader v-if="item.type==='cascader'" v-model="formModel[item.prop]" placeholder="试试模糊搜索"
+            :options="item.options" :props="item.props" multiple=false filterable></el-cascader>
           <!-- 
             日期时间：
             type:datetime
@@ -65,6 +62,8 @@
             v-model="formModel[item.prop]"
             type="datetime"
             :default-time="item.defaultTime || ''"
+            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="选择日期时间">
           </el-date-picker>
           <!-- 
@@ -153,10 +152,9 @@ export default {
       },
       selectForm(){
         console.log("我告诉你要搜索");
-        const _this = this;
         this.$refs[this.ruleForm].validate((valid) => {
           if (valid) {
-            this.$emit("selectFun",JSON.stringify(_this.formModel));
+            this.$emit("selectFun");
           } else {
             console.log('error submit!!');
             return false;

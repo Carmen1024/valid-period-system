@@ -1,24 +1,35 @@
 <template>
   <div class="app-container">
     <my-form
-      ruleForm="selectMaterials"
+      ruleForm="selectMaterial"
       :formData="formData"
       :formModel="formModel"
-      @addFun="addMaterials"
-      @selectFun="selectMaterials"
+      @addFun="addMaterial"
+      @selectFun="selectMaterial"
      />
      <add-form 
-      ref='operateMaterials'
+      ref='operateMaterial'
+      ruleForm="addMaterial"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
-      @submitForm="submitForm"
+      @submitFun="submitForm"
      />
     <my-table 
       :tableData=list 
       :columnList=columnList 
       @handleMethod = "handleMethod"
     />
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pageIndex"
+      :page-sizes="[10, 20, 50]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+
   </div>
 </template>
 
@@ -26,7 +37,9 @@
 import myForm from '@/components/myForm';
 import addForm from '@/components/myForm/addForm';
 import myTable from '@/components/myTable';
-import { getList } from '@/api/table'
+import { materialQuery,materialInsert,materialUpdate,materialValid,materialDelete } from '@/api/material';
+import { classifyQueryAll } from '@/api/sort';
+import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
   components:{
@@ -38,88 +51,150 @@ export default {
     return {
       list: null,
       listLoading: true,
-      formModel : {ID: '', name: '', sort:null, createTime: '', status: null},
-      formData:[
+      // 搜索展示
+      formModel: {"_id": "","clf_id":"","m_name": "", "createTime": "", "endTime": "", "c_valid": null},
+      selectRule: {
+        "#eq":["_id","c_valid","clf_id"],
+        "#like":["m_name"],
+        "#gte":["c_create_time"],
+        "#lte":["c_create_time"]
+      },
+
+      // 新增
+      operateTitle:'新增物料',
+      operateModel:{m_name:'',clf_id:''},
+      // 表格数据展示
+      clfList:[],//物料分类列表
+      clfObj:null,
+      pageSize:10,
+      pageIndex:1,
+      total:10,
+      columnList:[
+        {type:'_id',label:'ID'},
+        {type:'m_code',label:'物料编号'},
+        {type:'m_name',label:'物料名称'},
+        {type:'clf_id',label:'归属分类'},
+        {type:'c_create_time',label:'创建时间'},
+        {type:'c_valid',label:'状态',switch:true},
+      ],
+    }
+  },
+  computed:{
+    formData:function(){
+      return [
         {
-          prop:'ID',
+          prop:'_id',
           type:"input",
           label:"ID"
         },
         {
-          prop:'name',
+          prop:'m_name',
           type:"input",
           label:"物料名"
         },
         {
-          prop:'sort',
-          type:"input",
+          prop:'clf_id',
+          type:"select",
           label:"归属分类",
-          options:[{label:'糖浆',value:0},{label:'奶油',value:1},{label:'芋圆',value:-1}]
+          options:this.clfList,
+          filterable:true,
+          props:{"value":'_id',"label":'clf_name'}
+        },
+        {
+          prop:'c_valid',
+          type:"select",
+          options:[{label:'全部',value:"all"},{label:'有效',value:true},{label:'无效',value:false}],
+          label:"状态",
         },
         {
           prop:'createTime',
           type:"datetime",
-          label:"创建时间",
+          label:"开始时间",
         },
         {
-          prop:'status',
-          type:"select",
-          options:[{label:'全部',value:0},{label:'有效',value:1},{label:'无效',value:-1}],
-          label:"状态",
+          prop:'endTime',
+          type:"datetime",
+          label:"结束时间",
         }
-      ],
-      operateTitle:'新增分类',
-      operateModel:{name:''},
-      operateFormData:[{
-          prop:'name',
-          type:"input",
-          label:"分类名",
-          rules:[
-            { required: true, message: '请输入名称', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-          ]
-        }],
-      list: null,
-      columnList:[
-        {type:'name',label:'名称'},
-        {type:'status',label:'状态'},
-        {type:'createTime',label:'创建时间'},
       ]
-    }
+    },
+    operateFormData:function(){
+      return [{
+        prop:'m_name',
+        type:"input",
+        label:"物料名",
+        rules:[
+          { required: true, message: '请输入物料名', trigger: 'blur' },
+        ]
+      },{
+        prop:'clf_id',
+        type:"select",
+        label:"归属分类",
+        options:this.clfList,
+        filterable:true,
+        props:{"value":'_id',"label":'clf_name'}
+      }]
+    },
+
   },
   created() {
-    this.fetchData();
+    this.getClfList();
+
+  },
+  mounted(){
+    this.selectMaterial();
   },
   methods: {
-    // 获取表格数据
-    fetchData() {
-      getList().then(response => {
-        this.list = response.data.items;
+    // 搜索
+    selectMaterial(){
+      console.log(this.clfObj);
+      const pageIndex = this.pageIndex - 1;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
+      console.log(this.formModel,dataParams);
+      materialQuery(dataParams).then(data => {
+        this.list = getContent(data);
+        this.total = getPageTotal(data);
+      })
+    },
+    // 获取归属分类
+    getClfList(){
+      classifyQueryAll().then(data => {
+        // this.clfList = getContent(data);
+        this.clfList = getContent(data).map(item => {
+          // this.clfObj[item._id] = item.clf_name;
+          return {value:item._id,label:item.clf_name};
+        });
+
       })
     },
     // 新增
-    addMaterials(){
-      console.log("响应新增，弹出弹框");
-      this.$refs.operateMaterials.dialogVisible = true;
-      this.operateTitle='新增分类';
+    addMaterial(){
+      console.log("响应新增");
+      this.operateModel = {m_name:'',clf_id:''};
+      this.$refs.operateMaterial.dialogVisible = true;
+      this.operateTitle='新增物料';
     },
-    editMaterials(item){
-      console.log("响应编辑，弹出弹框");
+    editMaterial(item){
+      console.log("响应编辑");
       this.operateModel = item;
-      console.log(item)
-      this.$refs.operateMaterials.dialogVisible = true;
-      this.operateTitle='编辑分类';
+      console.log(item);
+      this.$refs.operateMaterial.dialogVisible = true;
+      this.operateTitle=`编辑物料id: ${item._id},物料编号：${item.m_code}`;
     },
-    deleteMaterials(item){
+    deleteMaterial(item){
       this.$confirm('确定删除该物料?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          // this.$message({
-          //   type: 'success',
-          //   message: '删除成功!'
-          // });
+          const params = getDataParams({"#eq":["_id"]},item);
+          materialDelete(params).then(data => {
+            this.selectMaterial();
+            this.$message({
+              type: 'success',
+              message: '删除成功！!'
+            });
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -127,31 +202,67 @@ export default {
           });          
         });
     },
+    // 切换状态
+    switchMaterial(item){
+      const operateModel = {"_id":item._id,c_valid:item.c_valid};
+      const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
+      console.log(item,params);
+      materialValid(params).then(data => {
+        // this.selectMaterial();
+        this.$message({
+          type: 'success',
+          message: '状态切换成功！!'
+        });
+      })
+    },
     // 表格操作：编辑 删除
     handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
       console.log(type,item);
       if(type==='edit'){
-        this.editMaterials(item); 
+        this.editMaterial(item); 
       }
       if(type==='delete'){
-        this.deleteMaterials(item);
+        this.deleteMaterial(item);
+      }
+      if(type==='switch'){
+        this.switchMaterial(item);
       }
     },
-    // 搜索
-    selectMaterials(selectModel){
-      console.log(selectModel);
-      console.log("响应搜索，发送请求ing");
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.selectMaterial();
+    },
+    handleCurrentChange(val) {
+      this.pageIndex = val;
+      this.selectMaterial();
     },
     // 提交
-    submitForm(model){
-      console.log(JSON.parse(JSON.stringify(model)));
-      this.$refs.operateMaterials.dialogVisible = false;
-      console.log("保存成功！");
-      this.$message({
-        type: 'success',
-        message: '保存成功！!'
-      });
+    submitForm(){
+
+      console.log(this.operateModel);
+      if(this.operateTitle === '新增物料'){
+        materialInsert(this.operateModel).then(data => {
+          this.selectMaterial();
+          this.$message({
+            type: 'success',
+            message: '保存成功！!'
+          });
+          this.$refs.operateMaterial.dialogVisible = false;
+        })
+      }else{
+        // 编辑
+        const params = getDataParams({"#eq":["_id"],"#set":["m_name","clf_id"]},this.operateModel);
+        materialUpdate(params).then(data => {
+          this.selectMaterial();
+          this.$message({
+            type: 'success',
+            message: '修改成功！!'
+          });
+          this.$refs.operateMaterial.dialogVisible = false;
+        })
+      }
+
     },
 
   }

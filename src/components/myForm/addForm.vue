@@ -111,7 +111,7 @@ export default {
       },
       ruleForm:{
         type:String,
-        default:'ruleForm'
+        default:'addForm'
       },
       labelWidth:{
         type:String,
@@ -121,8 +121,10 @@ export default {
         type:String,
         default:''
       },
-        formModel : {
-          name:'11',name2:'222'},
+      formModel: {
+        type: Object,
+        default: () => {}
+      },
       
     },
     data(){
@@ -148,9 +150,15 @@ export default {
         },
         deep: true
       },
+      formModel :{
+        handler: function (val, oldVal) {
+
+        },
+        deep: true
+      },
     },
     created() {
-      this.formData.map(item=> this.formModel[item.prop] = item.model );
+
     },
     methods: {
       cancel(){
@@ -158,10 +166,9 @@ export default {
       },
       submitForm(){
         console.log("我告诉你要保存");
-        const _this = this;
         this.$refs[this.ruleForm].validate((valid) => {
           if (valid) {
-            this.$emit("submitForm",_this.formModel);
+            this.$emit("submitFun");
           } else {
             console.log('数据有问题，请重新填入!!');
             return false;
