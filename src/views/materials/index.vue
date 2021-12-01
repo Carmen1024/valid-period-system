@@ -20,15 +20,10 @@
       :columnList=columnList 
       @handleMethod = "handleMethod"
     />
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="pageIndex"
-      :page-sizes="[10, 20, 50]"
-      :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+    <pagination
+      @changeFun="paginationChange"
+      :total="total"
+     />
 
   </div>
 </template>
@@ -37,6 +32,7 @@
 import myForm from '@/components/myForm';
 import addForm from '@/components/myForm/addForm';
 import myTable from '@/components/myTable';
+import pagination from '@/components/pagination';
 import { materialQuery,materialInsert,materialUpdate,materialValid,materialDelete } from '@/api/material';
 import { classifyQueryAll } from '@/api/sort';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
@@ -45,7 +41,8 @@ export default {
   components:{
     myForm,
     addForm,
-    myTable
+    myTable,
+    pagination
   },
   data() {
     return {
@@ -229,12 +226,9 @@ export default {
         this.switchMaterial(item);
       }
     },
-    handleSizeChange(val) {
-      this.pageSize = val;
-      this.selectMaterial();
-    },
-    handleCurrentChange(val) {
-      this.pageIndex = val;
+    paginationChange(type,val){
+      if(type === 'handleSizeChange') this.pageSize = val;
+      else this.pageIndex = val;
       this.selectMaterial();
     },
     // 提交
@@ -267,6 +261,7 @@ export default {
 
   }
 }
-</script><style scoped lang='scss'>
+</script>
+<style scoped lang='scss'>
 
 </style>

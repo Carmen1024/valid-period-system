@@ -9,20 +9,33 @@ export function login(data) {
 }
 
 export function getInfo(data) {
-  // return request({
-  //   url: '/valid-period-system/user/info',
-  //   method: 'post',
-  //   data
-  // })
-  return new Promise(()=>{
+
+  return new Promise((resolve)=>{
     const reData={
       roles: ['admin'],
       introduction: 'I am a super administrator',
-      avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-      name: 'Super Admin'
+      avatar: '@/styles/images/avatar.jpg',
+      name: '管理员'
     }
     resolve(reData)
   })
+  // return request({
+  //   url: '/valid-period-system/user/info',
+  //   type: 'get',
+  //   response: config => {
+  //     const info = {
+  //       roles: ['admin'],
+  //       introduction: 'I am a super administrator',
+  //       avatar: '@/styles/images/avatar.jpg',
+  //       name: '管理员'
+  //     }
+
+  //     return {
+  //       code: 20000,
+  //       data: info
+  //     }
+  //   }
+  // })
 }
 
 export function logout() {

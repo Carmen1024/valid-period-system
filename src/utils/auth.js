@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'cbd_admin_token'
+const TokenKey = '_admin_token'
 
 export function getToken() {
   return Cookies.get(TokenKey)

@@ -23,7 +23,7 @@
 
       <el-form-item prop="u_pass">
         <span class="svg-container">
-          <svg-icon icon-class="u_pass" />
+          <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
@@ -92,7 +92,7 @@ export default {
   },
   computed: {
     LoginFormTitle() {
-      return 'Login Form'
+      return '账号登录'
     }
   },
   watch: {
