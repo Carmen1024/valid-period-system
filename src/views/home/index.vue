@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <div class="home-text">name: {{ name }}</div>
+    <div class="home-text"> {{ name }},欢迎进入！</div>
   </div>
 </template>
 

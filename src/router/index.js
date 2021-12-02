@@ -95,54 +95,54 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/area',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Area',
-        component: () => import('@/views/area/index'),
-        meta: { title: '区域管理', icon: 'area' }
-      }
-    ]
-  },
-  {
-    path: '/shop',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Shop',
-        component: () => import('@/views/shop/index'),
-        meta: { title: '门店管理', icon: 'shop' }
-      }
-    ]
-  },
-  {
-    path: '/device',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Device',
-        component: () => import('@/views/device/index'),
-        meta: { title: '设备管理', icon: 'device' }
-      }
-    ]
-  },
-  {
-    path: '/print',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Print',
-        component: () => import('@/views/print/index'),
-        meta: { title: '打印模板管理', icon: 'print' }
-      }
-    ]
-  },
+  // {
+  //   path: '/area',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Area',
+  //       component: () => import('@/views/area/index'),
+  //       meta: { title: '区域管理', icon: 'area' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/shop',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Shop',
+  //       component: () => import('@/views/shop/index'),
+  //       meta: { title: '门店管理', icon: 'shop' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/device',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Device',
+  //       component: () => import('@/views/device/index'),
+  //       meta: { title: '设备管理', icon: 'device' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/print',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Print',
+  //       component: () => import('@/views/print/index'),
+  //       meta: { title: '打印模板管理', icon: 'print' }
+  //     }
+  //   ]
+  // },
   {
     path: '/printList',
     component: Layout,
@@ -155,80 +155,55 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/user',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'User',
-        component: () => import('@/views/user/index'),
-        meta: { title: '用户管理', icon: 'user' }
-      }
-    ]
-  },
-  {
-    path: '/role',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Role',
-        component: () => import('@/views/role/index'),
-        meta: { title: '角色管理', icon: 'role' }
-      }
-    ]
-  },
-  {
-    path: '/power',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Power',
-        component: () => import('@/views/power/index'),
-        meta: { title: '权限管理', icon: 'power' }
-      }
-    ]
-  },
-  {
-    path: '/globalSetting',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'GlobalSetting',
-        component: () => import('@/views/globalSetting/index'),
-        meta: { title: '全局设置', icon: 'globalSetting' }
-      }
-    ]
-  },
+  // {
+  //   path: '/user',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'User',
+  //       component: () => import('@/views/user/index'),
+  //       meta: { title: '用户管理', icon: 'user' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/role',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Role',
+  //       component: () => import('@/views/role/index'),
+  //       meta: { title: '角色管理', icon: 'role' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/power',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Power',
+  //       component: () => import('@/views/power/index'),
+  //       meta: { title: '权限管理', icon: 'power' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/globalSetting',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'GlobalSetting',
+  //       component: () => import('@/views/globalSetting/index'),
+  //       meta: { title: '全局设置', icon: 'globalSetting' }
+  //     }
+  //   ]
+  // },
   // 权限 全局设置
-
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/table',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Table',
-  //       component: () => import('@/views/table/index'),
-  //       meta: { title: 'Table', icon: 'table' }
-  //     }
-  //   ]
-  // },
 
   // {
   //   path: 'outLink',

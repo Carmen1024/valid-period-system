@@ -1,7 +1,7 @@
 
 // 覆盖
 .el-button--primary:focus, .el-button--primary:hover {
-    background: $cbdBlue;
+    background: rgba($cbdBlue,.8);
     border-color: $cbdBlue;
 }
 .el-button--primary {

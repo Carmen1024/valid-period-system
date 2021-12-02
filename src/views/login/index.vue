@@ -44,7 +44,8 @@
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
       <div class="tips">
-        <router-link to="/register">我要注册</router-link>
+        <span>没有账号？先</span>
+        <router-link to="/register">去注册</router-link>
         <!-- <span style="margin-right:20px;">u_phone: admin</span> -->
         <!-- <span> u_pass: any</span> -->
       </div>
@@ -195,8 +196,14 @@ $light_gray:#eee;
     width: 520px;
     max-width: 100%;
     padding: 160px 35px 0;
-    margin: 0 auto;
+    margin: auto;
     overflow: hidden;
+    animation: loginMove 1s;
+
+    @keyframes loginMove{
+      0%   {padding: 0px 35px 0;}
+      100% {padding: 160px 35px 0;}
+    }
   }
 
   .tips {
@@ -204,12 +211,9 @@ $light_gray:#eee;
     color: #fff;
     margin-bottom: 10px;
     text-align: right;
-    text-decoration: underline;
 
-    span {
-      &:first-of-type {
-        margin-right: 16px;
-      }
+    a {
+      text-decoration: underline;
     }
   }
 

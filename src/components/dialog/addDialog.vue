@@ -34,35 +34,52 @@
             -->
             <el-input v-if="item.type==='input'" v-model="formModel[item.prop]"></el-input>
             <!-- 
-              下拉框：
-              type:select
-              options:[{label,value}]
+              输入框：
+              type：input
+              数字
             -->
-            <el-select v-if="item.type==='select'" v-model="formModel[item.prop]" placeholder="请选择">
+            <el-input v-if="item.type==='number'" style="width:45%;margin-right:10px;"
+              v-model.number="formModel[item.prop]">
+            </el-input>
+            <el-select v-if="item.unitProp" v-model="formModel[item.unitProp]" 
+              style="width:30%" placeholder="请选择单位">
               <el-option 
-                v-for="(optionItem, optionIndex) in item.options"
+                v-for="(optionItem, optionIndex) in item.unit"
                 :key="optionIndex"
-                :label="optionItem.label || ''" 
-                :value="optionItem.value || ''"
+                :label="optionItem.label"
+                :value="optionItem.value"
                 clearable
               >
               </el-option>
             </el-select>
             <!-- 
-              可搜索的下拉框：
-              type:cascader
-              options: [{
-                value: '0',
-                label: '全部',
-                children: [{}]
-              }]
-              -->
-            <el-cascader
-              v-if="item.type==='cascader'"
-              placeholder="试试搜索：全部"
-              :options="item.options"
-              filterable>
-            </el-cascader>
+              下拉框：
+              type:select
+              options:[{label,value}]
+            -->
+            <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
+              v-model="formModel[item.prop]" placeholder="请选择">
+              <el-option 
+                v-for="(optionItem, optionIndex) in item.options"
+                :key="optionIndex"
+                :label="optionItem.label"
+                :value="optionItem.value"
+                clearable
+              >
+              </el-option>
+            </el-select>
+            <el-select v-if="item.type==='selectItem'" value-key="value" :filterable="item.filterable || false" 
+              v-model="formModel[item.prop]" placeholder="请选择" @change="changeModel($event,item.prop)">
+              <el-option 
+                v-for="(optionItem, optionIndex) in item.options"
+                :key="optionIndex"
+                :label="optionItem.label" 
+                :value="optionItem"
+                clearable
+              >
+              </el-option>
+            </el-select>
+            
             <!-- 
               日期时间：
               type:datetime
@@ -73,6 +90,8 @@
               v-model="formModel[item.prop]"
               type="datetime"
               :default-time="item.defaultTime || ''"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择日期时间">
             </el-date-picker>
             <!-- 
@@ -177,6 +196,9 @@ export default {
       },
       handleClose(){
          this.dialogVisible = false;
+      },
+      changeModel(data,prop){
+        this.$emit("changeModelFun",data,prop);
       }
     }
 }
@@ -193,6 +215,9 @@ export default {
     .el-form-item{
 
       width: 50%;
+      .el-input{
+        display: inline-block;
+      }
 
     }
   }

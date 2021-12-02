@@ -39,7 +39,7 @@ const actions = {
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         // commit('SET_NAME', userInfo.u_phone)
-        store.dispatch('user/getInfo')
+        // store.dispatch('user/getInfo')
         resolve()
       }).catch(error => {
         reject(error)

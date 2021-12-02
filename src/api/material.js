@@ -41,3 +41,11 @@ export function materialDelete(data){
       data
     })
 }
+
+// 物料-获取物料列表
+export function materialQueryAll(){
+  return request({
+      url: '/material/query_all_valid',
+      method: 'post'
+    })
+}

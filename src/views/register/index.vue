@@ -70,7 +70,7 @@
 
       <div class="tips">
         <span>已有账号？请</span>
-        <router-link to="/login"> 直接登录</router-link>
+        <router-link to="/login">直接登录</router-link>
       </div>
 
     </el-form>
@@ -266,6 +266,12 @@ $light_gray:#eee;
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+    animation: loginMove 1s;
+
+    @keyframes loginMove{
+      0%   {padding: 0px 35px 0;}
+      100% {padding: 160px 35px 0;}
+    }
   }
 
   .tips {

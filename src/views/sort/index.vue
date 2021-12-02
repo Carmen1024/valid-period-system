@@ -7,7 +7,7 @@
       @addFun="addSort"
       @selectFun="selectSort"
      />
-     <add-form 
+     <add-dialog 
       ref='operateSort'
       ruleForm="addSort"
       :title='operateTitle'
@@ -18,7 +18,7 @@
     <my-table 
       :tableData=list 
       :columnList=columnList 
-      @handleMethod = "handleMethod"
+      @handleFun = "handleMethod"
     />
     <pagination
       @pageChangeFun="paginationChange"
@@ -30,7 +30,7 @@
 
 <script>
 import myForm from '@/components/myForm';
-import addForm from '@/components/myForm/addForm';
+import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { classifyQuery,classifyInsert,classifyUpdate,classifyValid,classifyDelete } from '@/api/sort';
@@ -39,7 +39,7 @@ import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/d
 export default {
   components:{
     myForm,
-    addForm,
+    addDialog,
     myTable,
     pagination
   },

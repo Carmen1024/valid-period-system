@@ -11,16 +11,8 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <!-- <router-link to="/">
-            <el-dropdown-item>
-              工作台
-            </el-dropdown-item>
-          </router-link> -->
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+          <el-dropdown-item @click.native="logout">
+            <span style="display:block;">退出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -32,6 +24,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import avatarNormal from '@/styles/images/avatar.jpg';
 
 export default {
   components: {
@@ -41,8 +34,13 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      // 'avatar'
     ])
+  },
+  data() {
+    return {
+      avatar : avatarNormal
+    }
   },
   methods: {
     toggleSideBar() {
@@ -120,6 +118,7 @@ export default {
           width: 40px;
           height: 40px;
           border-radius: 10px;
+          // background: url("./../../styles/images/avatar.jpg");
         }
 
         .el-icon-caret-bottom {

@@ -7,7 +7,7 @@
       @addFun="addMaterial"
       @selectFun="selectMaterial"
      />
-     <add-form 
+     <add-dialog 
       ref='operateMaterial'
       ruleForm="addMaterial"
       :title='operateTitle'
@@ -18,10 +18,10 @@
     <my-table 
       :tableData=list 
       :columnList=columnList 
-      @handleMethod = "handleMethod"
+      @handleFun = "handleMethod"
     />
     <pagination
-      @changeFun="paginationChange"
+      @pageChangeFun="paginationChange"
       :total="total"
      />
 
@@ -30,7 +30,7 @@
 
 <script>
 import myForm from '@/components/myForm';
-import addForm from '@/components/myForm/addForm';
+import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { materialQuery,materialInsert,materialUpdate,materialValid,materialDelete } from '@/api/material';
@@ -40,7 +40,7 @@ import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/d
 export default {
   components:{
     myForm,
-    addForm,
+    addDialog,
     myTable,
     pagination
   },

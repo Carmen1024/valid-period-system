@@ -8,18 +8,13 @@
       fit
       highlight-current-row
     >
-      <!-- <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column> -->
       
       <el-table-column
         v-for="(item,index) in columnList"
         :key='item.type + index'
         :prop="item.type"
         :label="item.label"
-        :width="item.width || 180" 
+        :width="item.width || 150" 
         align="center"
         >
           <template slot-scope="scope">
@@ -94,7 +89,7 @@ export default {
   methods: {
     handle(type,item){
       // console.log(type,index,item);
-      this.$emit("handleMethod",type,item);
+      this.$emit("handleFun",type,item);
       
     }
   }

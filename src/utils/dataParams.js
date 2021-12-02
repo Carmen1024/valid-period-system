@@ -5,10 +5,10 @@ export function getDataParams(rule,data){
         const item = rule[index];
         let indexMap = {};
         item.map((n) => {
-            if(index === '#gte' && n === "c_create_time"){
-                indexMap["c_create_time"] = data["createTime"];
-            }else if(index === '#lte' && n === "c_create_time"){
-                indexMap["c_create_time"] = data["endTime"];
+            if(index === '#gte' && n.match(/_time$/ig)){
+                indexMap[n] = data["createTime"];
+            }else if(index === '#lte' && n.match(/_time$/ig)){
+                indexMap[n] = data["endTime"];
             }else{
                 indexMap[n] = data[n];
             }

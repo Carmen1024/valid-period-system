@@ -80,8 +80,13 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="selectForm">搜索</el-button>
-          <el-button @click="addItem">新增</el-button>
+          <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
+          <el-button @click="addItem">新增</el-button> -->
+          <el-button 
+            v-for='item in handles'
+            :key=item.type
+            :type="item.buttonStyle || ''"
+            @click="handle(item.type)">{{item.label}}</el-button>
         </el-form-item>
     </el-form>
   </div>
@@ -111,6 +116,13 @@ export default {
         type: Object,
         default: () => {}
       },
+      handles:{
+        type:Array,
+        default:()=>[
+          {buttonStyle:"primary",label:"搜索",type:"select"},
+          {label:"新增",type:"add"},
+        ]
+      }
     },
     data(){
       return {
@@ -145,6 +157,11 @@ export default {
     methods: {
       setFormModel(){
 
+      },
+      handle(type){
+        if(type === 'add') this.addItem();
+        else if(type === 'select') this.selectForm();
+        else this.$emit("formHandle",type);
       },
       addItem(){
         console.log("我告诉你要新增");
