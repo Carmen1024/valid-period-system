@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <div class="home-text"> {{ name }},欢迎进入！</div>
+    <div class="home-text"> {{ name }}你好,欢迎进入：茶百道效期管理系统！</div>
   </div>
 </template>
 

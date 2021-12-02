@@ -27,12 +27,22 @@
             :prop="item.prop"
             :label="item.label || ''" 
             :rules="item.rules"
+            :style="item.style"
             >
             <!-- 
               输入框：
               type：input
             -->
-            <el-input v-if="item.type==='input'" v-model="formModel[item.prop]"></el-input>
+            <el-input 
+              v-if="item.type==='input'" 
+              v-model="formModel[item.prop]"
+            ></el-input>
+            <el-input 
+              v-if="item.type==='textarea'" 
+              v-model="formModel[item.prop]"
+              type = "textarea"
+              :rows="item.rows || 2"
+            ></el-input>
             <!-- 
               输入框：
               type：input
@@ -52,6 +62,16 @@
               >
               </el-option>
             </el-select>
+            <!-- 
+              天 时 分 选择控件
+             -->
+            <time-util 
+              v-if="item.type==='timeUtil'"
+              :id="`${formModel['_id']}_${item.prop}`"
+              :propModel="item.prop" 
+              :times = "formModel[item.prop]"
+              @returnTime = "setRealTime" 
+            />
             <!-- 
               下拉框：
               type:select
@@ -79,7 +99,13 @@
               >
               </el-option>
             </el-select>
-            
+            <el-switch 
+              v-if="item.type=='switch'" 
+              v-model="formModel[item.prop]"
+              :active-text="item.activeText || '是'"
+              :inactive-text="item.inactiveText || '否'"
+              >
+            </el-switch>
             <!-- 
               日期时间：
               type:datetime
@@ -118,7 +144,11 @@
 </template>
 
 <script>
+  import timeUtil from '@/components/util/time';
 export default {
+    components:{
+      timeUtil
+    },
     props: {
       formData: {
         type: Array,
@@ -199,6 +229,10 @@ export default {
       },
       changeModel(data,prop){
         this.$emit("changeModelFun",data,prop);
+      },
+      setRealTime(prop,time){
+        this.formModel[prop] = time;
+        // console.log(this.formModel);
       }
     }
 }
@@ -217,6 +251,9 @@ export default {
       width: 50%;
       .el-input{
         display: inline-block;
+      }
+      &.largeWidth{
+        width: 100%;
       }
 
     }

@@ -6,7 +6,7 @@
       :formModel="formModel"
       :handles="formHandle"
       @selectFun="selectPrintHistory"
-     />
+    />
     <my-table 
       :tableData=list 
       :columnList=columnList 
@@ -16,10 +16,14 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+
+     />
+     <description-dialog 
+      ref="printDescription" 
       :descriptModel="descriptModel"
       :descriptions="descripOptions"
-     />
-     <description-dialog ref="printDescription" />
+      title = "打印内容详情"
+    />
   </div>
 </template>
 
@@ -120,13 +124,13 @@ export default {
       ],
       descriptModel:null,
       descripOptions:[
-        {type:'_id',label:'ID'},
-        {type:'pt_h_sn',label:'打印序列号'},
+        {type:'_id',label:'ID',span:2},
         {type:'s_name',label:'门店名称'},
         {type:'m_name',label:'物料名称'},
         {type:'clf_name',label:'分类名称'},
         {type:'m_t_type_desc',label:'物料状态'},
         {type:'m_t_name',label:'物料标签'},
+        {type:'pt_h_sn',label:'打印序列号'},
         {type:'pt_h_time',label:'打印时间'}
       ]
     }

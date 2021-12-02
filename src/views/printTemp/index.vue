@@ -1,15 +1,15 @@
 <template>
   <div class="app-container">
     <my-form
-      ruleForm="selectMaterial"
+      ruleForm="selectPrintTemp"
       :formData="formData"
       :formModel="formModel"
-      @addFun="addMaterial"
-      @selectFun="selectMaterial"
+      @addFun="addPrintTemp"
+      @selectFun="selectPrintTemp"
      />
      <add-dialog 
-      ref='operateMaterial'
-      ruleForm="addMaterial"
+      ref='operatePrintTemp'
+      ruleForm="addPrintTemp"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
@@ -33,8 +33,7 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { materialQuery,materialInsert,materialUpdate,materialValid,materialDelete } from '@/api/material';
-import { classifyQueryAll } from '@/api/sort';
+import { printTempQuery,printTempInsert,printTempUpdate,printTempValid,printTempDelete } from '@/api/print';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -49,29 +48,26 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","clf_id":"","m_name": "", "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "", "createTime": "", "endTime": "", "pt_save_type": null, "c_valid": null},
       selectRule: {
-        "#eq":["_id","c_valid","clf_id"],
-        "#like":["m_name"],
+        "#eq":["_id","c_valid","pt_save_type"],
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
 
       // 新增
-      operateTitle:'新增物料',
-      operateModel:{m_name:'',clf_id:''},
+      operateTitle:'新增打印模板',
+      operateModel:{pt_save_type:null,pt_desc:"",pt_default:true,pt_text:""},
       // 表格数据展示
-      clfList:[],//物料分类列表
-      clfJson:{},
       pageSize:10,
       pageIndex:1,
       total:10,
       columnList:[
         {type:'_id',label:'ID'},
-        {type:'m_code',label:'物料编号'},
-        {type:'m_name',label:'物料名称'},
-        {type:'clf_name',label:'归属分类'},
+        {type:'pt_save_type_desc',label:'物料状态'},
+        {type:'pt_desc',label:'描述'},
         {type:'c_create_time',label:'创建时间'},
+        {type:'pt_default',label:'是否默认',switch:true,activeText:"是",inactiveText:"否"},
         {type:'c_valid',label:'状态',switch:true},
       ],
     }
@@ -85,17 +81,13 @@ export default {
           label:"ID"
         },
         {
-          prop:'m_name',
-          type:"input",
-          label:"物料名"
-        },
-        {
-          prop:'clf_id',
+          prop:'pt_save_type',
           type:"select",
-          label:"归属分类",
-          options:this.clfList,
-          filterable:true,
-          props:{"value":'_id',"label":'clf_name'}
+          label:"物料状态",
+          options:[
+            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
+            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+          ],  
         },
         {
           prop:'c_valid',
@@ -116,82 +108,77 @@ export default {
       ]
     },
     operateFormData:function(){
-      return [{
-        prop:'m_name',
-        type:"input",
-        label:"物料名",
-        rules:[
-          { required: true, message: '请输入物料名', trigger: 'blur' },
-        ]
-      },{
-        prop:'clf_id',
-        type:"select",
-        label:"归属分类",
-        options:this.clfList,
-        filterable:true,
-        props:{"value":'_id',"label":'clf_name'}
-      }]
-    },
+      return [
+        {
+          prop:'pt_save_type',
+          type:"select",
+          label:"物料状态",
+          options:[
+            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
+            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+          ],  
+        },
+        {
+          prop:'pt_desc',
+          type:"input",
+          label:"模板描述",
+        },
 
-  },
-  created() {
-    this.getClfList();
+        {
+          prop:"pt_text",
+          label:'模板内容',
+          type:"textarea",
+          rows:3,
+          style:"width:100%"
+        },
+        {
+          prop:'pt_default',
+          label:'是否默认',
+          type:"switch",
+          activeText:"是",
+          inactiveText:"否"
+        },
+      ]
+    },
 
   },
   mounted(){
+    this.selectPrintTemp();
   },
   methods: {
     // 搜索
-    selectMaterial(){
-      console.log(this.clfObj);
+    selectPrintTemp(){
       const pageIndex = this.pageIndex - 1;
       const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
       console.log(this.formModel,dataParams);
-      materialQuery(dataParams).then(data => {
-        this.list = getContent(data).map(item => {
-          item.clf_name = this.clfJson[item.clf_id];
-          return item;
-        });
+      printTempQuery(dataParams).then(data => {
+        this.list = getContent(data);
         this.total = getPageTotal(data);
       })
     },
-    // 获取归属分类
-    getClfList(){
-      classifyQueryAll().then(data => {
-        // this.clfList = getContent(data);
-        this.clfList = getContent(data).map(item => {
-          this.clfJson[item._id] = item.clf_name;
-          return {value:item._id,label:item.clf_name};
-
-        });
-
-      }).then(()=>{
-        this.selectMaterial();
-      })
-    },
     // 新增
-    addMaterial(){
+    addPrintTemp(){
       console.log("响应新增");
-      this.operateModel = {m_name:'',clf_id:''};
-      this.$refs.operateMaterial.dialogVisible = true;
+      this.operateModel = {pt_save_type:null,pt_desc:"",pt_default:true,pt_text:""};
+      this.$refs.operatePrintTemp.dialogVisible = true;
       this.operateTitle='新增物料';
     },
-    editMaterial(item){
+    editPrintTemp(item){
       console.log("响应编辑");
       this.operateModel = item;
       console.log(item);
-      this.$refs.operateMaterial.dialogVisible = true;
+      this.$refs.operatePrintTemp.dialogVisible = true;
       this.operateTitle=`编辑物料id: ${item._id},物料编号：${item.m_code}`;
     },
-    deleteMaterial(item){
+    deletePrintTemp(item){
       this.$confirm('确定删除该物料?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           const params = getDataParams({"#eq":["_id"]},item);
-          materialDelete(params).then(data => {
-            this.selectMaterial();
+          printTempDelete(params).then(data => {
+            this.selectPrintTemp();
             this.$message({
               type: 'success',
               message: '删除成功！!'
@@ -205,68 +192,77 @@ export default {
         });
     },
     // 切换状态
-    switchMaterial(item){
-      const operateModel = {"_id":item._id,c_valid:item.c_valid};
-      const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
-      console.log(item,params);
-      materialValid(params).then(data => {
-        // this.selectMaterial();
-        this.$message({
-          type: 'success',
-          message: '状态切换成功！!'
-        });
-      })
+    switchPrintTemp(item,prop){
+      console.log(prop);
+      const operateModel = {};
+      operateModel["_id"] = item._id;
+      operateModel[prop] = item[prop];
+      const params = getDataParams({"#eq":["_id"],"#set":[prop]},operateModel);
+      console.log(params);
+      if(prop === "c_valid"){
+        printTempValid(params).then(data => {
+          // this.selectPrintTemp();
+          this.$message({
+            type: 'success',
+            message: '状态切换成功！!'
+          });
+        })
+      }else{
+        this.updatePrintTemp(params);
+      }
     },
     // 表格操作：编辑 删除
-    handleMethod(type,item){
+    handleMethod(type,item,prop){
       item = JSON.parse(JSON.stringify(item));
       console.log(type,item);
       if(type==='edit'){
-        this.editMaterial(item); 
+        this.editPrintTemp(item); 
       }
       if(type==='delete'){
-        this.deleteMaterial(item);
+        this.deletePrintTemp(item);
       }
       if(type==='switch'){
-        this.switchMaterial(item);
+        this.switchPrintTemp(item,prop);
       }
     },
     paginationChange(type,val){
-      console.log(type,val);
-      if(type === 'handleSizeChange') 
-        this.pageSize = val;
-      else 
-        this.pageIndex = val;
-
-      this.selectMaterial();
+      if(type === 'handleSizeChange') this.pageSize = val;
+      else this.pageIndex = val;
+      this.selectPrintTemp();
     },
     // 提交
     submitForm(){
 
       console.log(this.operateModel);
       if(this.operateTitle === '新增物料'){
-        materialInsert(this.operateModel).then(data => {
-          this.selectMaterial();
+        printTempInsert(this.operateModel).then(data => {
+          this.selectPrintTemp();
           this.$message({
             type: 'success',
             message: '保存成功！!'
           });
-          this.$refs.operateMaterial.dialogVisible = false;
+          this.$refs.operatePrintTemp.dialogVisible = false;
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["m_name","clf_id"]},this.operateModel);
-        materialUpdate(params).then(data => {
-          this.selectMaterial();
+        const params = getDataParams({
+            "#eq":["_id"],
+            "#set":["pt_desc","pt_default","pt_save_type","pt_text"]
+          },this.operateModel);
+        this.updatePrintTemp(params);
+      }
+
+    },
+    updatePrintTemp(params){
+      printTempUpdate(params).then(data => {
+          this.selectPrintTemp();
           this.$message({
             type: 'success',
             message: '修改成功！!'
           });
-          this.$refs.operateMaterial.dialogVisible = false;
+          this.$refs.operatePrintTemp.dialogVisible = false;
         })
-      }
-
-    },
+    }
 
   }
 }

@@ -1,5 +1,6 @@
 <template>
   <div class="register-container">
+    <img class="loginBg" :src="loginBgSrc" />
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
@@ -66,7 +67,7 @@
         />
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">注册</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">点我注册</el-button>
 
       <div class="tips">
         <span>已有账号？请</span>
@@ -80,7 +81,7 @@
 <script>
 import { validUsername,validPhone } from '@/utils/validate'
 import { signup } from '@/api/user'
-import { param2Obj } from '@/utils'
+import loginBg from '@/styles/images/loginBg.png'
 
 export default {
 
@@ -127,12 +128,13 @@ export default {
       },
       loading: false,
       passwordType: 'u_pass',
-      redirect: undefined
+      redirect: undefined,
+      loginBgSrc:loginBg
     }
   },
   computed: {
     RegisterFormTitle() {
-      return '欢迎注册'
+      return '茶百道效期系统'
     }
   },
   watch: {
@@ -249,28 +251,36 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
+$bg:#152a7d;
+$cbdColor:#152a7d;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 
 .register-container {
-  min-height: 100%;
+  height: 100vh;
   width: 100%;
-  background-color: $bg;
+  background:rgba($bg,.8);
   overflow: hidden;
+  position: relative;
 
+  .loginBg{
+    width: 100%;
+  }
   .register-form {
-    position: relative;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
+    padding: 0 35px;
     margin: 0 auto;
     overflow: hidden;
     animation: loginMove 1s;
 
     @keyframes loginMove{
-      0%   {padding: 0px 35px 0;}
-      100% {padding: 160px 35px 0;}
+      0%   {top: 0;}
+      100% {top: 50%;transform: translate(-50%, -50%);}
     }
   }
 
@@ -298,7 +308,8 @@ $light_gray:#eee;
 
     .title {
       font-size: 26px;
-      color: $light_gray;
+      font-size: 36px;
+      color: #fff;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;

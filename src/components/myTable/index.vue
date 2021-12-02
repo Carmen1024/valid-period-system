@@ -22,9 +22,9 @@
             <el-switch 
               v-if="item.switch==true" 
               v-model="scope.row[item.type]"
-              active-text='有效'
-              inactive-text='无效'
-              @change="handle('switch',scope.row)"
+              :active-text="item.activeText || '有效'"
+              :inactive-text="item.inactiveText || '无效'"
+              @change="handle('switch',scope.row,item.type)"
               >
             </el-switch>
             <!-- 其他 -->
@@ -87,9 +87,9 @@ export default {
     
   },
   methods: {
-    handle(type,item){
+    handle(type,item,prop=""){
       // console.log(type,index,item);
-      this.$emit("handleFun",type,item);
+      this.$emit("handleFun",type,item,prop);
       
     }
   }

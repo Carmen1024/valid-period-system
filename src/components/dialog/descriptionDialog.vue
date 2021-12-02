@@ -6,30 +6,7 @@
       :before-close="handleClose"
       width="50%"
       center>
-      <el-form 
-      :ref='ruleForm' 
-      :label-width='labelWidth'
-      :class='className'
-      :model='formModel'
-      :rules="formRule"
-      >
-        <!-- 
-          type:
-          label:
-          rules:[] 校验规则
-          model:
-        -->
-        <el-form-item 
-          v-for="item in formData"
-          :key="item.prop" 
-          :prop="item.prop"
-          :label="item.label || ''" 
-          :rules="item.rules"
-          >
-          </el-form-item>
-        </el-form>
-      <!-- 这玩意儿tm不支持遍历，先不用了 -->
-      <!-- <el-descriptions class="margin-top" :column="3" border>
+      <el-descriptions v-if="dialogVisible" class="margin-top" :column="2" border>
         <el-descriptions-item 
           v-for="item in descriptions"
           :key="item.type"
@@ -38,7 +15,7 @@
           >
             {{ descriptModel[item.type] }}
         </el-descriptions-item>
-      </el-descriptions> -->
+      </el-descriptions>
     </el-dialog>
   </div>
 </template>
@@ -65,6 +42,10 @@ export default {
       descriptions:{
         type: Array,
         default: () => []
+      },
+      className:{
+        type:String,
+        default:''
       }
     },
     data(){

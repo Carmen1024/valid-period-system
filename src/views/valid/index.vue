@@ -69,12 +69,6 @@ export default {
         "m_t_fw_time": null,  //可选，风味效期 < 质量效期
         "m_t_fw_1_time": null,  //可选，风味效期1（黄色预警）
         "m_t_fw_2_time": null,  //可选，风味效期2（红色预警）
-        "m_t_zl_time_unit": 1000*60*24,  //可选，质量效期 单位
-        "m_t_zl_1_time_unit": 1000*60*24,  //可选，质量效期1（黄色预警）单位
-        "m_t_zl_2_time_unit": 1000*60*24,  //可选，质量效期2（红色预警）单位
-        "m_t_fw_time_unit": 1000*60*24,  //可选，风味效期 单位
-        "m_t_fw_1_time_unit": 1000*60*24,  //可选，风味效期1（黄色预警）单位
-        "m_t_fw_2_time_unit": 1000*60*24,  //可选，风味效期2（红色预警）单位
         "m_t_tag": "",  //可选，标签
       },
       loadOperateModel:{
@@ -90,7 +84,8 @@ export default {
         "m_t_tag": "",  //可选，标签
       },
       // 表格数据展示
-      validList:[],//物料分类列表
+      materialList:[],//物料分类列表
+      materialJson:{},
       clfObj:null,
       pageSize:10,
       pageIndex:1,
@@ -99,16 +94,12 @@ export default {
         {type:'_id',label:'ID'},
         {type:'m_t_name',label:'物料名称'},
         {type:'m_t_tag',label:'物料标签'},
+        
         {type:'m_t_type_desc',label:'物料状态'},
         {type:'m_t_zl_time_desc',label:'质量效期'},
         {type:'m_t_fw_time_desc',label:'赏味效期'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
-      ],
-      unitOptions:[
-        {label:"天",value:1440000},
-        {label:"小时",value:60000},
-        {label:"分",value:1000}
       ],
     }
   },
@@ -155,16 +146,25 @@ export default {
     operateFormData:function(){
       return [
         {
-          prop:'m_t_obj',
-          type:"selectItem",
+          prop:'m_id',
+          type:"select",
           label:"物料名称",
-          options:this.validList,
-          filterable:true,
-          props:{"value":'_id',"label":'clf_name'},
+          options:this.materialList,
           rules:[
             { required: true, message: '请选择物料名', trigger: 'blur' },
           ]
         },
+        // {
+        //   prop:'m_t_obj',
+        //   type:"selectItem",
+        //   label:"物料名称",
+        //   options:this.materialList,
+        //   filterable:true,
+        //   props:{"value":'_id',"label":'clf_name'},
+        //   rules:[
+        //     { required: true, message: '请选择物料名', trigger: 'blur' },
+        //   ]
+        // },
         {
           prop:'m_t_type',
           type:"select",
@@ -179,55 +179,37 @@ export default {
         },
         {
           prop:'m_t_zl_time',
-          type:"number",
+          type:"timeUtil",
           label:"质量效期",
-          unit:this.unitOptions,
-          unitProp:'m_t_zl_time_unit',
-          rules:[{ type: 'number', message: '请填写数字'}],
         },
         {
           prop:'m_t_fw_time',
-          type:"number",
+          type:"timeUtil",
           label:"赏味效期",
-          unit:this.unitOptions,
-          unitProp:'m_t_fw_time_unit',
-          rules:[{ type: 'number', message: '请填写数字'}],
         },
         {
           prop:'m_t_zl_1_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_zl_1_time_unit',
+          type:"timeUtil",
           label:"质量效期预警1",
-          rules:[{ type: 'number', message: '请填写数字'}]
         },
         {
           prop:'m_t_fw_1_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_fw_1_time_unit',
+          type:"timeUtil",
           label:"赏味效期预警1",
-          rules:[{ type: 'number', message: '请填写数字'}]
         },
         {
           prop:'m_t_zl_2_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_zl_2_time_unit',
+          type:"timeUtil",
           label:"质量效期预警2",
-          rules:[{ type: 'number', message: '请填写数字'}]
         },
         {
           prop:'m_t_fw_2_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_fw_2_time_unit',
+          type:"timeUtil",
           label:"赏味效期预警2",
-          rules:[{ type: 'number', message: '请填写数字'}]
         },
         {
           prop:'m_t_tag',
-          type:"number",
+          type:"input",
           label:"物料标签",  
           rules:[
             { required: true, message: '请填写', trigger: 'blur' },
@@ -259,8 +241,9 @@ export default {
     // 获取归属分类
     getValidList(){
       materialQueryAll().then(data => {
-        // this.validList = getContent(data);
-        this.validList = getContent(data).map(item => {
+        // this.materialList = getContent(data);
+        this.materialList = getContent(data).map(item => {
+          this.materialJson[item._id] = item.m_name;
           return {value:item._id,label:item.m_name};
         });
       })
@@ -278,21 +261,14 @@ export default {
         "m_t_fw_time": null,  //可选，风味效期 < 质量效期
         "m_t_fw_1_time": null,  //可选，风味效期1（黄色预警）
         "m_t_fw_2_time": null,  //可选，风味效期2（红色预警）
-        "m_t_zl_time_unit": 1440000,  //可选，质量效期 单位
-        "m_t_zl_1_time_unit": 1000*60*24,  //可选，质量效期1（黄色预警）单位
-        "m_t_zl_2_time_unit": 1000*60*24,  //可选，质量效期2（红色预警）单位
-        "m_t_fw_time_unit": 1000*60*24,  //可选，风味效期 单位
-        "m_t_fw_1_time_unit": 1000*60*24,  //可选，风味效期1（黄色预警）单位
-        "m_t_fw_2_time_unit": 1000*60*24,  //可选，风味效期2（红色预警）单位
         "m_t_tag": "",  //可选，标签
       };
       this.$refs.operateValid.dialogVisible = true;
       this.operateTitle='新增物料';
     },
     editValid(item){
-      console.log("响应编辑");
       this.operateModel = item;
-      console.log(item);
+      console.log("响应编辑",this.operateModel);
       this.$refs.operateValid.dialogVisible = true;
       this.operateTitle=`编辑物料id: ${item._id}`;
     },
@@ -353,13 +329,8 @@ export default {
     submitForm(){
 
       console.log(this.operateModel);
-      let loadOperateModel = {};
-      for(let index in this.loadOperateModel){
-        if(this.operateModel[index]==null || this.operateModel[index]=='') return;
-        if(index.match(/_time$/ig)) loadOperateModel[index] = this.operateModel[index] * this.operateModel[index+"_unit"];
-        else loadOperateModel[index] = this.operateModel[index];
-      }
-      console.log(loadOperateModel);
+      let loadOperateModel = this.operateModel;
+      loadOperateModel.m_t_name = this.materialJson[loadOperateModel.m_id];
 
       if(this.operateTitle === '新增物料'){
         validInsert(loadOperateModel).then(data => {
@@ -372,7 +343,21 @@ export default {
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["m_t_name","m_t_type"]},this.operateModel);
+        const params = getDataParams({
+          "#eq":["_id"],
+          "#set":[
+            "m_id",
+            "m_t_name",
+            "m_t_type",
+            "m_t_tag",
+            "m_t_zl_time",
+            "m_t_zl_1_time",
+            "m_t_zl_2_time",
+            "m_t_fw_time",
+            "m_t_fw_1_time",
+            "m_t_fw_2_time",
+          ],
+        },this.operateModel);
         validUpdate(params).then(data => {
           this.selectValid();
           this.$message({

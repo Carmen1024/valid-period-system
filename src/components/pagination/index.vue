@@ -47,7 +47,7 @@ export default {
     methods:{
         handleSizeChange(val) {
             // this.pageSize = val;
-            this.$emit("pageChangeFun","paginationChange",val);
+            this.$emit("pageChangeFun","handleSizeChange",val);
         },
         handleCurrentChange(val) {
             // this.pageIndex = val;

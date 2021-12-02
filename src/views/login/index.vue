@@ -1,5 +1,6 @@
 <template>
   <div class="login-container">
+    <img class="loginBg" :src="loginBgSrc" />
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
@@ -41,7 +42,7 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">点我登录</el-button>
 
       <div class="tips">
         <span>没有账号？先</span>
@@ -56,6 +57,7 @@
 
 <script>
 import { validPhone } from '@/utils/validate'
+import loginBg from '@/styles/images/loginBg.png'
 
 export default {
   name: 'Login',
@@ -88,12 +90,13 @@ export default {
       },
       loading: false,
       passwordType: 'u_pass',
-      redirect: undefined
+      redirect: undefined,
+      loginBgSrc:loginBg
     }
   },
   computed: {
     LoginFormTitle() {
-      return '账号登录'
+      return '茶百道效期系统'
     }
   },
   watch: {
@@ -181,28 +184,38 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
+$bg:#152a7d;
+$cbdColor:#152a7d;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 
 .login-container {
-  min-height: 100%;
+  height: 100vh;
   width: 100%;
-  background-color: $bg;
+  background:rgba($bg,.8);
   overflow: hidden;
+  position: relative;
 
+  .loginBg{
+    width: 100%;
+  }
   .login-form {
-    position: relative;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
-    margin: auto;
+    padding: 35px;
+    // background: $bg;
+    // border-radius: 5px;
+    // box-shadow: 0 0 5px #ddd;
     overflow: hidden;
     animation: loginMove 1s;
 
     @keyframes loginMove{
-      0%   {padding: 0px 35px 0;}
-      100% {padding: 160px 35px 0;}
+      0%   {top: 0;}
+      100% {top: 50%;transform: translate(-50%, -50%);}
     }
   }
 
@@ -229,8 +242,8 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
-      color: $light_gray;
+      font-size: 36px;
+      color: #fff;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
