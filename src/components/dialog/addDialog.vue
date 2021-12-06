@@ -6,7 +6,7 @@
       :title="title"
       :visible="dialogVisible"
       :before-close="handleClose"
-      width="50%"
+      :width="width"
       center>
       <el-form 
         :ref='ruleForm' 
@@ -133,10 +133,15 @@
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitForm">提交</el-button>
-            <el-button @click="cancel">取消</el-button>
-          </el-form-item>
+          <el-form-item class="form-handle">
+          <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
+          <el-button @click="addItem">新增</el-button> -->
+          <el-button 
+            v-for='item in handles'
+            :key=item.type
+            :type="item.buttonStyle || ''"
+            @click="handle(item.type)">{{item.label}}</el-button>
+        </el-form-item>
       </el-form>
 
     </el-dialog>
@@ -174,7 +179,18 @@ export default {
         type: Object,
         default: () => {}
       },
-      
+      width: {
+        type:String,
+        default:'50%'
+      },
+      handles:{
+        type:Array,
+        default:()=>[
+          {label:"提交",type:"submit",buttonStyle:"primary"},
+          {label:"取消",type:"cancel"},
+        ]
+      },
+
     },
     data(){
       return {
@@ -214,7 +230,7 @@ export default {
          this.dialogVisible = false;
       },
       submitForm(){
-        console.log("我告诉你要保存");
+        // console.log("我告诉你要保存");
         this.$refs[this.ruleForm].validate((valid) => {
           if (valid) {
             this.$emit("submitFun");
@@ -223,6 +239,12 @@ export default {
             return false;
           }
         });
+      },
+      handle(type){
+        if(type === 'submit') this.submitForm();
+        else if(type === 'cancel') this.cancel();
+        else this.$emit("formHandle",type);
+        
       },
       handleClose(){
          this.dialogVisible = false;
@@ -256,6 +278,10 @@ export default {
         width: 100%;
       }
 
+    }
+    .form-handle{
+      width: 100%;
+      text-align: right;
     }
   }
 

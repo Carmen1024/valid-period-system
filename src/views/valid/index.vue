@@ -6,6 +6,7 @@
       :formModel="formModel"
       @addFun="addValid"
       @selectFun="selectValid"
+      @cancelFun="cancelMethod"
      />
      <add-dialog 
       ref='operateValid'
@@ -128,7 +129,7 @@ export default {
         {
           prop:'c_valid',
           type:"select",
-          options:[{label:'全部',value:"all"},{label:'有效',value:true},{label:'无效',value:false}],
+          options:[{label:'有效',value:true},{label:'无效',value:false}],
           label:"状态",
         },
         {
@@ -219,19 +220,15 @@ export default {
     },
 
   },
-  created() {
+  mounted() {
     this.getValidList();
-
-  },
-  mounted(){
-    this.selectValid();
   },
   methods: {
     // 搜索
-    selectValid(){
+    selectValid(refresh){
       // console.log(this.clfObj);
       const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
       // console.log(this.formModel,dataParams);
       validQuery(dataParams).then(data => {
         this.list = getContent(data);
@@ -246,11 +243,14 @@ export default {
           this.materialJson[item._id] = item.m_name;
           return {value:item._id,label:item.m_name};
         });
+        // resolve();
+      }).then(() => {
+        this.selectValid();
       })
     },
     // 新增
     addValid(){
-      console.log("响应新增");
+      // console.log("响应新增");
       this.operateModel = {
         "m_id" : "",  //必填， 物料ID
         "m_t_name": "",  //必填, 物料名称
@@ -268,7 +268,7 @@ export default {
     },
     editValid(item){
       this.operateModel = item;
-      console.log("响应编辑",this.operateModel);
+      // console.log("响应编辑",this.operateModel);
       this.$refs.operateValid.dialogVisible = true;
       this.operateTitle=`编辑物料id: ${item._id}`;
     },
@@ -297,7 +297,7 @@ export default {
     switchValid(item){
       const operateModel = {"_id":item._id,c_valid:item.c_valid};
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
-      console.log(item,params);
+      // console.log(item,params);
       validValid(params).then(data => {
         // this.selectValid();
         this.$message({
@@ -309,7 +309,7 @@ export default {
     // 表格操作：编辑 删除
     handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
-      console.log(type,item);
+      // console.log(type,item);
       if(type==='edit'){
         this.editValid(item); 
       }
@@ -323,12 +323,12 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectValid();
+      this.selectValid(false);
     },
     // 提交 
     submitForm(){
 
-      console.log(this.operateModel);
+      // console.log(this.operateModel);
       let loadOperateModel = this.operateModel;
       loadOperateModel.m_t_name = this.materialJson[loadOperateModel.m_id];
 
@@ -369,11 +369,16 @@ export default {
       }
     },
     changeModel(data,prop){
-        console.log(data,prop);
+        // console.log(data,prop);
         if(prop === 'm_t_obj') 
           this.operateModel.m_t_name = data.label;
           this.operateModel.m_id = data.value;
-        console.log(this.operateModel);
+        // console.log(this.operateModel);
+    },
+    // 清空
+    cancelMethod(){
+      this.formModel = {"_id": "","m_t_type":null,"m_t_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      
     }
   }
 }

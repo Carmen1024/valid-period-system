@@ -83,7 +83,7 @@ export default {
         },
         setTimes(){
             let times = this.times;
-            console.log(times);
+            // console.log(times);
             if(isNaN(times) || times<=0){
                 this.days = null;
                 this.hours = null;

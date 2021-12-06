@@ -6,6 +6,7 @@
       :formModel="formModel"
       @addFun="addSort"
       @selectFun="selectSort"
+      @cancelFun="cancelMethod"
      />
      <add-dialog 
       ref='operateSort'
@@ -64,7 +65,7 @@ export default {
         {
           prop:'c_valid',
           type:"select",
-          options:[{label:'全部',value:"all"},{label:'有效',value:true},{label:'无效',value:false}],
+          options:[{label:'有效',value:true},{label:'无效',value:false}],
           label:"状态",
         },
         {
@@ -96,28 +97,28 @@ export default {
       total:10,
       list: null,
       columnList:[
-        {type:'_id',label:'ID'},
-        {type:'clf_name',label:'名称'},
-        {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'_id',label:'ID',width:220},
+        {type:'clf_name',label:'名称',width:200},
+        {type:'c_create_time',label:'创建时间',width:220},
+        {type:'c_valid',label:'状态',switch:true,width:200},
       ],
     }
   },
-  created() {
-    this.selectSort();
+  mounted() {
+    this.selectSort(false);
   },
   methods: {
     // 新增
     addSort(){
-      console.log("响应新增");
+      // console.log("响应新增");
       this.operateModel = {clf_name:''};
       this.$refs.operateSort.dialogVisible = true;
       this.operateTitle='新增分类';
     },
     editSort(item){
-      console.log("响应编辑");
+      // console.log("响应编辑");
       this.operateModel = item;
-      console.log(item);
+      // console.log(item);
       this.$refs.operateSort.dialogVisible = true;
       this.operateTitle='编辑分类id:' + item._id;
     },
@@ -146,7 +147,7 @@ export default {
     switchSort(item){
       const operateModel = {"_id":item._id,c_valid:item.c_valid};
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
-      console.log(item,params);
+      // console.log(item,params);
       classifyValid(params).then(data => {
         // this.selectSort();
         this.$message({
@@ -158,7 +159,7 @@ export default {
     // 表格操作：编辑 删除
     handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
-      console.log(type,item);
+      // console.log(type,item);
       if(type==='edit'){
         this.editSort(item); 
       }
@@ -172,22 +173,22 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectSort();
+      this.selectSort(false);
     },
     // 搜索
-    selectSort(){
+    selectSort(refresh){
       const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
       classifyQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);
       })
-      console.log("响应搜索，发送请求ing");
+      // console.log("响应搜索，发送请求ing");
     },
     // 提交
     submitForm(){
 
-      console.log(this.operateModel);
+      // console.log(this.operateModel);
       if(this.operateTitle === '新增分类'){
         classifyInsert(this.operateModel).then(data => {
           this.selectSort();
@@ -211,6 +212,11 @@ export default {
       }
 
     },
+    // 清空
+    cancelMethod(){
+      this.formModel = {"_id": "","clf_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      
+    }
 
   }
 }

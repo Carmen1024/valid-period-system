@@ -14,25 +14,28 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/login',
+    name: '登录',
     component: () => import('@/views/login/index'),
     hidden: true
   },
   {
     path: '/register',
+    name: '注册',
     component: () => import('@/views/register/index'),
     hidden: true
   },
 
   {
     path: '/404',
+    name: '404',
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
     redirect: '/home',
+    name: '工作台',
     children: [{
       path: 'home',
       name: 'Home',
@@ -43,6 +46,7 @@ export const constantRoutes = [
   {
     path: '/sort',
     component: Layout,
+    name: '分类管理',
     children: [
       {
         path: 'index',
@@ -55,6 +59,7 @@ export const constantRoutes = [
   {
     path: '/materials',
     component: Layout,
+    name: '物料管理',
     children: [
       {
         path: 'index',
@@ -67,12 +72,39 @@ export const constantRoutes = [
   {
     path: '/valid',
     component: Layout,
+    name: '物料效期管理',
     children: [
       {
         path: 'index',
         name: 'Valid',
         component: () => import('@/views/valid/index'),
         meta: { title: '物料效期管理', icon: 'valid' }
+      }
+    ]
+  },
+  {
+    path: '/print',
+    component: Layout,
+    name: '打印模板管理',
+    children: [
+      {
+        path: 'index',
+        name: 'PrintTemp',
+        component: () => import('@/views/printTemp/index'),
+        meta: { title: '打印模板管理', icon: 'print' }
+      }
+    ]
+  },
+  {
+    path: '/printList',
+    component: Layout,
+    name: '打印记录管理',
+    children: [
+      {
+        path: 'index',
+        name: 'PrintList',
+        component: () => import('@/views/printList/index'),
+        meta: { title: '打印记录管理', icon: 'printList' }
       }
     ]
   },
@@ -112,30 +144,6 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  {
-    path: '/printTemp',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'PrintTemp',
-        component: () => import('@/views/printTemp/index'),
-        meta: { title: '打印模板管理', icon: 'print' }
-      }
-    ]
-  },
-  {
-    path: '/printList',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'PrintList',
-        component: () => import('@/views/printList/index'),
-        meta: { title: '打印记录管理', icon: 'printList' }
-      }
-    ]
-  },
   // {
   //   path: '/user',
   //   component: Layout,
@@ -200,10 +208,11 @@ export const constantRoutes = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  
   scrollBehavior: () => ({ y: 0 }),
+  mode: 'history', // require service support
+  base:'/admin/',
   routes: constantRoutes
 })
 

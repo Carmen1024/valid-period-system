@@ -14,6 +14,7 @@ export function isExternal(path) {
 export function validUsername(str) {
   // const valid_map = ['admin', 'editor','17828019562']
   // return valid_map.indexOf(str.trim()) >= 0
+  if(str==='') return true;
   return /^[A-Za-z]+[A-Za-z0-9_@]{2,19}/.test(str)
 }
 

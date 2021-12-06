@@ -38,7 +38,7 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'u_pass' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
@@ -78,8 +78,10 @@ export default {
     }
     return {
       loginForm: {
-        u_phone: '17828019562',
-        u_pass: '123'
+        // u_phone: '17828019562',
+        // u_pass: '123',
+        u_phone: '',
+        u_pass: ''
       },
       loginRules: {
         u_phone: [
@@ -89,7 +91,7 @@ export default {
         u_pass: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
-      passwordType: 'u_pass',
+      passwordType: 'password',
       redirect: undefined,
       loginBgSrc:loginBg
     }

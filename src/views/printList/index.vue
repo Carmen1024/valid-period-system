@@ -6,6 +6,7 @@
       :formModel="formModel"
       :handles="formHandle"
       @selectFun="selectPrintHistory"
+      @cancelFun="cancelMethod"
     />
     <my-table 
       :tableData=list 
@@ -44,12 +45,15 @@ export default {
   },
   data() {
     return {
-      formHandle:[{buttonStyle:"primary",label:"搜索",type:"select"}],
+      formHandle:[
+        {buttonStyle:"primary",label:"搜索",type:"select"},
+        {label:"清空",type:"cancel"},
+      ],
       handle:[{label:"详情",type:"detail"}],
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","m_t_type":'',"clf_name": "","m_name": "","s_name": "","m_t_name": "","pt_h_sn": "", "createTime": "", "endTime": ""},
+      formModel: {"_id": "","m_t_type":null,"clf_name": "","m_name": "","s_name": "","m_t_name": "","pt_h_sn": "", "createTime": "", "endTime": ""},
       selectRule: {
         "#eq":["_id","m_t_type"],
         "#like":["clf_name","m_name","s_name","m_t_name","pt_h_sn"],
@@ -135,8 +139,8 @@ export default {
       ]
     }
   },
-  created() {
-    this.selectPrintHistory();
+  mounted() {
+    this.selectPrintHistory(false);
   },
   methods: {
     // 表格操作：详情
@@ -145,7 +149,7 @@ export default {
       // console.log(type,item);
       if(type === 'detail'){
         this.descriptModel = item;
-        console.log(this.descriptModel,this.descripOptions);
+        // console.log(this.descriptModel,this.descripOptions);
         this.$refs.printDescription.dialogVisible = true;
         // this.editPrintHistory(item); 
       }
@@ -153,18 +157,23 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectPrintHistory();
+      this.selectPrintHistory(false);
     },
     // 搜索
-    selectPrintHistory(){
+    selectPrintHistory(refresh){
       const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
       printHistoryQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);
       })
-      console.log("响应搜索，发送请求ing");
+      // console.log("响应搜索，发送请求ing");
     },
+    // 清空
+    cancelMethod(){
+      this.formModel = {"_id": "","m_t_type":null,"clf_name": "","m_name": "","s_name": "","m_t_name": "","pt_h_sn": "", "createTime": "", "endTime": ""};
+      
+    }
 
   }
 }

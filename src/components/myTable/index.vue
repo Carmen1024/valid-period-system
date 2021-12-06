@@ -14,7 +14,7 @@
         :key='item.type + index'
         :prop="item.type"
         :label="item.label"
-        :width="item.width || 150" 
+         
         align="center"
         >
           <template slot-scope="scope">
@@ -33,7 +33,11 @@
             </span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" v-if='handles && handles.length > 0'>
+      <el-table-column 
+        label="操作" 
+        v-if='handles && handles.length > 0'
+        :width="handleWidth"
+      >
         <template slot-scope="scope">
           <el-button 
             v-for='item in handles'
@@ -73,7 +77,20 @@ export default {
 
         },
         deep: true
-      }
+      },
+      handles:{
+        handler: function (val, oldVal) {
+
+        },
+        deep: true
+      },
+  },
+  computed:{
+    handleWidth:function(){
+      const width = this.handles.length * 100;
+      console.log(this.handles.length,width);
+      return width;
+    }
   },
   data() {
     return {
@@ -88,7 +105,7 @@ export default {
   },
   methods: {
     handle(type,item,prop=""){
-      // console.log(type,index,item);
+      console.log(type,item);
       this.$emit("handleFun",type,item,prop);
       
     }

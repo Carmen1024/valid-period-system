@@ -7,6 +7,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 import '@/styles/index.scss' // global css
 
+import dataV from '@jiaminghi/data-view' //datav
+
 import App from './App'
 import store from './store'
 import router from './router'
@@ -31,6 +33,9 @@ if (process.env.NODE_ENV === 'production') {
 // Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 Vue.use(ElementUI)
+
+//datav
+Vue.use(dataV)
 
 Vue.config.productionTip = false
 

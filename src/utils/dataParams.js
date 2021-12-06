@@ -16,13 +16,14 @@ export function getDataParams(rule,data){
         dataParams[index] = indexMap;
     }
     
-    console.log(dataParams);
+    // console.log(dataParams);
     return dataParams;
 }
 // 分页的数据结构
-export function getPageParams(rule,data,pageSize,pageIndex){
+export function getPageParams(rule,data,pageSize,pageIndex,refresh=true){
     let dataParams = {"#content":getDataParams(rule,data)};
-    dataParams["#cache"] = "refresh"; //强制刷新后台缓存
+    
+    if(refresh) dataParams["#cache"] = "refresh"; //强制刷新后台缓存
     
     dataParams["#content"]["#size"] = pageSize || 10;
     dataParams["#content"]["#start"] = pageIndex || 0;

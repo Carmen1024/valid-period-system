@@ -6,6 +6,7 @@
       :formModel="formModel"
       @addFun="addMaterial"
       @selectFun="selectMaterial"
+      @cancelFun="cancelMethod"
      />
      <add-dialog 
       ref='operateMaterial'
@@ -49,7 +50,7 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","clf_id":"","m_name": "", "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "","clf_id":null,"m_name": "", "createTime": "", "endTime": "", "c_valid": null},
       selectRule: {
         "#eq":["_id","c_valid","clf_id"],
         "#like":["m_name"],
@@ -100,7 +101,7 @@ export default {
         {
           prop:'c_valid',
           type:"select",
-          options:[{label:'全部',value:"all"},{label:'有效',value:true},{label:'无效',value:false}],
+          options:[{label:'有效',value:true},{label:'无效',value:false}],
           label:"状态",
         },
         {
@@ -129,24 +130,24 @@ export default {
         label:"归属分类",
         options:this.clfList,
         filterable:true,
-        props:{"value":'_id',"label":'clf_name'}
+        props:{"value":'_id',"label":'clf_name'},
+        rules:[
+          { required: true, message: '请选择分类', trigger: 'blur' },
+        ]
       }]
     },
 
   },
   created() {
     this.getClfList();
-
-  },
-  mounted(){
   },
   methods: {
     // 搜索
-    selectMaterial(){
-      console.log(this.clfObj);
+    selectMaterial(refresh){
+      console.log(refresh);
       const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
-      console.log(this.formModel,dataParams);
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+      // console.log(this.formModel,dataParams);
       materialQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
           item.clf_name = this.clfJson[item.clf_id];
@@ -162,24 +163,23 @@ export default {
         this.clfList = getContent(data).map(item => {
           this.clfJson[item._id] = item.clf_name;
           return {value:item._id,label:item.clf_name};
-
         });
-
+        // resolve();
       }).then(()=>{
-        this.selectMaterial();
+        this.selectMaterial(false);
       })
     },
     // 新增
     addMaterial(){
-      console.log("响应新增");
+      // console.log("响应新增");
       this.operateModel = {m_name:'',clf_id:''};
       this.$refs.operateMaterial.dialogVisible = true;
       this.operateTitle='新增物料';
     },
     editMaterial(item){
-      console.log("响应编辑");
+      // console.log("响应编辑");
       this.operateModel = item;
-      console.log(item);
+      // console.log(item);
       this.$refs.operateMaterial.dialogVisible = true;
       this.operateTitle=`编辑物料id: ${item._id},物料编号：${item.m_code}`;
     },
@@ -208,7 +208,7 @@ export default {
     switchMaterial(item){
       const operateModel = {"_id":item._id,c_valid:item.c_valid};
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
-      console.log(item,params);
+      // console.log(item,params);
       materialValid(params).then(data => {
         // this.selectMaterial();
         this.$message({
@@ -220,7 +220,7 @@ export default {
     // 表格操作：编辑 删除
     handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
-      console.log(type,item);
+      // console.log(type,item);
       if(type==='edit'){
         this.editMaterial(item); 
       }
@@ -232,18 +232,18 @@ export default {
       }
     },
     paginationChange(type,val){
-      console.log(type,val);
+      // console.log(type,val);
       if(type === 'handleSizeChange') 
         this.pageSize = val;
       else 
         this.pageIndex = val;
 
-      this.selectMaterial();
+      this.selectMaterial(false);
     },
     // 提交
     submitForm(){
 
-      console.log(this.operateModel);
+      // console.log(this.operateModel);
       if(this.operateTitle === '新增物料'){
         materialInsert(this.operateModel).then(data => {
           this.selectMaterial();
@@ -267,6 +267,11 @@ export default {
       }
 
     },
+    // 清空
+    cancelMethod(){
+      this.formModel = {"_id": "","clf_id":null,"m_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      
+    }
 
   }
 }

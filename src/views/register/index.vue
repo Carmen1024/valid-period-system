@@ -6,7 +6,19 @@
       <div class="title-container">
         <h3 class="title">{{ RegisterFormTitle }}</h3>
       </div>
-
+      <el-form-item prop="u_phone">
+        <span class="svg-container">
+          <svg-icon icon-class="phone" />
+        </span>
+        <el-input
+          v-model="registerForm.u_phone"
+          placeholder="手机号"
+          name="u_phone"
+          type="text"
+          tabindex="1"
+          auto-complete="on"
+        />
+      </el-form-item>
       <el-form-item prop="u_name">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -36,24 +48,11 @@
           @keyup.enter.native="handleRegister"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'u_pass' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-      
-      <el-form-item prop="u_phone">
-        <span class="svg-container">
-          <svg-icon icon-class="phone" />
-        </span>
-        <el-input
-          v-model="registerForm.u_phone"
-          placeholder="手机号"
-          name="u_phone"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-      <el-form-item prop="u_real_name">
+    
+      <!-- <el-form-item prop="u_real_name">
         <span class="svg-container">
           <svg-icon icon-class="realname" />
         </span>
@@ -65,7 +64,7 @@
           tabindex="1"
           auto-complete="on"
         />
-      </el-form-item>
+      </el-form-item> -->
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">点我注册</el-button>
 
@@ -106,14 +105,12 @@ export default {
         "u_phone": "",
         "u_name": "",
         "u_pass": "",
-        "u_real_name": "",
+        // "u_real_name": "",
         "c_desc":"test",
         "u_avatar": "http://www.avatar.com/header.jpg"
       },
       registerRules: {
         u_name: [
-          { required: true, message: '请输入名称', trigger: 'blur' },
-          { required: true, min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' },
           { required: true, message: '用户名只能带字母、下划线、@、数字，并以字母开头',validator:validateUsername, trigger: 'change'}
         ],
         u_pass: [
@@ -122,12 +119,12 @@ export default {
         ],
         u_phone:[
           { required: true, message: '请输入手机号', trigger: 'blur' },
-          { required: true,min: 11, max: 11, message: '请输入正确的手机号',validator:validatePhone, trigger: 'change' }
+          { required: true,max: 11, message: '请输入正确的11位手机号',validator:validatePhone, trigger: 'change' }
         ]
 
       },
       loading: false,
-      passwordType: 'u_pass',
+      passwordType: 'password',
       redirect: undefined,
       loginBgSrc:loginBg
     }
@@ -165,8 +162,8 @@ export default {
             this.$message({
               message: '注册成功，三秒后为您跳转到登录页~',
               center: true,
+              type:'success',
               onClose:()=>{
-
                 this.$router.push({ path: _this.redirect || '/' })
               }
             });

@@ -6,18 +6,32 @@
       :formModel="formModel"
       @addFun="addPrintTemp"
       @selectFun="selectPrintTemp"
+      @cancelFun="cancelMethod"
      />
      <add-dialog 
       ref='operatePrintTemp'
       ruleForm="addPrintTemp"
       :title='operateTitle'
-      :formData=operateFormData
+      :formData=operateData
       :formModel=operateModel
       @submitFun="submitForm"
+     />
+     <!-- 测试打印模板 -->
+    <add-dialog 
+      ref='testPrintTemp'
+      className='testPrintTemp'
+      ruleForm="testPrintTemp"
+      title="测试打印模板"
+      width="30%"
+      :formData=testPrintData
+      :formModel=testPrintModel
+      :handles="testHandles"
+      @submitFun="testPrint"
      />
     <my-table 
       :tableData=list 
       :columnList=columnList 
+      :handles="handle"
       @handleFun = "handleMethod"
     />
     <pagination
@@ -33,7 +47,7 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { printTempQuery,printTempInsert,printTempUpdate,printTempValid,printTempDelete } from '@/api/print';
+import { printTempQuery,printTempInsert,printTempUpdate,printTempValid,printTempDelete,printTempTest } from '@/api/print';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -57,7 +71,7 @@ export default {
 
       // 新增
       operateTitle:'新增打印模板',
-      operateModel:{pt_save_type:null,pt_desc:"",pt_default:true,pt_text:""},
+      operateModel:{pt_save_type:null,pt_desc:"",pt_default:true,pt_text:"",callback:''},
       // 表格数据展示
       pageSize:10,
       pageIndex:1,
@@ -70,6 +84,52 @@ export default {
         {type:'pt_default',label:'是否默认',switch:true,activeText:"是",inactiveText:"否"},
         {type:'c_valid',label:'状态',switch:true},
       ],
+      handle:[
+        {type:'edit',label:'编辑'},
+        {label:"打印测试",type:"printTest"},
+        {type:'delete',label:'删除'}
+      ],
+      // 测试打印模板
+      testPrintModel:{},
+      testHandles:[
+        {label:"打印",type:"submit",buttonStyle:"primary"},
+        {label:"取消",type:"cancel"},
+      ],
+      testPrintData:[
+        {
+          prop:'user',
+          type:"input",
+          style:"width:100%",
+          label:"打印机账号",
+          rules:[
+            { required: true, message: '请填写打印机账号', trigger: 'blur' },
+          ],
+        },
+        {
+          prop:'sn',
+          type:"input",
+          style:"width:100%",
+          label:"打印机序列号",
+          rules:[
+            { required: true, message: '请填写打印机序列号', trigger: 'blur' },
+          ],
+        },
+        {
+          prop:'uKey',
+          type:"input",
+          style:"width:100%",
+          label:"打印机密钥",
+          rules:[
+            { required: true, message: '请填写打印机密钥', trigger: 'blur' },
+          ],
+        },{
+          prop:'callback',
+          type:"textarea",
+          rows:3,
+          style:"width:100%",
+          label:"打印返回结果",
+        }
+      ]
     }
   },
   computed:{
@@ -92,7 +152,7 @@ export default {
         {
           prop:'c_valid',
           type:"select",
-          options:[{label:'全部',value:"all"},{label:'有效',value:true},{label:'无效',value:false}],
+          options:[{label:'有效',value:true},{label:'无效',value:false}],
           label:"状态",
         },
         {
@@ -107,7 +167,7 @@ export default {
         }
       ]
     },
-    operateFormData:function(){
+    operateData:function(){
       return [
         {
           prop:'pt_save_type',
@@ -116,6 +176,9 @@ export default {
           options:[
             {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
             {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+          ],
+          rules:[
+            { required: true, message: '请选择物料状态', trigger: 'blur' },
           ],  
         },
         {
@@ -128,8 +191,11 @@ export default {
           prop:"pt_text",
           label:'模板内容',
           type:"textarea",
-          rows:3,
-          style:"width:100%"
+          rows:5,
+          style:"width:100%",
+          rules:[
+            { required: true, message: '请填写模板状态', trigger: 'blur' },
+          ],  
         },
         {
           prop:'pt_default',
@@ -143,14 +209,14 @@ export default {
 
   },
   mounted(){
-    this.selectPrintTemp();
+    this.selectPrintTemp(false);
   },
   methods: {
     // 搜索
-    selectPrintTemp(){
+    selectPrintTemp(refresh){
       const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex);
-      console.log(this.formModel,dataParams);
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+      // console.log(this.formModel,dataParams);
       printTempQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);
@@ -158,15 +224,15 @@ export default {
     },
     // 新增
     addPrintTemp(){
-      console.log("响应新增");
+      // console.log("响应新增");
       this.operateModel = {pt_save_type:null,pt_desc:"",pt_default:true,pt_text:""};
       this.$refs.operatePrintTemp.dialogVisible = true;
       this.operateTitle='新增物料';
     },
     editPrintTemp(item){
-      console.log("响应编辑");
+      // console.log("响应编辑");
       this.operateModel = item;
-      console.log(item);
+      // console.log(item);
       this.$refs.operatePrintTemp.dialogVisible = true;
       this.operateTitle=`编辑物料id: ${item._id},物料编号：${item.m_code}`;
     },
@@ -193,12 +259,12 @@ export default {
     },
     // 切换状态
     switchPrintTemp(item,prop){
-      console.log(prop);
+      // console.log(prop);
       const operateModel = {};
       operateModel["_id"] = item._id;
       operateModel[prop] = item[prop];
       const params = getDataParams({"#eq":["_id"],"#set":[prop]},operateModel);
-      console.log(params);
+      // console.log(params);
       if(prop === "c_valid"){
         printTempValid(params).then(data => {
           // this.selectPrintTemp();
@@ -211,10 +277,10 @@ export default {
         this.updatePrintTemp(params);
       }
     },
-    // 表格操作：编辑 删除
+    // 表格操作：编辑 删除 打印测试
     handleMethod(type,item,prop){
       item = JSON.parse(JSON.stringify(item));
-      console.log(type,item);
+      // console.log(type,item);
       if(type==='edit'){
         this.editPrintTemp(item); 
       }
@@ -224,16 +290,19 @@ export default {
       if(type==='switch'){
         this.switchPrintTemp(item,prop);
       }
+      if(type === 'printTest'){
+        this.setPrintTest(item);
+      }
     },
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectPrintTemp();
+      this.selectPrintTemp(false);
     },
     // 提交
     submitForm(){
 
-      console.log(this.operateModel);
+      // console.log(this.operateModel);
       if(this.operateTitle === '新增物料'){
         printTempInsert(this.operateModel).then(data => {
           this.selectPrintTemp();
@@ -262,6 +331,33 @@ export default {
           });
           this.$refs.operatePrintTemp.dialogVisible = false;
         })
+    },
+    setPrintTest(item){
+      const { pt_text } = item;
+      this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
+      this.testPrintModel = {user:"",sn:"",uKey:"",callback:"",pt_text};
+      console.log(this.testPrintModel);
+      this.$refs.testPrintTemp.dialogVisible = true;
+    },
+    testPrint(){
+      const { user,sn,uKey,pt_text="" } = this.testPrintModel;
+      const testData = { user,sn,uKey,pt_text };
+      console.log(this.testPrintModel,testData);
+      printTempTest(testData).then(data => {
+          
+          this.testPrintModel.callback = getContent(data).result;
+          // this.$message({
+          //   type: 'success',
+          //   message: '修改成功！!'
+          // });
+          // this.$refs.testPrintTemp.dialogVisible = false;
+        })
+
+    },
+    // 清空
+    cancelMethod(){
+      this.formModel = {"_id": "", "createTime": "", "endTime": "", "pt_save_type": null, "c_valid": null};
+      
     }
 
   }

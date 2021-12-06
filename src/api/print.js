@@ -43,10 +43,19 @@ return request({
 
 // 删除
 export function printTempDelete(data){
-return request({
-    url: '/printTemp/del',
-    method: 'post',
-    data
-  })
+  return request({
+      url: '/printTemp/del',
+      method: 'post',
+      data
+    })
+}
+
+// 打印测试
+export function printTempTest(data){
+  return request({
+      url: '/printTemp/print',
+      method: 'post',
+      data
+    })
 }
 

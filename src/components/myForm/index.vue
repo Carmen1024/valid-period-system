@@ -33,11 +33,15 @@
           <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
             v-model="formModel[item.prop]" placeholder="请选择">
             <el-option 
+              label="全部"
+              :value="valueNull"
+            />
+            <el-option 
               v-for="(optionItem, optionIndex) in item.options"
               :key="optionIndex"
               :label="optionItem.label || ''" 
               :value="optionItem.value || false"
-              clearable
+              
             >
             </el-option>
           </el-select>
@@ -79,7 +83,7 @@
             placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="form-handle">
           <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
           <el-button @click="addItem">新增</el-button> -->
           <el-button 
@@ -121,6 +125,7 @@ export default {
         default:()=>[
           {buttonStyle:"primary",label:"搜索",type:"select"},
           {label:"新增",type:"add"},
+          {label:"清空",type:"cancel"},
         ]
       }
     },
@@ -131,7 +136,8 @@ export default {
             //   { required: true, message: '请输入名称', trigger: 'blur' },
             //   { required: true,min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
             // ]
-          }
+          },
+          valueNull:null
       }
     },
     watch: {
@@ -161,22 +167,49 @@ export default {
       handle(type){
         if(type === 'add') this.addItem();
         else if(type === 'select') this.selectForm();
+        else if(type === 'cancel') this.emptyItem();
         else this.$emit("formHandle",type);
+        
       },
       addItem(){
-        console.log("我告诉你要新增");
+        // console.log("我告诉你要新增");
         this.$emit("addFun");
       },
       selectForm(){
-        console.log("我告诉你要搜索");
+        // console.log("我告诉你要搜索");
         this.$refs[this.ruleForm].validate((valid) => {
           if (valid) {
-            this.$emit("selectFun");
+            this.validate().then(data=>{
+              this.$emit("selectFun","false");
+            })
           } else {
             console.log('error submit!!');
             return false;
           }
         });
+      },
+      // 基础校验 先写在这里
+      validate(){
+        console.log(this.formModel.createTime,this.formModel.endTime);
+        return new Promise((resolve,reject)=>{
+            if(this.formModel.createTime 
+                && this.formModel.endTime 
+                && (new Date(this.formModel.createTime) > new Date(this.formModel.endTime))
+              ){
+              this.$message({
+                type: 'warning',
+                message: '开始时间不得晚于结束时间'
+              });
+              console.log('error submit!!');
+              return false;
+            }else{
+              resolve();
+            }
+        })
+      },
+      // 清空
+      emptyItem(){
+        this.$emit("cancelFun");
       }
     }
 }
@@ -189,11 +222,16 @@ export default {
     display: flex;
     // justify-content: space-between;
     flex-wrap: wrap;
+    width: 70%;
 
     .el-form-item{
 
-      width: 30%;
+      width: calc(100% / 3);
 
+    }
+    .form-handle{
+      width: 100%;
+      text-align: right;
     }
   }
 
