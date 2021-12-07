@@ -88,6 +88,10 @@
               >
               </el-option>
             </el-select>
+            <!--
+               选择一个对象
+               type:selectItem
+             -->
             <el-select v-if="item.type==='selectItem'" value-key="value" :filterable="item.filterable || false" 
               v-model="formModel[item.prop]" placeholder="请选择" @change="changeModel($event,item.prop)">
               <el-option 
@@ -132,17 +136,28 @@
               :default-time="item.defaultTime || ''"
               placeholder="选择日期">
             </el-date-picker>
+            <!-- 
+              多选框
+             -->
+             <el-checkbox-group v-model="formModel[item.prop]" v-if="item.type==='checkbox'">
+              <el-checkbox 
+                v-for="item in item.options"
+                :label="item.label" 
+                :key="item.label"
+              >
+              </el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
           <el-form-item class="form-handle">
-          <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
-          <el-button @click="addItem">新增</el-button> -->
-          <el-button 
-            v-for='item in handles'
-            :key=item.type
-            :type="item.buttonStyle || ''"
-            @click="handle(item.type)">{{item.label}}</el-button>
-        </el-form-item>
-      </el-form>
+            <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
+            <el-button @click="addItem">新增</el-button> -->
+            <el-button 
+              v-for='item in handles'
+              :key=item.type
+              :type="item.buttonStyle || ''"
+              @click="handle(item.type)">{{item.label}}</el-button>
+          </el-form-item>
+        </el-form>
 
     </el-dialog>
   </div>

@@ -108,42 +108,42 @@ export const constantRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/area',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Area',
-  //       component: () => import('@/views/area/index'),
-  //       meta: { title: '区域管理', icon: 'area' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/shop',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Shop',
-  //       component: () => import('@/views/shop/index'),
-  //       meta: { title: '门店管理', icon: 'shop' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/device',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Device',
-  //       component: () => import('@/views/device/index'),
-  //       meta: { title: '设备管理', icon: 'device' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/area',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Area',
+        component: () => import('@/views/area/index'),
+        meta: { title: '区域管理', icon: 'area' }
+      }
+    ]
+  },
+  {
+    path: '/store',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Store',
+        component: () => import('@/views/store/index'),
+        meta: { title: '门店管理', icon: 'store' }
+      }
+    ]
+  },
+  {
+    path: '/device',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Device',
+        component: () => import('@/views/device/index'),
+        meta: { title: '设备管理', icon: 'device' }
+      }
+    ]
+  },
   // {
   //   path: '/user',
   //   component: Layout,

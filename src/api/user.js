@@ -40,7 +40,7 @@ export function getInfo(data) {
 
 export function logout() {
   return request({
-    url: '/valid-period-system/user/logout',
+    url: '/login/logout_with_admin',
     method: 'post'
   })
 }
@@ -51,4 +51,54 @@ export function signup(data) {
     method: 'post',
     data
   })
+}
+
+export function userQuery(data){
+    return request({
+        url: '/user/query',
+        method: 'post',
+        data
+      })
+}
+
+export function userInsert(data){
+  return request({
+      url: '/user/insert',
+      method: 'post',
+      data
+    })
+}
+
+export function userUpdate(data){
+  return request({
+      url: '/user/update',
+      method: 'post',
+      data
+    })
+}
+
+// 状态变更 失效 有效
+export function userValid(data){
+  return request({
+      url: '/user/valid',
+      method: 'post',
+      data
+    })
+}
+
+// 删除
+export function userDelete(data){
+  return request({
+      url: '/user/del',
+      method: 'post',
+      data
+    })
+}
+
+// 物料-获取物料列表
+export function userQueryAll(){
+  return request({
+      url: '/user/query_all_valid',
+      method: 'post'
+    })
 }

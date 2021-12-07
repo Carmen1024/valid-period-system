@@ -138,7 +138,7 @@ export default {
     },
 
   },
-  created() {
+  mounted() {
     this.getClfList();
   },
   methods: {
