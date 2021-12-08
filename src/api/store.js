@@ -50,3 +50,11 @@ export function storeQueryAll(){
     })
 }
 
+// 查询所有门店-模糊查询
+export function storeQueryValid(data){
+  return request({
+      url: '/store/query_valid',
+      method: 'post',
+      data
+    })
+}

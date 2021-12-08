@@ -78,7 +78,7 @@
               options:[{label,value}]
             -->
             <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
-              v-model="formModel[item.prop]" placeholder="请选择">
+              v-model="formModel[item.prop]" placeholder="请选择" @change="changeModel($event,item.prop)">
               <el-option 
                 v-for="(optionItem, optionIndex) in item.options"
                 :key="optionIndex"
@@ -88,6 +88,25 @@
               >
               </el-option>
             </el-select>
+              <!-- 远程搜索 -->
+            <el-select
+              v-if="item.type==='selectRemote'" 
+              v-model="formModel[item.prop]"
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请输入关键词"
+              :remote-method="remoteMethod"
+              :loading="loading"
+            >
+              <el-option 
+                v-for="(optionItem, optionIndex) in item.options"
+                :key="optionIndex"
+                :label="optionItem.label || ''" 
+                :value="optionItem.value || false"
+              ></el-option>
+            </el-select>
+            <!-- 
             <!--
                选择一个对象
                type:selectItem
@@ -147,6 +166,16 @@
               >
               </el-checkbox>
             </el-checkbox-group>
+            <!-- 多级联动 -->
+          <el-cascader
+            v-model="formModel[item.prop]" 
+            v-if="item.type==='cascader'"
+            placeholder="试试搜索：成都"
+            :options="item.options"
+            :props="item.props"
+            @change="blurHandle"
+            filterable>
+          </el-cascader>
           </el-form-item>
           <el-form-item class="form-handle">
             <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
@@ -212,7 +241,8 @@ export default {
         dialogVisible:false,
         formRule : {
             
-          }
+        },
+        loading:false,
       }
     },
     watch: {
@@ -220,7 +250,7 @@ export default {
       // type：
       formData:{
         handler: function (val,oldVal) {
-
+          this.loading = false;
         },
         deep: true
       },
@@ -270,6 +300,16 @@ export default {
       setRealTime(prop,time){
         this.formModel[prop] = time;
         // console.log(this.formModel);
+      },
+      blurHandle(value) {
+        // console.log(value);
+      },
+      remoteMethod(query) {
+        // console.log(query);
+        if (query !== '') {
+          this.loading = true;
+          this.$emit("remoteFun",query);
+        }
       }
     }
 }

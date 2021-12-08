@@ -7,6 +7,7 @@
       @addFun="addDevice"
       @selectFun="selectDevice"
       @cancelFun="cancelMethod"
+      @remoteFun="getStoreList"
      />
      <add-dialog 
       ref='operateDevice'
@@ -15,6 +16,7 @@
       :formData=operateFormData
       :formModel=operateModel
       @submitFun="submitForm"
+      @remoteFun="getStoreList"
      />
     <my-table 
       :tableData=list 
@@ -35,7 +37,7 @@ import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { deviceQuery,deviceInsert,deviceUpdate,deviceValid,deviceDelete } from '@/api/device';
-import { classifyQueryAll } from '@/api/sort';
+import { storeQueryValid } from '@/api/store';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -94,11 +96,10 @@ export default {
         },
         {
           prop:'s_id',
-          type:"select",
+          type:"selectRemote",
           label:"所属门店",
           options:this.storeList,
           filterable:true,
-          props:{"value":'_id',"label":'store_name'}
         },
         {
           prop:'tm_status',
@@ -134,15 +135,11 @@ export default {
           { required: true, message: '请输入设备编号', trigger: 'blur' },
         ]
       },{
-        prop:'s_id',
-        type:"select",
-        label:"所属门店",
-        options:this.storeList,
-        filterable:true,
-        props:{"value":'_id',"label":'store_name'},
-        rules:[
-          { required: true, message: '请选择门店', trigger: 'blur' },
-        ]
+          prop:'s_id',
+          type:"selectRemote",
+          label:"所属门店",
+          options:this.storeList,
+          filterable:true,
       },
       {
         prop:'tm_status',
@@ -159,12 +156,13 @@ export default {
 
   },
   created() {
-    this.getStoreList();
+    // this.getStoreList();
+    this.selectDevice(false);
   },
   methods: {
     // 搜索
     selectDevice(refresh){
-      console.log(refresh);
+      // console.log(refresh);
       const pageIndex = this.pageIndex - 1;
       const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
       // console.log(this.formModel,dataParams);
@@ -177,16 +175,14 @@ export default {
       })
     },
     // 获取归属门店
-    getStoreList(){
-      classifyQueryAll().then(data => {
-        // this.storeList = getContent(data);
+    getStoreList(name){
+      const params = getDataParams({"#like":["s_name"]},{s_name:name});
+      storeQueryValid(params).then(data => {
         this.storeList = getContent(data).map(item => {
-          this.storeJson[item._id] = item.store_name;
-          return {value:item._id,label:item.store_name};
+          this.storeJson[item._id] = item.s_name;
+          return {value:item._id,label:item.s_name};
         });
         // resolve();
-      }).then(()=>{
-        this.selectDevice(false);
       })
     },
     // 新增

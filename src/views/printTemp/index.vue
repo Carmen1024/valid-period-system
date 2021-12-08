@@ -334,15 +334,15 @@ export default {
     },
     setPrintTest(item){
       const { pt_text } = item;
-      this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
+      // this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
       this.testPrintModel = {user:"",sn:"",uKey:"",callback:"",pt_text};
-      console.log(this.testPrintModel);
+      // console.log(this.testPrintModel);
       this.$refs.testPrintTemp.dialogVisible = true;
     },
     testPrint(){
       const { user,sn,uKey,pt_text="" } = this.testPrintModel;
       const testData = { user,sn,uKey,pt_text };
-      console.log(this.testPrintModel,testData);
+      // console.log(this.testPrintModel,testData);
       printTempTest(testData).then(data => {
           
           this.testPrintModel.callback = getContent(data).result;

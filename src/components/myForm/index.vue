@@ -30,8 +30,11 @@
             type:select
             options:[{label,value}]
           -->
-          <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
-            v-model="formModel[item.prop]" placeholder="请选择">
+          <el-select v-if="item.type==='select'" 
+            :filterable="item.filterable || false" 
+            v-model="formModel[item.prop]" 
+            placeholder="请选择"
+          >
             <el-option 
               label="全部"
               :value="valueNull"
@@ -41,9 +44,26 @@
               :key="optionIndex"
               :label="optionItem.label || ''" 
               :value="optionItem.value || false"
-              
             >
             </el-option>
+          </el-select>
+          <!-- 远程搜索 -->
+          <el-select
+            v-if="item.type==='selectRemote'" 
+            v-model="formModel[item.prop]"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="remoteMethod"
+            :loading="loading"
+          >
+            <el-option 
+              v-for="(optionItem, optionIndex) in item.options"
+              :key="optionIndex"
+              :label="optionItem.label || ''" 
+              :value="optionItem.value || false"
+            ></el-option>
           </el-select>
           <!-- 
             可搜索的下拉框：
@@ -137,7 +157,8 @@ export default {
             //   { required: true,min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
             // ]
           },
-          valueNull:null
+          valueNull:null,
+          loading:false,
       }
     },
     watch: {
@@ -145,7 +166,7 @@ export default {
       // type：
       formData:{
         handler: function (val, oldVal) {
-
+          this.loading = false;
         },
         deep: true
       },
@@ -210,6 +231,14 @@ export default {
       // 清空
       emptyItem(){
         this.$emit("cancelFun");
+      },
+      remoteMethod(query) {
+        // console.log(query);
+        if (query !== '') {
+          this.loading = true;
+          this.$emit("remoteFun",query);
+          // 
+        }
       }
     }
 }

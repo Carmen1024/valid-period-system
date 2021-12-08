@@ -157,7 +157,7 @@ export default {
   methods: {
     // 搜索
     selectUser(refresh){
-      console.log(refresh);
+      // console.log(refresh);
       const pageIndex = this.pageIndex - 1;
       const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
       // console.log(this.formModel,dataParams);
@@ -193,7 +193,7 @@ export default {
     editUser(item){
       // console.log("响应编辑");
       this.operateModel = item;
-      console.log(item);
+      // console.log(item);
       this.$refs.operateUser.dialogVisible = true;
       this.operateTitle=`编辑用户id: ${item._id}`;
     },

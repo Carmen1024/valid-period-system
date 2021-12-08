@@ -15,6 +15,7 @@
       :formData=operateFormData
       :formModel=operateModel
       @submitFun="submitForm"
+      @changeModelFun="changeModel"
      />
     <my-table 
       :tableData=list 
@@ -37,6 +38,7 @@ import pagination from '@/components/pagination';
 import { storeQuery,storeInsert,storeUpdate,storeValid,storeDelete } from '@/api/store';
 import { classifyQueryAll } from '@/api/sort';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
+import { getRegionCode } from '@/utils/region';
 
 export default {
   components:{
@@ -66,17 +68,46 @@ export default {
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
-      formData: [
+      
+      // 新增
+      operateTitle:'新增门店',
+      operateModel:{},
+      // 编辑:
+      // 表格数据展示
+      RegionCodeList:[],//物料分类列表
+      regionCodeJson:{},
+      pageSize:10,
+      pageIndex:1,
+      total:10,
+      list: null,
+      columnList:[
+        {type:'_id',label:'ID',width:220},
+        {type:'s_city_code',label:'市级代码'},
+        {type:'s_code',label:'门店编码'},
+        {type:'s_short_code',label:'门店简码'},
+        {type:'s_name',label:'门店名称'},
+        {type:'s_addr',label:'门店地址'},
+        {type:'c_create_time',label:'创建时间',width:220},
+        {type:'c_valid',label:'状态',switch:true},
+      ],
+    }
+  },
+  computed:{
+    formData: function(){
+      return [
         {
           prop:'_id',
           type:"input",
           label:"ID"
         },
-        {
-          prop:'s_city_code',
-          type:"select",
-          label:"市级代码"
-        },
+        // {
+        //   prop:'s_city_code',
+        //   type:"select",
+        //   label:"市级代码",
+        //   options:this.RegionCodeList,
+        //   filterable:true,
+        //   props:{"value":'rg_code',"label":'rg_name'},
+        // },
         {
           prop:'c_valid',
           type:"select",
@@ -113,31 +144,8 @@ export default {
           type:"datetime",
           label:"结束时间",
         }
-      ],
-      // 新增
-      operateTitle:'新增门店',
-      operateModel:{},
-      // 编辑:
-      // 表格数据展示
-      areaList:[],//物料分类列表
-      areaJson:{},
-      pageSize:10,
-      pageIndex:1,
-      total:10,
-      list: null,
-      columnList:[
-        {type:'_id',label:'ID',width:220},
-        {type:'s_city_code',label:'市级代码'},
-        {type:'s_code',label:'门店编码'},
-        {type:'s_short_code',label:'门店简码'},
-        {type:'s_name',label:'门店名称'},
-        {type:'s_addr',label:'门店地址'},
-        {type:'c_create_time',label:'创建时间',width:220},
-        {type:'c_valid',label:'状态',switch:true},
-      ],
-    }
-  },
-  computed:{
+      ]
+    },
     operateFormData:function(){
       return [{
           prop:'s_name',
@@ -162,17 +170,18 @@ export default {
           rules:[
             { required: true, message: '请输入门店简码', trigger: 'blur' },
           ]
-        },{
-        prop:'s_city_code',
-        type:"select",
-        label:"省市区",
-        options:this.areaList,
-        // filterable:true,
-        // props:{"value":'_id',"label":'area_name'},
-        rules:[
-          { required: true, message: '请选择省市区', trigger: 'blur' },
-        ]
-      },
+        },
+        {
+          prop:'s_city_code',
+          type:"select",
+          label:"省市区",
+          options:this.RegionCodeList,
+          filterable:true,
+          props:{"value":'rg_code',"label":'rg_name'},
+          rules:[
+            { required: true, message: '请选择省市区', trigger: 'change' },
+          ]
+        },
         {
           prop:'s_addr',
           type:"input",
@@ -182,20 +191,28 @@ export default {
     },
   },
   mounted() {
-    this.getAreaList();
+    this.getRegionCodeList();
+    this.selectStore(false);
+
   },
   methods: {
-    // 获取归属分类
-    getAreaList(){
-      classifyQueryAll().then(data => {
-        // this.areaList = getContent(data);
-        this.areaList = getContent(data).map(item => {
-          this.areaJson[item._id] = item.area_name;
-          return {value:item._id,label:item.area_name};
-        });
-        // resolve();
-      }).then(()=>{
-        this.selectStore(false);
+    // 获取市级代码
+    getRegionCodeList(){
+      getRegionCode("").then(data=>{
+        // console.log(data);
+        this.RegionCodeList = data;
+        data.map(item=>{
+        //   "s_province": "",  //必填，省
+        // "s_city": "",  //必填，市
+        // "s_district": "",  //必填，区
+          const { rg_province,rg_city,rg_distrct } = item;
+          this.regionCodeJson[item.rg_code] ={
+              s_province:rg_province,
+              s_city:rg_city,
+              s_district:rg_distrct
+            };
+        })
+        // console.log(this.regionCodeJson);
       });
     },
     // 新增
@@ -207,11 +224,13 @@ export default {
         "s_code": "",  //可选，门店编码
         "s_short_code": "",  //可选，门店简码
         "s_addr":"",//门店地址
-        "s_province": "四川省",  //必填，省
-        "s_city": "成都市",  //必填，市
-        "s_district": "高新区",  //必填，区
-        "s_city_code": "101",  //必填，市级代码
-        "createTime": "", "endTime": "", "c_valid": null
+        "s_province": "",  //必填，省
+        "s_city": "",  //必填，市
+        "s_district": "",  //必填，区
+        "s_city_code": "",  //必填，市级代码
+        "createTime": "", 
+        "endTime": "", 
+        "c_valid": null
       };
       this.$refs.operateStore.dialogVisible = true;
       this.operateTitle='新增门店';
@@ -317,8 +336,24 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","area_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {        
+        "_id": "",
+        "s_name": "",  //可选，门店名称
+        "s_code": "",  //可选，门店编码
+        "s_short_code": "",  //可选，门店简码
+        "s_addr":"",//门店地址
+        "createTime": "", "endTime": "", "c_valid": null
+      };
       
+    },
+    changeModel(data,prop){
+      // console.log(data,prop);
+      if(prop === 's_city_code'){
+        const { s_province,s_city,s_district } = this.regionCodeJson[data]
+        this.operateModel.s_province = s_province;
+        this.operateModel.s_city = s_city;
+        this.operateModel.s_district = s_district;
+      }
     }
 
   }

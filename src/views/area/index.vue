@@ -37,6 +37,7 @@ import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { areaQuery,areaInsert,areaUpdate,areaValid,areaDelete } from '@/api/area';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
+import { getRegion } from '@/utils/region';
 
 export default {
   components:{
@@ -71,7 +72,7 @@ export default {
         {
           prop:'rg_name',
           type:"input",
-          label:"省市区"
+          label:"省/市/区",
         },
         {
           prop:'c_valid',
@@ -97,37 +98,12 @@ export default {
         "rg_name": "",  //可选，省市区
         "rg_province": "",  //必填，省
         "rg_city": "",  //必填，市
-        "rg_distrct": ""  //必填，区
+        "rg_distrct": "",  //必填，区
+        "rg_regionList":[]
       },
-      operateFormData:[{
-          prop:'rg_code',
-          type:"input",
-          label:"区域名",
-          rules:[
-            { required: true, message: '请输入区域名', trigger: 'blur' },
-          ]
-        },{
-          prop:'rg_province',
-          type:"input",
-          label:"省",
-          rules:[
-            { required: true, message: '请输入省', trigger: 'blur' },
-          ]
-        },{
-          prop:'rg_city',
-          type:"input",
-          label:"市",
-          rules:[
-            { required: true, message: '请输入省', trigger: 'blur' },
-          ]
-        },{
-          prop:'rg_distrct',
-          type:"input",
-          label:"区",
-          rules:[
-            { required: true, message: '请输入区', trigger: 'blur' },
-          ]
-        }],
+      provinceList:[],
+      cityList:[],
+      distrctList:[],
       // 编辑:
       // 表格数据展示
       pageSize:10,
@@ -145,10 +121,41 @@ export default {
       ],
     }
   },
+  computed:{
+    operateFormData:function(){
+      return [{
+          prop:'rg_code',
+          type:"input",
+          label:"市级代码",
+          rules:[
+            { required: true, message: '请输入市级代码', trigger: 'change' },
+          ],
+
+        },{
+          prop:'rg_regionList',
+          type:"cascader",
+          label:"省市区",
+          rules:[
+            { required: true, message: '请选择省市区', trigger: 'change' },
+          ],
+          options:this.provinceList,
+          // filterable:true,
+          props:{"value":'name',"label":'name'},
+        }]
+      }
+  },
   mounted() {
+    this.getRegionList();
     this.selectArea(false);
   },
   methods: {
+    // 搜索省市区代码
+    getRegionList(){
+      getRegion("").then(data=>{
+        // console.log(data);
+        this.provinceList = data;
+      });
+    },
     // 新增
     addArea(){
       // console.log("响应新增");
@@ -157,14 +164,17 @@ export default {
         "rg_name": "",  //可选，省市区
         "rg_province": "",  //必填，省
         "rg_city": "",  //必填，市
-        "rg_distrct": ""  //必填，区
+        "rg_distrct": "",  //必填，区
+        "rg_regionList":[]
       };
       this.$refs.operateArea.dialogVisible = true;
       this.operateTitle='新增区域';
     },
     editArea(item){
       // console.log("响应编辑");
+      item.rg_regionList = [item.rg_province,item.rg_city,item.rg_distrct];
       this.operateModel = item;
+      
       // console.log(item);
       this.$refs.operateArea.dialogVisible = true;
       this.operateTitle='编辑区域id:' + item._id;
@@ -235,11 +245,17 @@ export default {
     // 提交
     submitForm(){
 
-      let { rg_province,rg_city,rg_distrct } = this.operateModel;
-      this.operateModel.rg_name = `${rg_province}省${rg_city}市${rg_distrct}区`;
+      let operateModel = this.operateModel
+      // 重新组装
+      if(this.operateModel.rg_regionList.length >= 3){
+        let [ rg_province,rg_city,rg_distrct ] = operateModel.rg_regionList;
+        const rg_name = operateModel.rg_regionList.join("");
+        operateModel = {...operateModel,rg_province,rg_city,rg_distrct,rg_name};
+      }
+
       // console.log(this.operateModel);
       if(this.operateTitle === '新增区域'){
-        areaInsert(this.operateModel).then(data => {
+        areaInsert(operateModel).then(data => {
           this.selectArea();
           this.$message({
             type: 'success',
@@ -249,7 +265,7 @@ export default {
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["rg_code","rg_name","rg_province","rg_city","rg_distrct"],},this.operateModel);
+        const params = getDataParams({"#eq":["_id"],"#set":["rg_code","rg_name","rg_province","rg_city","rg_distrct"],},operateModel);
         areaUpdate(params).then(data => {
           this.selectArea();
           this.$message({
