@@ -24,6 +24,18 @@
               v-model="scope.row[item.type]"
               :active-text="item.activeText || '有效'"
               :inactive-text="item.inactiveText || '无效'"
+              :active-value="true"
+              :inactive-value="false"
+              @change="handle('switch',scope.row,item.type)"
+              >
+            </el-switch>
+            <el-switch 
+              v-else-if="item.switchStatus==true" 
+              v-model="scope.row[item.type]"
+              :active-text="item.activeText || '有效'"
+              :inactive-text="item.inactiveText || '无效'"
+              :active-value="1"
+              :inactive-value="0"
               @change="handle('switch',scope.row,item.type)"
               >
             </el-switch>

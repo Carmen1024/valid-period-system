@@ -127,6 +127,8 @@
               v-model="formModel[item.prop]"
               :active-text="item.activeText || '是'"
               :inactive-text="item.inactiveText || '否'"
+              :active-value="item.activeValue || true"
+              :inactive-value="item.activeValue || false"
               >
             </el-switch>
             <!-- 

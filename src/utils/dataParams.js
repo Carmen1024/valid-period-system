@@ -38,3 +38,7 @@ export function getPageTotal(data){
     const ext = JSON.parse( data["#ext"] );
     return ext.total;
 }
+
+export function isEmpty(str){
+    return str==null || str==undefined || str==''
+}

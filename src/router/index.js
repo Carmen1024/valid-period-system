@@ -84,32 +84,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/print',
-    component: Layout,
-    name: '打印模板管理',
-    children: [
-      {
-        path: 'index',
-        name: 'PrintTemp',
-        component: () => import('@/views/printTemp/index'),
-        meta: { title: '打印模板管理', icon: 'print' }
-      }
-    ]
-  },
-  {
-    path: '/printList',
-    component: Layout,
-    name: '打印记录管理',
-    children: [
-      {
-        path: 'index',
-        name: 'PrintList',
-        component: () => import('@/views/printList/index'),
-        meta: { title: '打印记录管理', icon: 'printList' }
-      }
-    ]
-  },
-  {
     path: '/area',
     component: Layout,
     children: [
@@ -142,6 +116,33 @@ export const constantRoutes = [
         name: 'Device',
         component: () => import('@/views/device/index'),
         meta: { title: '设备管理', icon: 'device' }
+      }
+    ]
+  },
+  {
+    path: '/print',
+    component: Layout,
+    redirect: '/print/index',
+    name: '打印管理',
+    meta: { title: '打印管理', icon: 'print' },
+    children: [
+      {
+        path: 'index',
+        name: 'Printer',
+        component: () => import('@/views/printer/index'),
+        meta: { title: '打印机', icon: 'printer' }
+      },
+      {
+        path: 'PrintTemp',
+        name: 'PrintTemp',
+        component: () => import('@/views/printTemp/index'),
+        meta: { title: '打印模板', icon: 'printTemp' }
+      },
+      {
+        path: 'PrintList',
+        name: 'PrintList',
+        component: () => import('@/views/printList/index'),
+        meta: { title: '打印记录', icon: 'printList' }
       }
     ]
   },

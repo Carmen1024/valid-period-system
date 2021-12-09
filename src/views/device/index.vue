@@ -38,7 +38,7 @@ import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { deviceQuery,deviceInsert,deviceUpdate,deviceValid,deviceDelete } from '@/api/device';
 import { storeQueryValid } from '@/api/store';
-import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
+import { getPageParams,getContent, getDataParams, getPageTotal, isEmpty } from '@/utils/dataParams';
 
 export default {
   components:{
@@ -74,9 +74,9 @@ export default {
         {type:'_id',label:'ID'},
         {type:'tm_sn',label:'设备编号'},
         {type:'s_name',label:'所属门店'},
-        {type:'tm_status',label:'在线状态'},
         {type:'tm_key',label:'设备KEY'},
         {type:'c_create_time',label:'创建时间'},
+        {type:'tm_status',label:'在线状态',switchStatus:true,activeText:"在线",inactiveText:"离线"},
         {type:'c_valid',label:'状态',switch:true},
       ],
     }
@@ -168,7 +168,7 @@ export default {
       // console.log(this.formModel,dataParams);
       deviceQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
-          item.store_name = this.storeJson[item.store_id];
+          item.store_name = this.storeJson[item.s_id];
           return item;
         });
         this.total = getPageTotal(data);
@@ -176,6 +176,7 @@ export default {
     },
     // 获取归属门店
     getStoreList(name){
+      if(isEmpty(name)) return;
       const params = getDataParams({"#like":["s_name"]},{s_name:name});
       storeQueryValid(params).then(data => {
         this.storeList = getContent(data).map(item => {
@@ -194,9 +195,10 @@ export default {
     editDevice(item){
       // console.log("响应编辑");
       this.operateModel = item;
+      this.getStoreList(item.s_name);
       // console.log(item);
       this.$refs.operateDevice.dialogVisible = true;
-      this.operateTitle=`编辑设备id: ${item._id},设备编号：${item.m_code}`;
+      this.operateTitle=`编辑设备: ${item._id}`;
     },
     deleteDevice(item){
       this.$confirm('确定删除该设备?','提示', {
@@ -221,11 +223,12 @@ export default {
     },
     // 切换状态
     switchDevice(item){
-      const operateModel = {"_id":item._id,c_valid:item.c_valid};
+      let { _id,c_valid,tm_status } = item;
+      const operateModel = { _id,c_valid,tm_status };
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
       // console.log(item,params);
       deviceValid(params).then(data => {
-        // this.selectDevice();
+        this.selectDevice();
         this.$message({
           type: 'success',
           message: '状态切换成功！!'
@@ -233,7 +236,7 @@ export default {
       })
     },
     // 表格操作：编辑 删除
-    handleMethod(type,item){
+    handleMethod(type,item,prop){
       item = JSON.parse(JSON.stringify(item));
       // console.log(type,item);
       if(type==='edit'){
@@ -243,7 +246,12 @@ export default {
         this.deleteDevice(item);
       }
       if(type==='switch'){
-        this.switchDevice(item);
+        if(prop=='c_valid') this.switchDevice(item);
+        else{
+          this.operateModel = item;
+          console.log(item);
+          this.submitForm("update")
+        };
       }
     },
     paginationChange(type,val){
@@ -256,10 +264,10 @@ export default {
       this.selectDevice(false);
     },
     // 提交
-    submitForm(){
+    submitForm(type="add"){
 
       // console.log(this.operateModel);
-      if(this.operateTitle === '新增设备'){
+      if(this.operateTitle === '新增设备' && type=="add"){
         deviceInsert(this.operateModel).then(data => {
           this.selectDevice();
           this.$message({
@@ -270,7 +278,10 @@ export default {
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["m_name","store_id"]},this.operateModel);
+        const params = getDataParams({
+          "#eq":["_id"],
+          "#set":["tm_status","s_id","tm_status","tm_sn"]
+          },this.operateModel);
         deviceUpdate(params).then(data => {
           this.selectDevice();
           this.$message({
@@ -284,7 +295,7 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","store_id":null,"m_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","s_id":null,"tm_key": "",tm_status:null,tm_sn:"", "createTime": "", "endTime": "", "c_valid": null};
       
     }
 
