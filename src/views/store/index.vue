@@ -205,11 +205,11 @@ export default {
         //   "s_province": "",  //必填，省
         // "s_city": "",  //必填，市
         // "s_district": "",  //必填，区
-          const { rg_province,rg_city,rg_distrct } = item;
+          const { rg_province,rg_city,rg_district } = item;
           this.regionCodeJson[item.rg_code] ={
               s_province:rg_province,
               s_city:rg_city,
-              s_district:rg_distrct
+              s_district:rg_district
             };
         })
         // console.log(this.regionCodeJson);

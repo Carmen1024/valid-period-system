@@ -1,6 +1,12 @@
 <template>
   <div class="home-container">
-    <div class="home-text"> {{ name }},欢迎进入茶百道效期管理系统！</div>
+    <!-- <div class="home-text"> {{ name }},欢迎进入茶百道效期管理系统！</div> -->
+    <div class="home-msg">
+      <div v-for="(item,index) in tips" :key="index">
+        <span>{{ item.label }}</span>
+        <span>{{ item.value }}</span>
+      </div>
+    </div>
     <div class="home-content">
       <echart-line :echartData="echartData" />
       <dv-rank :dv-data="dvData" :dv-style="dvStyle" />
@@ -59,6 +65,12 @@ export default {
           unit: '家',
           waitTime:5000,
       },
+      tips:[
+        {label:"今日全国门店",value:'5241'},
+        {label:"今日有效物料",value:'17'},
+        {label:"今日有效效期",value:'20'},
+        {label:"今日打印模板",value:'15'},
+      ],
       dvStyle:"width:50%;height:100%;",
       echartData:{}
     }
@@ -87,7 +99,7 @@ export default {
         });
 
         const echartData = {
-          title:"今日打印记录",
+          title:"打印记录",
           xName:"分类",
           unit:'次数',
           xData:Object.keys(seriesJson),
@@ -103,9 +115,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$color1:#fc758e;
+$color2:#F9CDAD;
+$color3:#4fbdaa;
+$color4:#5169ca;
+// @mixin getColor(n){
+//   let colorList = ['#fc758e']
+//   color:colorList[n];
+// }
 .home {
   &-container {
-    margin: 30px;
+    margin: 20px;
   }
   &-text {
     font-size: 30px;
@@ -115,8 +135,40 @@ export default {
   }
   &-content {
     display: flex;
-    height: calc(100% - 100px);
-
+    height: calc(100% - 150px);
+  }
+  &-msg{
+    width: 100%;
+    height: 100px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: stretch;
+    div{
+      border-radius: 10px;
+      margin: 0 20px;
+      background: $color1;
+      flex: 1;
+      text-align: center;
+      &:nth-child(2){
+        background: $color2;
+      }
+      &:nth-child(3){
+        background: $color3;
+      }
+      &:nth-child(4){
+        background: $color4;
+      }
+      span{
+        display: block;
+        color:#fff;
+        font-size: 22px;
+        line-height: 50px;
+        &:last-child{
+          font-size: 18px;
+          line-height: 30px;
+        }
+      }
+    }
   }
 }
 </style>

@@ -9,7 +9,7 @@
         </div>
         <div class="http404_tip">哦哦！网页找不到了...</div>
         <div class="http404_tipDetail">
-          重新打开<router-link to="/">首页</router-link>试试
+          重新打开<router-link to="/">工作台</router-link>试试
         </div>
         <div class="http404_tipDetail">
           或者点杯奶茶休息一下~

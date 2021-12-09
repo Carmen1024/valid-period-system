@@ -107,10 +107,10 @@
               ></el-option>
             </el-select>
             <!-- 
-            <!--
-               选择一个对象
-               type:selectItem
-             -->
+            <!-
+              选择一个对象
+              type:selectItem
+            -->
             <el-select v-if="item.type==='selectItem'" value-key="value" :filterable="item.filterable || false" 
               v-model="formModel[item.prop]" placeholder="请选择" @change="changeModel($event,item.prop)">
               <el-option 

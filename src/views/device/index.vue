@@ -73,7 +73,7 @@ export default {
       columnList:[
         {type:'_id',label:'ID'},
         {type:'tm_sn',label:'设备编号'},
-        {type:'s_id_desc',label:'所属门店'},
+        {type:'s_name',label:'所属门店'},
         {type:'tm_status',label:'在线状态'},
         {type:'tm_key',label:'设备KEY'},
         {type:'c_create_time',label:'创建时间'},

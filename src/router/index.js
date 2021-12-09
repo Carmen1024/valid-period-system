@@ -33,6 +33,7 @@ export const constantRoutes = [
   },
   {
     path: '/',
+    name:'工作台',
     component: Layout,
     redirect: '/home',
     name: '工作台',

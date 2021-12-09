@@ -98,7 +98,7 @@ export default {
         "rg_name": "",  //可选，省市区
         "rg_province": "",  //必填，省
         "rg_city": "",  //必填，市
-        "rg_distrct": "",  //必填，区
+        "rg_district": "",  //必填，区
         "rg_regionList":[]
       },
       provinceList:[],
@@ -115,7 +115,7 @@ export default {
         {type:'rg_code',label:'市级代码',width:200},
         {type:'rg_province',label:'省',width:200},
         {type:'rg_city',label:'市',width:200},
-        {type:'rg_distrct',label:'区',width:200},
+        {type:'rg_district',label:'区',width:200},
         {type:'c_create_time',label:'创建时间',width:220},
         {type:'c_valid',label:'状态',switch:true,width:200},
       ],
@@ -164,7 +164,7 @@ export default {
         "rg_name": "",  //可选，省市区
         "rg_province": "",  //必填，省
         "rg_city": "",  //必填，市
-        "rg_distrct": "",  //必填，区
+        "rg_district": "",  //必填，区
         "rg_regionList":[]
       };
       this.$refs.operateArea.dialogVisible = true;
@@ -172,7 +172,7 @@ export default {
     },
     editArea(item){
       // console.log("响应编辑");
-      item.rg_regionList = [item.rg_province,item.rg_city,item.rg_distrct];
+      item.rg_regionList = [item.rg_province,item.rg_city,item.rg_district];
       this.operateModel = item;
       
       // console.log(item);
@@ -248,9 +248,9 @@ export default {
       let operateModel = this.operateModel
       // 重新组装
       if(this.operateModel.rg_regionList.length >= 3){
-        let [ rg_province,rg_city,rg_distrct ] = operateModel.rg_regionList;
+        let [ rg_province,rg_city,rg_district ] = operateModel.rg_regionList;
         const rg_name = operateModel.rg_regionList.join("");
-        operateModel = {...operateModel,rg_province,rg_city,rg_distrct,rg_name};
+        operateModel = {...operateModel,rg_province,rg_city,rg_district,rg_name};
       }
 
       // console.log(this.operateModel);
@@ -265,7 +265,7 @@ export default {
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["rg_code","rg_name","rg_province","rg_city","rg_distrct"],},operateModel);
+        const params = getDataParams({"#eq":["_id"],"#set":["rg_code","rg_name","rg_province","rg_city","rg_district"],},operateModel);
         areaUpdate(params).then(data => {
           this.selectArea();
           this.$message({
