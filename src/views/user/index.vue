@@ -36,7 +36,6 @@ import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { userQuery,userInsert,userUpdate,userValid,userDelete } from '@/api/user';
-import { classifyQueryAll } from '@/api/sort';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -63,7 +62,13 @@ export default {
       operateTitle:'新增用户',
       operateModel:{},
       // 表格数据展示
-      userList:[],//用户分类列表
+      userList:[
+        {label:"普通用户",value:1},
+        {label:"商家",value:2},
+        {label:"管理员",value:3},
+        {label:"督导",value:4},
+        {label:"门店店员",value:5},
+      ],//用户分类列表
       userJson:{},
       pageSize:10,
       pageIndex:1,
@@ -171,16 +176,16 @@ export default {
     },
     // 获取归属分类
     getUserList(){
-      classifyQueryAll().then(data => {
-        // this.userList = getContent(data);
-        this.userList = getContent(data).map(item => {
-          this.userJson[item._id] = item.user_name;
-          return {value:item._id,label:item.user_name};
-        });
-        // resolve();
-      }).then(()=>{
+      // classifyQueryAll().then(data => {
+      //   // this.userList = getContent(data);
+      //   this.userList = getContent(data).map(item => {
+      //     this.userJson[item._id] = item.user_name;
+      //     return {value:item._id,label:item.user_name};
+      //   });
+      //   // resolve();
+      // }).then(()=>{
         this.selectUser(false);
-      })
+      // })
     },
     // 新增
     addUser(){

@@ -167,12 +167,14 @@
             <!-- 
               多选框
              -->
-             <el-checkbox-group v-model="formModel[item.prop]" v-if="item.type==='checkbox'">
-              <el-checkbox 
-                v-for="item in item.options"
-                :label="item.label" 
-                :key="item.label"
-              >
+             <el-checkbox-group 
+              v-model="formModel[item.prop]" 
+              v-if="item.type==='checkbox'">
+                <el-checkbox 
+                  v-for="item in item.options"
+                  :label="item.value" 
+                  :key="item.value"
+                >{{ item.label }}
               </el-checkbox>
             </el-checkbox-group>
             <!-- 多级联动 -->

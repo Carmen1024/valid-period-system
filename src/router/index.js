@@ -146,56 +146,46 @@ export const constantRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/user',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'User',
-  //       component: () => import('@/views/user/index'),
-  //       meta: { title: '用户管理', icon: 'user' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/role',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Role',
-  //       component: () => import('@/views/role/index'),
-  //       meta: { title: '角色管理', icon: 'role' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/power',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Power',
-  //       component: () => import('@/views/power/index'),
-  //       meta: { title: '权限管理', icon: 'power' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/globalSetting',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'GlobalSetting',
-  //       component: () => import('@/views/globalSetting/index'),
-  //       meta: { title: '全局设置', icon: 'globalSetting' }
-  //     }
-  //   ]
-  // },
-  // 权限 全局设置
-
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/index',
+    name: '用户管理',
+    meta: { title: '用户管理', icon: 'userMode' },
+    children: [
+      {
+        path: 'index',
+        name: 'User',
+        component: () => import('@/views/user/index'),
+        meta: { title: '用户', icon: 'user' }
+      },
+      {
+        path: 'role',
+        name: 'Role',
+        component: () => import('@/views/role/index'),
+        meta: { title: '角色管理', icon: 'role' }
+      },
+      {
+        path: 'power',
+        name: 'Power',
+        component: () => import('@/views/power/index'),
+        meta: { title: '权限管理', icon: 'power' }
+      }
+    ]
+  },
+  {
+    path: '/globalSetting',
+    component: Layout,
+    name: '全局设置',
+    children: [
+      {
+        path: 'index',
+        name: 'GlobalSetting',
+        component: () => import('@/views/globalSetting/index'),
+        meta: { title: '全局设置', icon: 'globalSetting' }
+      }
+    ]
+  },
   // {
   //   path: 'outLink',
   //   component: Layout,
