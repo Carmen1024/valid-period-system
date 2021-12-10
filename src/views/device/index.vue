@@ -5,7 +5,7 @@
       :formData="formData"
       :formModel="formModel"
       @addFun="addDevice"
-      @selectFun="selectDevice"
+      @selectFun="selectMethod"
       @cancelFun="cancelMethod"
       @remoteFun="getStoreList"
      />
@@ -26,6 +26,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -292,6 +293,11 @@ export default {
         })
       }
 
+    },
+    selectMethod(){
+      //返回到第一页
+      this.pageIndex = 1;
+      this.selectDevice();
     },
     // 清空
     cancelMethod(){

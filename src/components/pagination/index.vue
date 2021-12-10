@@ -18,7 +18,6 @@ export default {
     data() {
         return {
             pageSize:10,
-            pageIndex:1,
         }
     },
     props:{
@@ -33,11 +32,20 @@ export default {
         pageSizes:{
             type:Array,
             default:() => [10, 20, 50]
+        },
+        pageIndex:{
+            type:Number,
+            default:1
         }
-        
     },
     watch:{
         total:{
+            handler: function (val, oldVal) {
+
+            },
+            deep:true
+        },
+        pageIndex:{
             handler: function (val, oldVal) {
 
             },

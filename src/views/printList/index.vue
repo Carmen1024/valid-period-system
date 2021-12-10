@@ -5,7 +5,7 @@
       :formData="formData"
       :formModel="formModel"
       :handles="formHandle"
-      @selectFun="selectPrintHistory"
+      @selectFun="selectMethod"
       @cancelFun="cancelMethod"
     />
     <my-table 
@@ -17,6 +17,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
 
      />
      <description-dialog 
@@ -168,6 +169,11 @@ export default {
         this.total = getPageTotal(data);
       })
       // console.log("响应搜索，发送请求ing");
+    },
+    selectMethod(){
+      //返回到第一页
+      this.pageIndex = 1;
+      this.selectPrintHistory();
     },
     // 清空
     cancelMethod(){

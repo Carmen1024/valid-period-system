@@ -5,7 +5,7 @@
       :formData="formData"
       :formModel="formModel"
       @addFun="addPrinter"
-      @selectFun="selectPrinter"
+      @selectFun="selectMethod"
       @cancelFun="cancelMethod"
       @remoteFun="getStoreList"
      />
@@ -27,6 +27,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -281,6 +282,11 @@ export default {
         });
         // resolve();
       })
+    },
+    selectMethod(){
+      //返回到第一页
+      this.pageIndex = 1;
+      this.selectPrinter();
     },
     // 清空
     cancelMethod(){

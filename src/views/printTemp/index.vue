@@ -5,7 +5,7 @@
       :formData="formData"
       :formModel="formModel"
       @addFun="addPrintTemp"
-      @selectFun="selectPrintTemp"
+      @selectFun="selectMethod"
       @cancelFun="cancelMethod"
      />
      <add-dialog 
@@ -38,6 +38,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -370,6 +371,11 @@ export default {
       if(prop==='pt_save_type'){
         this.getPrintFetchTemp(data);
       }
+    },
+    selectMethod(){
+      //返回到第一页
+      this.pageIndex = 1;
+      this.selectPrintTemp();
     },
     // 清空
     cancelMethod(){

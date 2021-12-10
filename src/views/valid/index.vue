@@ -5,7 +5,7 @@
       :formData="formData"
       :formModel="formModel"
       @addFun="addValid"
-      @selectFun="selectValid"
+      @selectFun="selectMethod"
       @cancelFun="cancelMethod"
      />
      <add-dialog 
@@ -24,6 +24,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -355,6 +356,11 @@ export default {
           this.$refs.operateValid.dialogVisible = false;
         })
       }
+    },
+    selectMethod(){
+      //返回到第一页
+      this.pageIndex = 1;
+      this.selectValid();
     },
     // 清空
     cancelMethod(){

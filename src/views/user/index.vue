@@ -5,7 +5,7 @@
       :formData="formData"
       :formModel="formModel"
       @addFun="addUser"
-      @selectFun="selectUser"
+      @selectFun="selectMethod"
       @cancelFun="cancelMethod"
      />
      <add-dialog 
@@ -25,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -280,6 +281,11 @@ export default {
         })
       }
 
+    },
+    selectMethod(){
+      //返回到第一页
+      this.pageIndex = 1;
+      this.selectUser();
     },
     // 清空
     cancelMethod(){
