@@ -11,6 +11,7 @@
      <add-dialog 
       ref='operateSort'
       ruleForm="addSort"
+      width="30%"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
@@ -85,6 +86,7 @@ export default {
       operateFormData:[{
           prop:'clf_name',
           type:"input",
+          style:'width:100%',
           label:"分类名",
           rules:[
             { required: true, message: '请输入分类名', trigger: 'blur' },

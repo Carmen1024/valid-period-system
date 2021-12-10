@@ -15,7 +15,6 @@
       :formData=operateFormData
       :formModel=operateModel
       @submitFun="submitForm"
-      @changeModelFun = "changeModel"
      />
     <my-table 
       :tableData=list 
@@ -62,7 +61,7 @@ export default {
       operateTitle:'新增物料效期',
       operateModel:{
         "m_id" : "",  //必填， 物料ID
-        "m_t_name": "",  //必填, 物料名称
+        "m_t_name": "",  //必填, 归属物料
         "m_t_type": null,  //必填，物料状态:1-室温 2-冷藏 3-冷冻 4-常温密封 5-其它 6-台面 7-解冻
         "m_t_zl_time": null,  //可选，质量效期 最长
         "m_t_zl_1_time": null,  //可选，质量效期1（黄色预警）短
@@ -74,7 +73,7 @@ export default {
       },
       loadOperateModel:{
         "m_id" : "",  //必填， 物料ID
-        "m_t_name": "",  //必填, 物料名称
+        "m_t_name": "",  //必填, 归属物料
         "m_t_type": null,  //必填，物料状态:1-室温 2-冷藏 3-冷冻 4-常温密封 5-其它 6-台面 7-解冻
         "m_t_zl_time": null,  //可选，质量效期 最长
         "m_t_zl_1_time": null,  //可选，质量效期1（黄色预警）短
@@ -93,7 +92,7 @@ export default {
       total:10,
       columnList:[
         {type:'_id',label:'ID'},
-        {type:'m_t_name',label:'物料名称'},
+        {type:'m_t_name',label:'归属物料'},
         {type:'m_t_tag',label:'物料标签'},
         
         {type:'m_t_type_desc',label:'物料状态'},
@@ -115,7 +114,7 @@ export default {
         {
           prop:'m_t_name',
           type:"input",
-          label:"物料名称",
+          label:"归属物料",
         },
         {
           prop:'m_t_type',
@@ -149,23 +148,12 @@ export default {
         {
           prop:'m_id',
           type:"select",
-          label:"物料名称",
+          label:"归属物料",
           options:this.materialList,
           rules:[
-            { required: true, message: '请选择物料名', trigger: 'blur' },
+            { required: true, message: '请选择归属物料', trigger: 'blur' },
           ]
         },
-        // {
-        //   prop:'m_t_obj',
-        //   type:"selectItem",
-        //   label:"物料名称",
-        //   options:this.materialList,
-        //   filterable:true,
-        //   props:{"value":'_id',"label":'clf_name'},
-        //   rules:[
-        //     { required: true, message: '请选择物料名', trigger: 'blur' },
-        //   ]
-        // },
         {
           prop:'m_t_type',
           type:"select",
@@ -236,24 +224,24 @@ export default {
       })
     },
     // 获取归属分类
-    getValidList(){
-      materialQueryAll().then(data => {
+    async getValidList(){
+      await materialQueryAll().then(data => {
         // this.materialList = getContent(data);
         this.materialList = getContent(data).map(item => {
           this.materialJson[item._id] = item.m_name;
           return {value:item._id,label:item.m_name};
         });
         // resolve();
-      }).then(() => {
-        this.selectValid();
-      })
+        console.log(this.materialList);
+      });
+      this.selectValid();
     },
     // 新增
     addValid(){
       // console.log("响应新增");
       this.operateModel = {
         "m_id" : "",  //必填， 物料ID
-        "m_t_name": "",  //必填, 物料名称
+        "m_t_name": "",  //必填, 归属物料
         "m_t_type": null,  //必填，物料状态:1-室温 2-冷藏 3-冷冻 4-常温密封 5-其它 6-台面 7-解冻
         "m_t_zl_time": null,  //可选，质量效期 最长
         "m_t_zl_1_time": null,  //可选，质量效期1（黄色预警）短
@@ -264,7 +252,7 @@ export default {
         "m_t_tag": "",  //可选，标签
       };
       this.$refs.operateValid.dialogVisible = true;
-      this.operateTitle='效期';
+      this.operateTitle='新增物料效期';
     },
     editValid(item){
       this.operateModel = item;
@@ -332,7 +320,7 @@ export default {
       let loadOperateModel = this.operateModel;
       loadOperateModel.m_t_name = this.materialJson[loadOperateModel.m_id];
 
-      if(this.operateTitle === '新增物料'){
+      if(this.operateTitle === '新增物料效期'){
         validInsert(loadOperateModel).then(data => {
           this.selectValid();
           this.$message({
@@ -367,13 +355,6 @@ export default {
           this.$refs.operateValid.dialogVisible = false;
         })
       }
-    },
-    changeModel(data,prop){
-        // console.log(data,prop);
-        if(prop === 'm_t_obj') 
-          this.operateModel.m_t_name = data.label;
-          this.operateModel.m_id = data.value;
-        // console.log(this.operateModel);
     },
     // 清空
     cancelMethod(){

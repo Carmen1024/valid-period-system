@@ -361,7 +361,7 @@ export default {
       }
       // console.log(loadOperateModel);
 
-      if(this.operateTitle === '新增物料'){
+      if(this.operateTitle === '新增角色'){
         validInsert(loadOperateModel).then(data => {
           this.selectValid();
           this.$message({

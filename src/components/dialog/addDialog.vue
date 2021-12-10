@@ -37,6 +37,7 @@
               v-if="item.type==='input'" 
               v-model="formModel[item.prop]"
               :placeholder="item.placeholder || '请输入'"
+              :disabled="item.disabled || false"
             ></el-input>
             <el-input 
               v-if="item.type==='textarea'" 
@@ -44,14 +45,18 @@
               type = "textarea"
               :placeholder="item.placeholder || '请输入'"
               :rows="item.rows || 2"
+              :disabled="item.disabled || false"
             ></el-input>
             <!-- 
               输入框：
               type：input
               数字
             -->
-            <el-input v-if="item.type==='number'" style="width:45%;margin-right:10px;"
-              v-model.number="formModel[item.prop]">
+            <el-input 
+              v-if="item.type==='number'" 
+              style="width:45%;margin-right:10px;"
+              v-model.number="formModel[item.prop]"
+            >
             </el-input>
             <el-select v-if="item.unitProp" v-model="formModel[item.unitProp]" 
               style="width:30%" :placeholder="item.placeholder || '请选择单位'">

@@ -130,6 +130,8 @@ export default {
           rows:3,
           style:"width:100%",
           label:"打印返回结果",
+          disabled:true,
+          placeholder:'打印测试后的结果会展示在这里，不需要输入~'
         }
       ]
     }
@@ -313,9 +315,8 @@ export default {
     },
     // 提交
     submitForm(){
-
       // console.log(this.operateModel);
-      if(this.operateTitle === '新增物料'){
+      if(this.operateTitle === '新增打印模板'){
         printTempInsert(this.operateModel).then(data => {
           this.selectPrintTemp();
           this.$message({
@@ -346,8 +347,8 @@ export default {
     },
     setPrintTest(item){
       const { pt_text } = item;
-      this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
-      // this.testPrintModel = {user:"",sn:"",uKey:"",callback:"",pt_text};
+      // this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
+      this.testPrintModel = {user:"",sn:"",uKey:"",callback:"",pt_text};
       this.$refs.testPrintTemp.dialogVisible = true;
     },
     testPrint(){

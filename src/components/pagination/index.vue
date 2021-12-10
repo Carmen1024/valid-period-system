@@ -60,5 +60,6 @@ export default {
 <style scoped lang="scss">
     .pagination-Container{
         text-align: center;
+        margin-top: 10px;
     }
 </style>
