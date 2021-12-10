@@ -7,6 +7,7 @@
       @addFun="addPrinter"
       @selectFun="selectPrinter"
       @cancelFun="cancelMethod"
+      @remoteFun="getStoreList"
      />
      <add-dialog 
       width="30%"
@@ -16,11 +17,11 @@
       :formData=operateData
       :formModel=operateModel
       @submitFun="submitForm"
+      @remoteFun="getStoreList"
      />
     <my-table 
       :tableData=list 
       :columnList=columnList 
-      :handles="handle"
       @handleFun = "handleMethod"
     />
     <pagination
@@ -36,8 +37,9 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { printerQuery,printerInsert,printerUpdate,printerValid,printerDelete,printerTest } from '@/api/print';
-import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
+import { storeQueryValid } from '@/api/store';
+import { printerQuery,printerInsert,printerUpdate,printerValid,printerDelete } from '@/api/print';
+import { getPageParams,getContent, getDataParams, getPageTotal, isEmpty } from '@/utils/dataParams';
 
 export default {
   components:{
@@ -51,57 +53,32 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "", "createTime": "", "endTime": "", "c_valid": null,user:""},
+      formModel: {"_id": "", "createTime": "", "endTime": "", "c_valid": null,"s_id":"",pt_status:null},
       selectRule: {
-        "#eq":["_id","c_valid"],
+        "#eq":["_id","c_valid","s_id","pt_status"],
+        "#like":["s_name"],
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
 
       // 新增
       operateTitle:'新增打印模板',
-      operateModel:{user:"",sn:"",uKey:""},
+      operateModel:{s_id:"",pt_sn:"",pt_key:""},
+      storeList:[],
+      storeJson:{},
       // 表格数据展示
       pageSize:10,
       pageIndex:1,
       total:10,
       columnList:[
         {type:'_id',label:'ID'},
-        {type:'user',label:'打印机账号'},
-        {type:'sn',label:'打印机序列号'},
-        {type:'uKey',label:'打印机密钥'},
+        {type:'s_name',label:'门店名称'},
+        {type:'pt_sn',label:'打印机序列号'},
+        {type:'pt_key',label:'打印机密钥'},
         {type:'c_create_time',label:'创建时间'},
+        {type:'pt_status',label:'在线状态',switchStatus:true,activeText:"在线",inactiveText:"离线"},
         {type:'c_valid',label:'状态',switch:true},
       ],
-      operateData:[
-        {
-          prop:'user',
-          type:"input",
-          style:"width:100%",
-          label:"打印机账号",
-          rules:[
-            { required: true, message: '请填写打印机账号', trigger: 'blur' },
-          ],
-        },
-        {
-          prop:'sn',
-          type:"input",
-          style:"width:100%",
-          label:"打印机序列号",
-          rules:[
-            { required: true, message: '请填写打印机序列号', trigger: 'blur' },
-          ],
-        },
-        {
-          prop:'uKey',
-          type:"input",
-          style:"width:100%",
-          label:"打印机密钥",
-          rules:[
-            { required: true, message: '请填写打印机密钥', trigger: 'blur' },
-          ],
-        }
-      ]
     }
   },
   computed:{
@@ -113,9 +90,17 @@ export default {
           label:"ID"
         },
         {
-          prop:'user',
-          type:"input",
-          label:"打印机账号",
+            prop:'s_id',
+            type:"selectRemote",
+            label:"所属门店",
+            options:this.storeList,
+            filterable:true,
+        },
+        {
+          prop:'pt_status',
+          type:"select",
+          label:'打印机状态',
+          options:[{label:'在线',value:1},{label:'离线',value:0}],
         },
         {
           prop:'c_valid',
@@ -136,45 +121,32 @@ export default {
       ]
     },
     operateData:function(){
-      return [
-        {
-          prop:'pt_save_type',
-          type:"select",
-          label:"打印机状态",
-          options:[
-            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
-          ],
-          rules:[
-            { required: true, message: '请选择打印机状态', trigger: 'blur' },
-          ],  
-        },
-        {
-          prop:'pt_desc',
-          type:"input",
-          label:"模板描述",
-        },
-
-        {
-          prop:"pt_text",
-          label:'模板内容',
-          type:"textarea",
-          rows:5,
-          style:"width:100%",
-          rules:[
-            { required: true, message: '请填写模板状态', trigger: 'blur' },
-          ],  
-        },
-        {
-          prop:'pt_default',
-          label:'是否默认',
-          type:"switch",
-          activeText:"是",
-          inactiveText:"否"
-        },
-      ]
-    },
-
+        return [
+          {
+            prop:'s_id',
+            type:"selectRemote",
+            label:"所属门店",
+            options:this.storeList,
+            filterable:true,
+            style:"width:100%",
+          },
+          {
+            prop:'pt_sn',
+            type:"input",
+            style:"width:100%",
+            label:"打印机序列号",
+            rules:[
+              { required: true, message: '请填写打印机序列号', trigger: 'blur' },
+            ],
+          },
+          {
+            prop:'pt_key',
+            type:"input",
+            style:"width:100%",
+            label:"打印机密钥",
+          }
+        ]
+    }
   },
   mounted(){
     this.selectPrinter(false);
@@ -193,16 +165,17 @@ export default {
     // 新增
     addPrinter(){
       // console.log("响应新增");
-      this.operateModel = {user:"",sn:"",uKey:""};
+      this.operateModel = {s_id:"",pt_sn:"",pt_key:""};
       this.$refs.operatePrinter.dialogVisible = true;
       this.operateTitle='新增打印机';
     },
     editPrinter(item){
       // console.log("响应编辑");
       this.operateModel = item;
+      this.getStoreList(item.s_name);
       // console.log(item);
       this.$refs.operatePrinter.dialogVisible = true;
-      this.operateTitle=`编辑打印机id: ${item._id},打印机编号：${item.m_code}`;
+      this.operateTitle=`编辑打印机id: ${item._id}`;
     },
     deletePrinter(item){
       this.$confirm('确定删除该打印机?','提示', {
@@ -233,7 +206,7 @@ export default {
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
       // if(prop === "c_valid"){
         printerValid(params).then(data => {
-          // this.selectPrinter();
+          this.selectPrinter();
           this.$message({
             type: 'success',
             message: '状态切换成功！!'
@@ -252,7 +225,11 @@ export default {
         this.deletePrinter(item);
       }
       if(type==='switch'){
-        this.switchPrinter(item,prop);
+        if(prop=='c_valid') this.switchPrinter(item,prop);
+        else{
+          this.operateModel = item;
+          this.submitForm("update")
+        };
       }
     },
     paginationChange(type,val){
@@ -277,7 +254,7 @@ export default {
         // 编辑
         const params = getDataParams({
             "#eq":["_id"],
-            "#set":["pt_desc","pt_default","pt_save_type","pt_text"]
+            "#set":["s_id","pt_sn","pt_key","pt_status"]
           },this.operateModel);
         this.updatePrinter(params);
       }
@@ -293,9 +270,21 @@ export default {
           this.$refs.operatePrinter.dialogVisible = false;
         })
     },
+        // 获取归属门店
+    getStoreList(name){
+      if(isEmpty(name)) return;
+      const params = getDataParams({"#like":["s_name"]},{s_name:name});
+      storeQueryValid(params).then(data => {
+        this.storeList = getContent(data).map(item => {
+          this.storeJson[item._id] = item.s_name;
+          return {value:item._id,label:item.s_name};
+        });
+        // resolve();
+      })
+    },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "", "createTime": "", "endTime": "", "c_valid": null,user:""};
+      this.formModel = {"_id": "", "createTime": "", "endTime": "", "c_valid": null,"s_id":"",pt_status:null};
       
     }
 

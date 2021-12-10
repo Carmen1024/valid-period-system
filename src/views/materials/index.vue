@@ -181,7 +181,7 @@ export default {
       this.operateModel = item;
       // console.log(item);
       this.$refs.operateMaterial.dialogVisible = true;
-      this.operateTitle=`编辑物料id: ${item._id},物料编号：${item.m_code}`;
+      this.operateTitle=`编辑物料id: ${item._id}`;
     },
     deleteMaterial(item){
       this.$confirm('确定删除该物料?','提示', {

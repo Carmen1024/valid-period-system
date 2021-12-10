@@ -82,32 +82,21 @@ export default {
 
     // 临时用一下
     getPrintList(){
-      let dataParams ={
-        "#content" : {
-          "#size": 100,
-          "#start": 0,
-        },
-        ["#cache"] : "refresh"
-      };
-      printHistoryQuery(dataParams).then(data => {
 
-        let seriesJson={};
 
-        this.list = getContent(data).map(item => {
-          let { m_name } = item;
-          seriesJson[m_name] = seriesJson[m_name]!=undefined ? ++seriesJson[m_name] : 1;
-        });
 
         const echartData = {
           title:"打印记录",
-          xName:"分类",
+          xName:"时间",
           unit:'次数',
-          xData:Object.keys(seriesJson),
-          seriesData:[Object.values(seriesJson)]
+          xData:["前天","昨天","今天"],
+          seriesData:[
+            {name:"佛手",data:[82,163,155]},{name:"西瓜",data:[200,180,80]},
+            {name:"葡萄",data:[252,209,235]},{name:"珍珠",data:[100,90,105]}
+          ]
         }
         // console.log(echartData);
         this.echartData = echartData;
-      })
     }
 
   }

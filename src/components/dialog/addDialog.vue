@@ -30,17 +30,19 @@
             :style="item.style"
             >
             <!-- 
-              输入框：
+              多行输入框：
               type：input
             -->
             <el-input 
               v-if="item.type==='input'" 
               v-model="formModel[item.prop]"
+              :placeholder="item.placeholder || '请输入'"
             ></el-input>
             <el-input 
               v-if="item.type==='textarea'" 
               v-model="formModel[item.prop]"
               type = "textarea"
+              :placeholder="item.placeholder || '请输入'"
               :rows="item.rows || 2"
             ></el-input>
             <!-- 
@@ -52,7 +54,7 @@
               v-model.number="formModel[item.prop]">
             </el-input>
             <el-select v-if="item.unitProp" v-model="formModel[item.unitProp]" 
-              style="width:30%" placeholder="请选择单位">
+              style="width:30%" :placeholder="item.placeholder || '请选择单位'">
               <el-option 
                 v-for="(optionItem, optionIndex) in item.unit"
                 :key="optionIndex"
@@ -78,7 +80,7 @@
               options:[{label,value}]
             -->
             <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
-              v-model="formModel[item.prop]" placeholder="请选择" @change="changeModel($event,item.prop)">
+              v-model="formModel[item.prop]" :placeholder="item.placeholder || '请选择'" @change="changeModel($event,item.prop)">
               <el-option 
                 v-for="(optionItem, optionIndex) in item.options"
                 :key="optionIndex"
@@ -95,7 +97,7 @@
               filterable
               remote
               reserve-keyword
-              placeholder="请输入关键词"
+              :placeholder="item.placeholder || '请输入关键词'"
               :remote-method="remoteMethod"
               :loading="loading"
             >
@@ -112,7 +114,7 @@
               type:selectItem
             -->
             <el-select v-if="item.type==='selectItem'" value-key="value" :filterable="item.filterable || false" 
-              v-model="formModel[item.prop]" placeholder="请选择" @change="changeModel($event,item.prop)">
+              v-model="formModel[item.prop]" :placeholder="item.placeholder || '请选择'" @change="changeModel($event,item.prop)">
               <el-option 
                 v-for="(optionItem, optionIndex) in item.options"
                 :key="optionIndex"
@@ -143,7 +145,7 @@
               :default-time="item.defaultTime || ''"
               format="yyyy-MM-dd HH:mm:ss"
               value-format="yyyy-MM-dd HH:mm:ss"
-              placeholder="选择日期时间">
+              :placeholder="item.placeholder || '选择日期时间'">
             </el-date-picker>
             <!-- 
               日期时间：
@@ -155,7 +157,7 @@
               v-model="formModel[item.prop]"
               type="date"
               :default-time="item.defaultTime || ''"
-              placeholder="选择日期">
+              :placeholder="item.placeholder || '选择日期'">
             </el-date-picker>
             <!-- 
               多选框
@@ -172,7 +174,7 @@
           <el-cascader
             v-model="formModel[item.prop]" 
             v-if="item.type==='cascader'"
-            placeholder="试试搜索：成都"
+            :placeholder="item.placeholder || '试试搜索：成都'"
             :options="item.options"
             :props="item.props"
             @change="blurHandle"

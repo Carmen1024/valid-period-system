@@ -24,7 +24,12 @@
             输入框：
             type：input
           -->
-          <el-input v-if="item.type==='input'" v-model="formModel[item.prop]"></el-input>
+          <el-input 
+            v-if="item.type==='input'" 
+            v-model="formModel[item.prop]"
+            :placeholder="item.placeholder || '请输入'"
+          >
+          </el-input>
           <!-- 
             下拉框：
             type:select
@@ -33,7 +38,7 @@
           <el-select v-if="item.type==='select'" 
             :filterable="item.filterable || false" 
             v-model="formModel[item.prop]" 
-            placeholder="请选择"
+            :placeholder="item.placeholder || '请选择'"
           >
             <el-option 
               label="全部"
@@ -54,7 +59,7 @@
             filterable
             remote
             reserve-keyword
-            placeholder="请输入关键词"
+           :placeholder="item.placeholder || '请输入关键词'"
             :remote-method="remoteMethod"
             :loading="loading"
           >
@@ -74,8 +79,16 @@
               children: [{}]
             }]
             -->
-          <el-cascader v-if="item.type==='cascader'" v-model="formModel[item.prop]" placeholder="试试模糊搜索"
-            :options="item.options" :props="item.props" multiple=false filterable></el-cascader>
+          <el-cascader 
+            v-if="item.type==='cascader'" 
+            v-model="formModel[item.prop]" 
+            :placeholder="item.placeholder || '试试模糊搜索'"
+            :options="item.options" 
+            :props="item.props" 
+            multiple=false 
+            filterable
+            >
+            </el-cascader>
           <!-- 
             日期时间：
             type:datetime
@@ -88,7 +101,7 @@
             :default-time="item.defaultTime || ''"
             format="yyyy-MM-dd HH:mm:ss"
             value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="选择日期时间">
+            :placeholder="item.placeholder || '选择日期时间'">
           </el-date-picker>
           <!-- 
             日期时间：
@@ -100,7 +113,7 @@
             v-model="formModel[item.prop]"
             type="date"
             :default-time="item.defaultTime || ''"
-            placeholder="选择日期">
+            :placeholder="item.placeholder || '选择日期'">
           </el-date-picker>
         </el-form-item>
         <el-form-item class="form-handle">

@@ -264,16 +264,16 @@ export default {
         "m_t_tag": "",  //可选，标签
       };
       this.$refs.operateValid.dialogVisible = true;
-      this.operateTitle='新增物料';
+      this.operateTitle='效期';
     },
     editValid(item){
       this.operateModel = item;
       // console.log("响应编辑",this.operateModel);
       this.$refs.operateValid.dialogVisible = true;
-      this.operateTitle=`编辑物料id: ${item._id}`;
+      this.operateTitle=`编辑物料效期id: ${item._id}`;
     },
     deleteValid(item){
-      this.$confirm('确定删除该物料?','提示', {
+      this.$confirm('确定删除该物料效期?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

@@ -117,7 +117,6 @@ export default {
   },
   methods: {
     handle(type,item,prop=""){
-      console.log(type,item);
       this.$emit("handleFun",type,item,prop);
       
     }

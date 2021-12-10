@@ -123,7 +123,7 @@ export default {
       this.operateTitle='编辑分类id:' + item._id;
     },
     deleteSort(item){
-      this.$confirm('确定删除该物料?','提示', {
+      this.$confirm('确定删除该分类?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

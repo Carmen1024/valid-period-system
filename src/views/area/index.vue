@@ -127,6 +127,7 @@ export default {
           prop:'rg_code',
           type:"input",
           label:"市级代码",
+          style:'width:100%',
           rules:[
             { required: true, message: '请输入市级代码', trigger: 'change' },
           ],
@@ -135,6 +136,7 @@ export default {
           prop:'rg_regionList',
           type:"cascader",
           label:"省市区",
+          style:'width:100%',
           rules:[
             { required: true, message: '请选择省市区', trigger: 'change' },
           ],
@@ -180,7 +182,7 @@ export default {
       this.operateTitle='编辑区域id:' + item._id;
     },
     deleteArea(item){
-      this.$confirm('确定删除该物料?','提示', {
+      this.$confirm('确定删除该区域?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

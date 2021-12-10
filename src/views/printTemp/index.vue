@@ -15,6 +15,7 @@
       :formData=operateData
       :formModel=operateModel
       @submitFun="submitForm"
+      @changeModelFun="changeModel"
      />
      <!-- 测试打印模板 -->
     <add-dialog 
@@ -47,7 +48,7 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { printTempQuery,printTempInsert,printTempUpdate,printTempValid,printTempDelete,printTempTest } from '@/api/print';
+import { printTempQuery,printTempInsert,printTempUpdate,printTempValid,printTempDelete,printTempTest,printFetchTemp } from '@/api/print';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -71,14 +72,14 @@ export default {
 
       // 新增
       operateTitle:'新增打印模板',
-      operateModel:{pt_save_type:null,pt_desc:"",pt_default:true,pt_text:"",callback:''},
+      operateModel:{pt_save_type:null,pt_desc:"",pt_default:true,pt_text:""},
       // 表格数据展示
       pageSize:10,
       pageIndex:1,
       total:10,
       columnList:[
         {type:'_id',label:'ID'},
-        {type:'pt_save_type_desc',label:'物料状态'},
+        {type:'pt_save_type_desc',label:'模板类型'},
         {type:'pt_desc',label:'描述'},
         {type:'c_create_time',label:'创建时间'},
         {type:'pt_default',label:'是否默认',switch:true,activeText:"是",inactiveText:"否"},
@@ -90,6 +91,7 @@ export default {
         {type:'delete',label:'删除'}
       ],
       // 测试打印模板
+      fetchTemp:{},
       testPrintModel:{},
       testHandles:[
         {label:"打印",type:"submit",buttonStyle:"primary"},
@@ -143,10 +145,9 @@ export default {
         {
           prop:'pt_save_type',
           type:"select",
-          label:"物料状态",
+          label:"模板类型",
           options:[
-            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+            {label:'质量效期',value:11},{label:'风味效期',value:12}
           ],  
         },
         {
@@ -172,19 +173,18 @@ export default {
         {
           prop:'pt_save_type',
           type:"select",
-          label:"物料状态",
+          label:"模板类型",
           options:[
-            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+            {label:'质量效期',value:11},{label:'风味效期',value:12}
           ],
           rules:[
-            { required: true, message: '请选择物料状态', trigger: 'blur' },
+            { required: true, message: '请选择模板类型', trigger: 'blur' },
           ],  
         },
         {
           prop:'pt_desc',
           type:"input",
-          label:"模板描述",
+          label:"模板类型描述",
         },
 
         {
@@ -193,8 +193,9 @@ export default {
           type:"textarea",
           rows:5,
           style:"width:100%",
+          placeholder:'选择模板类型后，会给您自动填充一段打印模板提示',
           rules:[
-            { required: true, message: '请填写模板状态', trigger: 'blur' },
+            { required: true, message: '请填写模板内容', trigger: 'blur' },
           ],  
         },
         {
@@ -210,8 +211,19 @@ export default {
   },
   mounted(){
     this.selectPrintTemp(false);
+
   },
   methods: {
+    // 获取打印模板
+    getPrintFetchTemp(type){
+      if(this.fetchTemp[type]) return;
+      const params = getDataParams({"#eq":["pt_save_type"]},{pt_save_type:type})
+      printFetchTemp(params).then(data=>{
+        const { pt_text } = getContent(data);
+        this.fetchTemp[type] = pt_text;
+        this.operateModel.pt_text = pt_text;
+      });
+    },
     // 搜索
     selectPrintTemp(refresh){
       const pageIndex = this.pageIndex - 1;
@@ -227,17 +239,17 @@ export default {
       // console.log("响应新增");
       this.operateModel = {pt_save_type:null,pt_desc:"",pt_default:true,pt_text:""};
       this.$refs.operatePrintTemp.dialogVisible = true;
-      this.operateTitle='新增物料';
+      this.operateTitle='新增打印模板';
     },
     editPrintTemp(item){
       // console.log("响应编辑");
       this.operateModel = item;
       // console.log(item);
       this.$refs.operatePrintTemp.dialogVisible = true;
-      this.operateTitle=`编辑物料id: ${item._id},物料编号：${item.m_code}`;
+      this.operateTitle=`编辑打印模板id: ${item._id}`;
     },
     deletePrintTemp(item){
-      this.$confirm('确定删除该物料?','提示', {
+      this.$confirm('确定删除该打印模板?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -334,9 +346,8 @@ export default {
     },
     setPrintTest(item){
       const { pt_text } = item;
-      // this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
-      this.testPrintModel = {user:"",sn:"",uKey:"",callback:"",pt_text};
-      // console.log(this.testPrintModel);
+      this.testPrintModel = {user:"yexing@chabaidao.com",sn:"960207139",uKey:"SzvhJq7RMVbFRJxQ",callback:"",pt_text};
+      // this.testPrintModel = {user:"",sn:"",uKey:"",callback:"",pt_text};
       this.$refs.testPrintTemp.dialogVisible = true;
     },
     testPrint(){
@@ -353,6 +364,11 @@ export default {
           // this.$refs.testPrintTemp.dialogVisible = false;
         })
 
+    },
+    changeModel(data,prop){
+      if(prop==='pt_save_type'){
+        this.getPrintFetchTemp(data);
+      }
     },
     // 清空
     cancelMethod(){
