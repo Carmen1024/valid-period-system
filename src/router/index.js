@@ -108,6 +108,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path:'/supervise',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Supervise',
+        component: () => import('@/views/supervise/index'),
+        meta: { title: '督导管理', icon: 'supervise' }
+      }
+    ]
+  },
+  {
     path: '/device',
     component: Layout,
     children: [
@@ -133,13 +145,13 @@ export const constantRoutes = [
         meta: { title: '打印机', icon: 'printer' }
       },
       {
-        path: 'PrintTemp',
+        path: 'printTemp',
         name: 'PrintTemp',
         component: () => import('@/views/printTemp/index'),
         meta: { title: '打印模板', icon: 'printTemp' }
       },
       {
-        path: 'PrintList',
+        path: 'printList',
         name: 'PrintList',
         component: () => import('@/views/printList/index'),
         meta: { title: '打印记录', icon: 'printList' }
@@ -150,27 +162,27 @@ export const constantRoutes = [
     path: '/user',
     component: Layout,
     redirect: '/user/index',
-    name: '用户管理',
-    meta: { title: '用户管理', icon: 'userMode' },
+    name: '用户权限',
+    meta: { title: '用户权限', icon: 'userMode' },
     children: [
       {
-        path: 'index',
-        name: 'User',
-        component: () => import('@/views/user/index'),
-        meta: { title: '用户', icon: 'user' }
+        path: 'power',
+        name: 'Power',
+        component: () => import('@/views/power/index'),
+        meta: { title: '权限管理', icon: 'power' }
       },
       {
         path: 'role',
         name: 'Role',
         component: () => import('@/views/role/index'),
         meta: { title: '角色管理', icon: 'role' }
-      },
+      },      
       {
-        path: 'power',
-        name: 'Power',
-        component: () => import('@/views/power/index'),
-        meta: { title: '权限管理', icon: 'power' }
-      }
+        path: 'index',
+        name: 'User',
+        component: () => import('@/views/user/index'),
+        meta: { title: '用户管理', icon: 'user' }
+      },
     ]
   },
   {

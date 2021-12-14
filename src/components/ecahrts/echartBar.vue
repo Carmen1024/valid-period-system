@@ -9,7 +9,7 @@ export default {
     props:{
         id:{
             type:String,
-            default:"echartLine"
+            default:"echartBar"
         },
         echartStyle:{
             type:String,
@@ -42,8 +42,6 @@ export default {
 
             const chartDom = document.getElementById(this.id);
             const myChart = echarts.init(chartDom);
-            // const colorList=colorList
-
             myChart.clear();
             let { 
                     title="",
@@ -66,9 +64,6 @@ export default {
                     show:true,
                     trigger: 'axis'
                 },
-                grid:{
-                    show:true,
-                },
                 xAxis: {
                     type: 'category',
                     data: xData,
@@ -79,7 +74,7 @@ export default {
                     nameTextStyle:{
                         color:"#333"
                     },
-                    boundaryGap: false,
+                    // boundaryGap: false,
                 },
                 yAxis: {
                     type: 'value',
@@ -104,22 +99,9 @@ export default {
                 
                 return {
                     data: item.data,
-                    type: 'line',
+                    type: 'bar',
                     smooth: true,
                     name:item.name || '',
-                    areaStyle: {
-                        opacity: 0.5,
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            {
-                                offset: 0,
-                                color: commonColorList[index][0]
-                            },
-                            {
-                                offset: 1,
-                                color: commonColorList[index][1]
-                            }
-                        ])
-                    }
                 }
                 
             });

@@ -1,21 +1,21 @@
 <template>
   <div class="app-container">
     <my-form
-      ruleForm="selectValid"
+      ruleForm="selectRole"
       :formData="formData"
       :formModel="formModel"
-      @addFun="addValid"
-      @selectFun="selectValid"
+      @addFun="addRole"
+      @selectFun="selectRole"
       @cancelFun="cancelMethod"
      />
      <add-dialog 
-      ref='operateValid'
-      ruleForm="addValid"
+      ref='operateRole'
+      ruleForm="addRole"
+      width="50%"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
       @submitFun="submitForm"
-      @changeModelFun = "changeModel"
      />
     <my-table 
       :tableData=list 
@@ -35,8 +35,7 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { validQuery,validInsert,validUpdate,validValid,validDelete } from '@/api/valid';
-import { materialQueryAll } from '@/api/material';
+import { roleQuery,roleInsert,roleUpdate,roleValid,roleDelete } from '@/api/role';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -51,65 +50,33 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","m_t_type":null,"m_t_name": "", "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "","c_name":"","c_desc":"","createTime": "", "endTime": "", "c_valid": null},
       selectRule: {
-        "#eq":["_id","c_valid","m_t_type"],
-        "#like":["m_t_name"],
+        "#eq":["_id","c_valid"],
+        "#like":["c_name","c_desc"],
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
+
       // 新增
-      operateTitle:'新增物料效期',
-      operateModel:{
-        "m_id" : "",  //必填， 物料ID
-        "m_t_name": "",  //必填, 物料名称
-        "m_t_type": null,  //必填，物料状态:1-室温 2-冷藏 3-冷冻 4-常温密封 5-其它 6-台面 7-解冻
-        "m_t_zl_time": null,  //可选，质量效期 最长
-        "m_t_zl_1_time": null,  //可选，质量效期1（黄色预警）短
-        "m_t_zl_2_time": null,  //可选，质量效期2（红色预警） 第二长
-        "m_t_fw_time": null,  //可选，风味效期 < 质量效期
-        "m_t_fw_1_time": null,  //可选，风味效期1（黄色预警）
-        "m_t_fw_2_time": null,  //可选，风味效期2（红色预警）
-        "m_t_zl_time_unit": 1000*60*24,  //可选，质量效期 单位
-        "m_t_zl_1_time_unit": 1000*60*24,  //可选，质量效期1（黄色预警）单位
-        "m_t_zl_2_time_unit": 1000*60*24,  //可选，质量效期2（红色预警）单位
-        "m_t_fw_time_unit": 1000*60*24,  //可选，风味效期 单位
-        "m_t_fw_1_time_unit": 1000*60*24,  //可选，风味效期1（黄色预警）单位
-        "m_t_fw_2_time_unit": 1000*60*24,  //可选，风味效期2（红色预警）单位
-        "m_t_tag": "",  //可选，标签
-      },
-      loadOperateModel:{
-        "m_id" : "",  //必填， 物料ID
-        "m_t_name": "",  //必填, 物料名称
-        "m_t_type": null,  //必填，物料状态:1-室温 2-冷藏 3-冷冻 4-常温密封 5-其它 6-台面 7-解冻
-        "m_t_zl_time": null,  //可选，质量效期 最长
-        "m_t_zl_1_time": null,  //可选，质量效期1（黄色预警）短
-        "m_t_zl_2_time": null,  //可选，质量效期2（红色预警） 第二长
-        "m_t_fw_time": null,  //可选，风味效期 < 质量效期
-        "m_t_fw_1_time": null,  //可选，风味效期1（黄色预警）
-        "m_t_fw_2_time": null,  //可选，风味效期2（红色预警）
-        "m_t_tag": "",  //可选，标签
-      },
+      operateTitle:'新增角色',
+      operateModel:{},
       // 表格数据展示
-      validList:[],//物料分类列表
-      clfObj:null,
+      powerList:[
+        {key:101,label:'/user/query'},
+        {key:102,label:'/role/query'},
+        {key:103,label:'/power/query'},
+      ],//权限列表
+      roleJson:{},
       pageSize:10,
       pageIndex:1,
       total:10,
       columnList:[
         {type:'_id',label:'ID'},
-        {type:'m_t_name',label:'物料名称'},
-        {type:'m_t_tag',label:'物料标签'},
-        {type:'m_t_type_desc',label:'物料状态'},
-        {type:'m_t_zl_time_desc',label:'质量效期'},
-        {type:'m_t_fw_time_desc',label:'赏味效期'},
+        {type:'c_name',label:'角色名称'},
+        {type:'c_desc',label:'角色描述'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
-      ],
-      unitOptions:[
-        {label:"天",value:1440000},
-        {label:"小时",value:60000},
-        {label:"分",value:1000}
       ],
     }
   },
@@ -122,18 +89,13 @@ export default {
           label:"ID"
         },
         {
-          prop:'m_t_name',
+          prop:'c_name',
           type:"input",
-          label:"物料名称",
-        },
-        {
-          prop:'m_t_type',
-          type:"select",
-          label:"物料状态",
-          options:[
-            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
-          ],  
+          label:"角色名"
+        },{
+          prop:'c_desc',
+          type:"input",
+          label:"角色描述"
         },
         {
           prop:'c_valid',
@@ -154,157 +116,84 @@ export default {
       ]
     },
     operateFormData:function(){
-      return [
-        {
-          prop:'m_t_obj',
-          type:"selectItem",
-          label:"物料名称",
-          options:this.validList,
-          filterable:true,
-          props:{"value":'_id',"label":'clf_name'},
-          rules:[
-            { required: true, message: '请选择物料名', trigger: 'blur' },
-          ]
-        },
-        {
-          prop:'m_t_type',
-          type:"select",
-          label:"物料状态",
-          options:[
-            {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
-          ],  
-          rules:[
-            { required: true, message: '请选择物料名', trigger: 'blur' },
-          ]
-        },
-        {
-          prop:'m_t_zl_time',
-          type:"number",
-          label:"质量效期",
-          unit:this.unitOptions,
-          unitProp:'m_t_zl_time_unit',
-          rules:[{ type: 'number', message: '请填写数字'}],
-        },
-        {
-          prop:'m_t_fw_time',
-          type:"number",
-          label:"赏味效期",
-          unit:this.unitOptions,
-          unitProp:'m_t_fw_time_unit',
-          rules:[{ type: 'number', message: '请填写数字'}],
-        },
-        {
-          prop:'m_t_zl_1_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_zl_1_time_unit',
-          label:"质量效期预警1",
-          rules:[{ type: 'number', message: '请填写数字'}]
-        },
-        {
-          prop:'m_t_fw_1_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_fw_1_time_unit',
-          label:"赏味效期预警1",
-          rules:[{ type: 'number', message: '请填写数字'}]
-        },
-        {
-          prop:'m_t_zl_2_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_zl_2_time_unit',
-          label:"质量效期预警2",
-          rules:[{ type: 'number', message: '请填写数字'}]
-        },
-        {
-          prop:'m_t_fw_2_time',
-          type:"number",
-          unit:this.unitOptions,
-          unitProp:'m_t_fw_2_time_unit',
-          label:"赏味效期预警2",
-          rules:[{ type: 'number', message: '请填写数字'}]
-        },
-        {
-          prop:'m_t_tag',
-          type:"number",
-          label:"物料标签",  
-          rules:[
-            { required: true, message: '请填写', trigger: 'blur' },
-          ]
-        }
-      ]
+      return [{
+        prop:'c_name',
+        type:"input",
+        label:"角色名",
+        style:'width:100%',
+        rules:[
+          { required: true, message: '请输入角色名', trigger: 'blur' },
+        ]
+      },{
+        prop:'c_desc',
+        type:"textarea",
+        label:"角色描述",
+        style:'width:100%',
+      },{
+        prop:'c_power',
+        type:"transfer",
+        label:"角色权限",
+        style:'width:100%',
+        options:this.powerList,
+        style:"width:100%;height:300px",
+      }]
     },
 
   },
-  mounted(){
-    this.getValidList();
+  mounted() {
+    this.selectRole(false);
+    // this.getPowerList();
   },
   methods: {
     // 搜索
-    selectValid(refresh){
-      // console.log(this.clfObj);
+    selectRole(refresh){
+      // console.log(refresh);
       const pageIndex = this.pageIndex - 1;
       const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
       // console.log(this.formModel,dataParams);
-      validQuery(dataParams).then(data => {
-        this.list = getContent(data);
+      roleQuery(dataParams).then(data => {
+        this.list = getContent(data).map(item => {
+          item.role_name = this.roleJson[item.role_id];
+          return item;
+        });
         this.total = getPageTotal(data);
       })
     },
-    // 获取归属分类
-    getValidList(){
-      materialQueryAll().then(data => {
-        // this.validList = getContent(data);
-        this.validList = getContent(data).map(item => {
-          return {value:item._id,label:item.m_name};
+    // 获取权限列表
+    getPowerList(){
+      classifyQueryAll().then(data => {
+        // this.powerList = getContent(data);
+        this.powerList = getContent(data).map(item => {
+          this.roleJson[item._id] = item.role_name;
+          return {key:item._id,label:item.role_name};
         });
         // resolve();
-      }).then(() => {
-        this.selectValid(false);
       })
     },
     // 新增
-    addValid(){
+    addRole(){
       // console.log("响应新增");
-      this.operateModel = {
-        "m_id" : "",  //必填， 物料ID
-        "m_t_name": "",  //必填, 物料名称
-        "m_t_type": null,  //必填，物料状态:1-室温 2-冷藏 3-冷冻 4-常温密封 5-其它 6-台面 7-解冻
-        "m_t_zl_time": null,  //可选，质量效期 最长
-        "m_t_zl_1_time": null,  //可选，质量效期1（黄色预警）短
-        "m_t_zl_2_time": null,  //可选，质量效期2（红色预警） 第二长
-        "m_t_fw_time": null,  //可选，风味效期 < 质量效期
-        "m_t_fw_1_time": null,  //可选，风味效期1（黄色预警）
-        "m_t_fw_2_time": null,  //可选，风味效期2（红色预警）
-        "m_t_zl_time_unit": 1440000,  //可选，质量效期 单位
-        "m_t_zl_1_time_unit": 1000*60*24,  //可选，质量效期1（黄色预警）单位
-        "m_t_zl_2_time_unit": 1000*60*24,  //可选，质量效期2（红色预警）单位
-        "m_t_fw_time_unit": 1000*60*24,  //可选，风味效期 单位
-        "m_t_fw_1_time_unit": 1000*60*24,  //可选，风味效期1（黄色预警）单位
-        "m_t_fw_2_time_unit": 1000*60*24,  //可选，风味效期2（红色预警）单位
-        "m_t_tag": "",  //可选，标签
-      };
-      this.$refs.operateValid.dialogVisible = true;
-      this.operateTitle='新增物料';
+      this.operateModel = {u_phone:'',c_name:'',u_desc:"",u_pass:""};
+      this.$refs.operateRole.dialogVisible = true;
+      this.operateTitle='新增角色';
     },
-    editValid(item){
+    // 编辑
+    editRole(item){
       // console.log("响应编辑");
       this.operateModel = item;
       // console.log(item);
-      this.$refs.operateValid.dialogVisible = true;
-      this.operateTitle=`编辑物料id: ${item._id}`;
+      this.$refs.operateRole.dialogVisible = true;
+      this.operateTitle=`编辑角色id: ${item._id}`;
     },
-    deleteValid(item){
-      this.$confirm('确定删除该物料?','提示', {
+    deleteRole(item){
+      this.$confirm('确定删除该角色?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           const params = getDataParams({"#eq":["_id"]},item);
-          validDelete(params).then(data => {
-            this.selectValid();
+          roleDelete(params).then(data => {
+            this.selectRole();
             this.$message({
               type: 'success',
               message: '删除成功！!'
@@ -318,12 +207,12 @@ export default {
         });
     },
     // 切换状态
-    switchValid(item){
+    switchRole(item){
       const operateModel = {"_id":item._id,c_valid:item.c_valid};
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
       // console.log(item,params);
-      validValid(params).then(data => {
-        // this.selectValid();
+      roleValid(params).then(data => {
+        // this.selectRole();
         this.$message({
           type: 'success',
           message: '状态切换成功！!'
@@ -335,66 +224,57 @@ export default {
       item = JSON.parse(JSON.stringify(item));
       // console.log(type,item);
       if(type==='edit'){
-        this.editValid(item); 
+        this.editRole(item); 
       }
       if(type==='delete'){
-        this.deleteValid(item);
+        this.deleteRole(item);
       }
       if(type==='switch'){
-        this.switchValid(item);
+        this.switchRole(item);
       }
     },
     paginationChange(type,val){
-      if(type === 'handleSizeChange') this.pageSize = val;
-      else this.pageIndex = val;
-      this.selectValid(false);
+      // console.log(type,val);
+      if(type === 'handleSizeChange') 
+        this.pageSize = val;
+      else 
+        this.pageIndex = val;
+
+      this.selectRole(false);
     },
-    // 提交 
+    // 提交
     submitForm(){
 
-      // console.log(this.operateModel);
-      let loadOperateModel = {};
-      for(let index in this.loadOperateModel){
-        if(this.operateModel[index]==null || this.operateModel[index]=='') return;
-        if(index.match(/_time$/ig)) loadOperateModel[index] = this.operateModel[index] * this.operateModel[index+"_unit"];
-        else loadOperateModel[index] = this.operateModel[index];
-      }
-      // console.log(loadOperateModel);
-
+      console.log(this.operateModel);
       if(this.operateTitle === '新增角色'){
-        validInsert(loadOperateModel).then(data => {
-          this.selectValid();
+        roleInsert(this.operateModel).then(data => {
+          this.selectRole();
           this.$message({
             type: 'success',
             message: '保存成功！!'
           });
-          this.$refs.operateValid.dialogVisible = false;
+          this.$refs.operateRole.dialogVisible = false;
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["m_t_name","m_t_type"]},this.operateModel);
-        validUpdate(params).then(data => {
-          this.selectValid();
+        const params = getDataParams({"#eq":["_id"],"#set":["m_name","role_id"]},this.operateModel);
+        roleUpdate(params).then(data => {
+          this.selectRole();
           this.$message({
             type: 'success',
             message: '修改成功！!'
           });
-          this.$refs.operateValid.dialogVisible = false;
+          this.$refs.operateRole.dialogVisible = false;
         })
       }
-    },
-    changeModel(data,prop){
-        // console.log(data,prop);
-        if(prop === 'm_t_obj') 
-          this.operateModel.m_t_name = data.label;
-          this.operateModel.m_id = data.value;
-        // console.log(this.operateModel);
+
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","m_t_type":null,"m_t_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","role_id":null,"m_name": "", "createTime": "", "endTime": "", "c_valid": null};
       
     }
+
   }
 }
 </script>

@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { validUsername,validPhone } from '@/utils/validate'
+import { validateUsername,validatePhone } from '@/utils/validate'
 import { signup } from '@/api/user'
 import loginBg from '@/styles/images/loginBg.png'
 
@@ -86,20 +86,6 @@ export default {
 
   name: 'Register',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePhone = (rule, value, callback) => {
-      if (!validPhone(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
     return {
       registerForm: {
         "u_phone": "",

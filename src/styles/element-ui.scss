@@ -50,3 +50,26 @@
 .el-date-editor.el-input, .el-date-editor.el-input__inner,.el-select,.el-cascader{
   width: 100%;
 }
+
+// 穿梭框
+.el-transfer-panel__filter{
+  margin: 5px 10px;
+  .el-input__inner{
+    border-radius: 5px;
+  }
+}
+.transferandpage {
+  .el-transfer-panel{
+    width: 230px;
+    &:first-child{
+      width: 350px;
+      .el-pagination .btn-prev{
+        padding-right: 2px;
+      }
+    }
+  }
+  .selectKey{
+    width: 350px;
+    margin-bottom: 10px;
+  }
+}

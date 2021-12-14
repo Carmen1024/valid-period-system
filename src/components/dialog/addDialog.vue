@@ -178,15 +178,50 @@
               </el-checkbox>
             </el-checkbox-group>
             <!-- 多级联动 -->
-          <el-cascader
-            v-model="formModel[item.prop]" 
-            v-if="item.type==='cascader'"
-            :placeholder="item.placeholder || '试试搜索：成都'"
-            :options="item.options"
-            :props="item.props"
-            @change="blurHandle"
-            filterable>
-          </el-cascader>
+            <el-cascader
+              v-model="formModel[item.prop]" 
+              v-if="item.type==='cascader'"
+              :placeholder="item.placeholder || '试试搜索：成都'"
+              :options="item.options"
+              :props="item.props"
+              @change="blurHandle"
+              filterable>
+            </el-cascader>
+            <!-- 穿梭框 -->
+            <el-transfer 
+              v-if="item.type==='transfer'"
+              :titles="['可选择', '已选择']"
+              :filter-placeholder="item.placeholder || '请输入关键词'"
+              v-model="formModel[item.prop]" 
+              :data="item.options"
+              filterable
+              >
+            </el-transfer>
+            <!-- 穿梭框带分页 -->
+            <div v-if="item.type==='transferandpage'" class="transferandpage">
+              <el-input 
+                class="selectKey"
+                :placeholder="item.placeholder || '请输入关键字'"
+                v-model="transferKey"
+                @change="changeTransferKey"
+              ></el-input>
+              <span style="margin-left:10px;">已选择门店：{{formModel[item.prop].length}} 家</span>
+              <el-transfer 
+                :titles="['可选择', '已选择']"
+                v-model="formModel[item.prop]" 
+                :data="item.options"
+                >
+                <pagination
+                class="transfer-footer" 
+                slot="left-footer"
+                size="small"
+                @pageChangeFun="paginationChange"
+                :total="item.total || 0"
+                />
+              </el-transfer>
+            </div>
+
+            <!-- 输入栏结束 -->
           </el-form-item>
           <el-form-item class="form-handle">
             <!-- <el-button type="primary" @click="selectForm">搜索</el-button>
@@ -205,9 +240,11 @@
 
 <script>
   import timeUtil from '@/components/util/time';
+  import pagination from '@/components/pagination/simple';
 export default {
     components:{
-      timeUtil
+      timeUtil,
+      pagination
     },
     props: {
       formData: {
@@ -244,8 +281,7 @@ export default {
           {label:"提交",type:"submit",buttonStyle:"primary"},
           {label:"取消",type:"cancel"},
         ]
-      },
-
+      }
     },
     data(){
       return {
@@ -254,6 +290,7 @@ export default {
             
         },
         loading:false,
+        transferKey:""
       }
     },
     watch: {
@@ -278,7 +315,7 @@ export default {
         deep: true
       },
     },
-    created() {
+    mounted() {
 
     },
     methods: {
@@ -321,7 +358,17 @@ export default {
           this.loading = true;
           this.$emit("remoteFun",query);
         }
-      }
+      },
+      filterFun(query, item) {
+        console.log(query, item)
+      },
+      changeTransferKey(val){
+        this.$emit("resetTransferByKey",val);
+      },
+      paginationChange(val){
+        this.storeIndex = val;
+        this.$emit("resetTransfer",val);
+      },
     }
 }
 </script>

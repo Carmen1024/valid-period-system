@@ -28,3 +28,17 @@ export function validUsername(str) {
   return /^1[0-9]{10}/.test(str)
 }
 
+export const validatePhone = (rule, value, callback) => {
+  if (!validPhone(value)) {
+    callback(new Error('Please enter the correct user name'))
+  } else {
+    callback()
+  }
+}
+export const validateUsername = (rule, value, callback) => {
+  if (!validUsername(value)) {
+    callback(new Error('Please enter the correct user name'))
+  } else {
+    callback()
+  }
+}

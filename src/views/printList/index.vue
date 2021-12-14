@@ -35,6 +35,7 @@ import pagination from '@/components/pagination';
 import descriptionDialog from '@/components/dialog/descriptionDialog';
 import { printHistoryQuery } from '@/api/print';
 import { getPageParams,getContent, getPageTotal } from '@/utils/dataParams';
+import { classifyQueryAll } from '@/api/sort';
 
 export default {
   components:{
@@ -53,23 +54,60 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","m_t_type":null,"clf_name": "","m_name": "","s_name": "","m_t_name": "","pt_h_sn": "", "createTime": "", "endTime": ""},
+      formModel: {"_id": "","m_t_type":null,"clf_id": null,"m_name": "","s_name": "","m_t_name": "","pt_h_sn": "", "createTime": "", "endTime": ""},
       selectRule: {
-        "#eq":["_id","m_t_type"],
-        "#like":["clf_name","m_name","s_name","m_t_name","pt_h_sn"],
+        "#eq":["_id","clf_id","m_t_type"],
+        "#like":["m_name","s_name","m_t_name","pt_h_sn"],
         "#gte":["pt_h_time"],
         "#lte":["pt_h_time"]
       },
-      formData: [
+      clfList:[],
+      // 表格数据展示
+      pageSize:10,
+      pageIndex:1,
+      total:10,
+      list: null,
+      columnList:[
+        {type:'_id',label:'ID'},
+        {type:'pt_h_sn',label:'打印序列号'},
+        {type:'s_name',label:'门店名称'},
+        {type:'m_name',label:'物料名称'},
+        {type:'clf_name',label:'归属分类'},
+        {type:'m_t_type_desc',label:'物料状态'},
+         {type:'m_t_name',label:'物料标签'},
+        {type:'pt_h_time',label:'打印时间'}
+      ],
+      descriptModel:null,
+      descripOptions:[
+        {type:'_id',label:'ID',span:2},
+        {type:'s_name',label:'门店名称'},
+        {type:'m_name',label:'物料名称'},
+        {type:'clf_name',label:'归属分类'},
+        {type:'m_t_type_desc',label:'物料状态'},
+        {type:'m_t_name',label:'物料标签'},
+        {type:'pt_h_sn',label:'打印序列号'},
+        {type:'pt_h_time',label:'打印时间'}
+      ]
+    }
+  },
+  computed:{
+    formData:function(){
+      return [
         {
           prop:'_id',
           type:"input",
           label:"ID"
         },
         {
-          prop:'clf_name',
-          type:"input",
-          label:"分类名称"
+          // prop:'clf_name',
+          // type:"input",
+          // label:"归属分类"
+          prop:'clf_id',
+          type:"select",
+          label:"归属分类",
+          options:this.clfList,
+          filterable:true,
+          props:{"value":'_id',"label":'clf_name'}
         },
         {
           prop:'m_name',
@@ -110,39 +148,24 @@ export default {
           type:"datetime",
           label:"结束时间",
         }
-      ],
-      // 表格数据展示
-      pageSize:10,
-      pageIndex:1,
-      total:10,
-      list: null,
-      columnList:[
-        {type:'_id',label:'ID'},
-        {type:'pt_h_sn',label:'打印序列号'},
-        {type:'s_name',label:'门店名称'},
-        {type:'m_name',label:'物料名称'},
-        {type:'clf_name',label:'分类名称'},
-        {type:'m_t_type_desc',label:'物料状态'},
-         {type:'m_t_name',label:'物料标签'},
-        {type:'pt_h_time',label:'打印时间'}
-      ],
-      descriptModel:null,
-      descripOptions:[
-        {type:'_id',label:'ID',span:2},
-        {type:'s_name',label:'门店名称'},
-        {type:'m_name',label:'物料名称'},
-        {type:'clf_name',label:'分类名称'},
-        {type:'m_t_type_desc',label:'物料状态'},
-        {type:'m_t_name',label:'物料标签'},
-        {type:'pt_h_sn',label:'打印序列号'},
-        {type:'pt_h_time',label:'打印时间'}
       ]
-    }
+    },
   },
   mounted() {
+    this.getClfList();
     this.selectPrintHistory(false);
   },
   methods: {
+        // 获取归属分类
+    getClfList(){
+      classifyQueryAll().then(data => {
+        // this.clfList = getContent(data);
+        this.clfList = getContent(data).map(item => {
+          return {value:item._id,label:item.clf_name};
+        });
+        // resolve();
+      })
+    },
     // 表格操作：详情
     handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));

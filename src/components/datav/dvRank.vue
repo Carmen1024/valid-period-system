@@ -4,12 +4,13 @@
         <dv-scroll-ranking-board 
             class="dvRank-content"
             :config="config" 
-            :id="id" 
+            :id="id"
         />
     </div>
 </template>
 
 <script>
+
 export default {
     props:{
         id:{
@@ -35,7 +36,7 @@ export default {
                 this.refreshConfig();
             },
             deep: true
-        }
+        },
     },
     data() {
         return {
@@ -62,8 +63,6 @@ export default {
 
 <style scoped lang="scss">
     .dvRank-Container{
-        width: 50%;
-        height: 100%;
         .dvRank-title{
             line-height: 30px;
             font: {
@@ -76,6 +75,11 @@ export default {
             height:550px;
             padding:0 20px;
             color:#152a7d;
+
+
+        }
+        .dv-scroll-ranking-board .ranking-column .inside-column{
+            height: 20px;
         }
     }
 </style>
