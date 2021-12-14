@@ -159,11 +159,11 @@ export default {
         {
           prop:'s_city_code',
           type:"cascader",
-          label:"省市区",
+          label:"门店区域",
           options:this.RegionCodeList,
           props:{"value":'rg_code',"label":'rg_name'},
           rules:[
-            { required: true, message: '请选择省市区', trigger: 'change' },
+            { required: true, message: '请选择门店区域获得市级代码', trigger: 'change' },
           ]
         },
         {

@@ -72,7 +72,7 @@ export default {
         {type:'pt_h_sn',label:'打印序列号'},
         {type:'s_name',label:'门店名称'},
         {type:'m_name',label:'物料名称'},
-        {type:'clf_name',label:'归属分类'},
+        {type:'clf_name',label:'物料分类'},
         {type:'m_t_type_desc',label:'物料状态'},
          {type:'m_t_name',label:'物料标签'},
         {type:'pt_h_time',label:'打印时间'}
@@ -82,7 +82,7 @@ export default {
         {type:'_id',label:'ID',span:2},
         {type:'s_name',label:'门店名称'},
         {type:'m_name',label:'物料名称'},
-        {type:'clf_name',label:'归属分类'},
+        {type:'clf_name',label:'物料分类'},
         {type:'m_t_type_desc',label:'物料状态'},
         {type:'m_t_name',label:'物料标签'},
         {type:'pt_h_sn',label:'打印序列号'},
@@ -101,10 +101,10 @@ export default {
         {
           // prop:'clf_name',
           // type:"input",
-          // label:"归属分类"
+          // label:"物料分类"
           prop:'clf_id',
           type:"select",
-          label:"归属分类",
+          label:"物料分类",
           options:this.clfList,
           filterable:true,
           props:{"value":'_id',"label":'clf_name'}
@@ -156,7 +156,7 @@ export default {
     this.selectPrintHistory(false);
   },
   methods: {
-        // 获取归属分类
+        // 获取物料分类
     getClfList(){
       classifyQueryAll().then(data => {
         // this.clfList = getContent(data);

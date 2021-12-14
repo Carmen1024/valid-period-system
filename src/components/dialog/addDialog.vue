@@ -185,7 +185,8 @@
               :options="item.options"
               :props="item.props"
               @change="blurHandle"
-              filterable>
+              filterable
+            >
             </el-cascader>
             <!-- 穿梭框 -->
             <el-transfer 
