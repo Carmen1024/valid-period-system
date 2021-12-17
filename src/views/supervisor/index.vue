@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <my-form
-      ruleForm="selectSupervise"
+      ruleForm="selectSupervisor"
       :formData="formData"
       :formModel="formModel"
-      @addFun="addSupervise"
-      @selectFun="selectSupervise"
+      @addFun="importSupervisor"
+      @selectFun="selectSupervisor"
       @cancelFun="cancelMethod"
      />
      <add-dialog 
-      ref='operateSupervise'
-      ruleForm="addSupervise"
+      ref='operateSupervisor'
+      ruleForm="addSupervisor"
       width="60%"
       :title='operateTitle'
       :formData=operateFormData
@@ -19,6 +19,19 @@
       @submitFun="submitForm"
       @resetTransfer="getStoreList"
       @resetTransferByKey="getStoreListByName"
+     />
+     <add-dialog 
+      ref='importSupervisor'
+      ruleForm="importSupervisor"
+      width="60%"
+      title="批量导入用户"
+      addDialogTip="督导只能选择有效状态的用户，如查询不到请先到用户管理页面确认用户状态~"
+      :formData=userFormData
+      :formModel=userModel
+      :transferKey="userPhone"
+      @submitFun="submitUserForm"
+      @resetTransfer="getUserList"
+      @resetTransferByKey="getUserListByPhone"
      />
     <my-table 
       :tableData=list 
@@ -38,11 +51,11 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { superviseQuery,superviseInsert,superviseUpdate,superviseValid,superviseDelete } from '@/api/supervise';
+import { supervisorQuery,supervisorInsert,supervisorUpdate,supervisorValid,supervisorDelete } from '@/api/supervisor';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
-import { getRegion } from '@/utils/region';
+import { getRegionCode } from '@/utils/region';
 import { storeQuery } from '@/api/store';
-import { validatePhone } from '@/utils/validate';
+import { userQuery } from '@/api/user';
 
 export default {
   components:{
@@ -56,22 +69,32 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","super_name": "", "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "","u_name": "","u_phone":"","reg_id":"", "createTime": "", "endTime": "", "c_valid": null},
       selectRule: {
-        "#eq":["_id","c_valid"],
-        "#like":["super_name"],
+        "#eq":["_id","c_valid","reg_id"],
+        "#like":["u_name","u_phone"],
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
       // 新增
-      operateTitle:'新增督导',
-      operateModel:{
-        "super_code": "", 
-        "super_name": "",
-        "super_storeList": [],  
-        "super_regionList":[]
+      operateTitle:'编辑督导信息',
+      operateModel:{"reg_id":"","s_ids":[]},
+      regionList:[],
+      // 搜索门店
+      storeList:[],
+      storeName:"",
+      storeIndex:1,
+      storeSize:10,
+      storeTotal:0,
+      // 批量导入用户
+      userList:[],
+      userModel:{
+        "u_ids": [],  //必填，用户ID
       },
-      provinceList:[],
+      userPhone:"",
+      userIndex:1,
+      userSize:10,
+      userTotal:0,
       // 编辑:
       // 表格数据展示
       pageSize:10,
@@ -80,19 +103,13 @@ export default {
       list: null,
       columnList:[
         {type:'_id',label:'ID'},
-        {type:'super_province',label:'姓名'},
-        {type:'super_city',label:'电话'},
-        {type:'super_district',label:'所属区域'},
-        {type:'super_code',label:'关联门店'},
+        {type:'u_name',label:'姓名'},
+        {type:'u_phone',label:'电话'},
+        {type:'reg_name',label:'所属区域'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
       ],
-      // 搜索门店
-      storeList:[],
-      storeName:"",
-      storeIndex:1,
-      storeSize:10,
-      storeTotal:0
+
     }
   },
   computed:{
@@ -104,26 +121,22 @@ export default {
           label:"ID"
         },
         {
-          prop:'super_name',
+          prop:'u_name',
           type:"input",
           label:"姓名",
         },
         {
-          prop:'super_phone',
+          prop:'u_phone',
           type:"input",
           label:"电话",
         },
         {
-          prop:'super_regionList',
+          prop:'reg_id',
           type:"cascader",
-          label:"省市区",
-          style:'width:100%',
-          rules:[
-            { required: true, message: '请选择省市区', trigger: 'change' },
-          ],
-          options:this.provinceList,
+          label:"所属区域",
+          options:this.regionList,
           // filterable:true,
-          props:{"value":'name',"label":'name'},
+          props:{"value":'_id',"label":'rg_name'},
         },
         {
           prop:'c_valid',
@@ -146,55 +159,56 @@ export default {
     operateFormData:function(){
       return [
         {
-          prop:'super_name',
-          type:"input",
-          label:"姓名",
-          rules:[
-            { required: true, message: '请输入姓名', trigger: 'change' },
-          ],
+          prop:'reg_id',
+          type:"cascader",
+          label:"所属区域",
+          options:this.regionList,
+          // filterable:true,
+          props:{"value":'_id',"label":'rg_name'},
         },
         {
-          prop:'super_phone',
-          type:"input",
-          label:"电话",
-          rules:[
-            { required: true, message: '请输入电话', trigger: 'blur' },
-            { required: true,max: 11, message: '请输入正确的11位手机号',validator:validatePhone, trigger: 'blur' }
-          ],
-        },{
-          prop:'super_regionList',
-          type:"cascader",
-          label:"省市区",
-          style:'width:100%',
-          rules:[
-            { required: true, message: '请选择省市区', trigger: 'change' },
-          ],
-          options:this.provinceList,
-          // filterable:true,
-          props:{"value":'name',"label":'name'},
-        },{
-          prop:'super_storeList',
+          prop:'s_ids',
           type:"transferandpage",
           label:"关联门店",
           style:'width:100%',
           options:this.storeList,
           total:this.storeTotal,
           placeholder:'请输入关键字搜索门店，例如：成都',
-          style:"width:100%;height:300px",
+          transferTip:'只展示分页已选择门店',
+          style:"width:100%;",
+          unitTip:'已选择门店',
+          unit:'家'
+        }]
+    },
+    userFormData:function(){
+      return [
+        {
+          prop:'u_ids',
+          type:"transferandpage",
+          label:"用户",
+          style:'width:100%',
+          options:this.userList,
+          total:this.userTotal,
+          placeholder:'可输入手机号查询用户',
+          transferTip:'只展示分页已选择用户',
+          style:"width:100%;",
+          unitTip:'已选择用户',
+          unit:'人'
         }]
       }
   },
   mounted() {
-    this.selectSupervise(false);
+    this.selectSupervisor(false);
     this.getRegionList();
     this.getStoreList();
+    this.getUserList();
   },
   methods: {
-    // 搜索省市区代码
+    // 搜索所属区域代码
+    // 获取市级代码
     getRegionList(){
-      getRegion("").then(data=>{
-        // console.log(data);
-        this.provinceList = data;
+      getRegionCode("").then(data=>{
+        this.regionList = data;
       });
     },
     getStoreListByName(val){
@@ -213,37 +227,42 @@ export default {
         this.storeTotal = getPageTotal(data);
       })
     },
-    // 新增
-    addSupervise(){
-      // console.log("响应新增");
-      console.log(this.storeList.map(item=>item.key));
-      this.operateModel = {
-        "super_code": "", 
-        "super_name": "",
-        "super_storeList": [],  
-        "super_regionList":[]
-      };
-      this.$refs.operateSupervise.dialogVisible = true;
-      this.operateTitle='新增督导';
+    getUserList(userIndex=this.userIndex){
+      const selectRule = {"#eq": ["c_valid"],"#like":["u_phone"]};
+      const formModel = {"u_phone":this.userPhone,"c_valid":true};
+      const dataParams = getPageParams(selectRule,formModel,this.userSize,--userIndex,true);
+      userQuery(dataParams).then(data => {
+        this.userList = getContent(data).map(item=>{
+          return {key:item._id,label:`${item.u_phone}${item.u_name?' ('+item.u_name+')':''}`};
+        });
+        this.userTotal = getPageTotal(data);
+      })
     },
-    editSupervise(item){
+    getUserListByPhone(val){
+      this.userPhone = val;
+      this.getUserList();
+    },
+    //批量导入用户成为督导
+    importSupervisor(){
+      this.$refs.importSupervisor.dialogVisible = true;
+    },
+    // 编辑督导
+    editSupervisor(item){
       // console.log("响应编辑");
-      item.super_regionList = [item.super_province,item.super_city,item.super_district];
       this.operateModel = item;
-      
       // console.log(item);
-      this.$refs.operateSupervise.dialogVisible = true;
-      this.operateTitle='编辑督导id:' + item._id;
+      this.$refs.operateSupervisor.dialogVisible = true;
+      this.operateTitle=`编辑督导（手机号: ${item.u_phone ||''})`;
     },
-    deleteSupervise(item){
+    deleteSupervisor(item){
       this.$confirm('确定删除该督导?','提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           const params = getDataParams({"#eq":["_id"]},item);
-          superviseDelete(params).then(data => {
-            this.selectSupervise();
+          supervisorDelete(params).then(data => {
+            this.selectSupervisor();
             this.$message({
               type: 'success',
               message: '删除成功！!'
@@ -257,12 +276,12 @@ export default {
         });
     },
     // 切换状态
-    switchSupervise(item){
+    switchSupervisor(item){
       const operateModel = {"_id":item._id,c_valid:item.c_valid};
       const params = getDataParams({"#eq":["_id"],"#set":["c_valid"]},operateModel);
       // console.log(item,params);
-      superviseValid(params).then(data => {
-        // this.selectSupervise();
+      supervisorValid(params).then(data => {
+        // this.selectSupervisor();
         this.$message({
           type: 'success',
           message: '状态切换成功！!'
@@ -274,25 +293,25 @@ export default {
       item = JSON.parse(JSON.stringify(item));
       // console.log(type,item);
       if(type==='edit'){
-        this.editSupervise(item); 
+        this.editSupervisor(item); 
       }
       if(type==='delete'){
-        this.deleteSupervise(item);
+        this.deleteSupervisor(item);
       }
       if(type==='switch'){
-        this.switchSupervise(item);
+        this.switchSupervisor(item);
       }
     },
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectSupervise(false);
+      this.selectSupervisor(false);
     },
     // 搜索
-    selectSupervise(refresh){
+    selectSupervisor(refresh){
       const pageIndex = this.pageIndex - 1;
       const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
-      superviseQuery(dataParams).then(data => {
+      supervisorQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);
       })
@@ -302,40 +321,27 @@ export default {
     submitForm(){
 
       let operateModel = this.operateModel
-      // 重新组装
-      if(this.operateModel.super_regionList.length >= 3){
-        let [ super_province,super_city,super_district ] = operateModel.super_regionList;
-        const super_name = operateModel.super_regionList.join("");
-        operateModel = {...operateModel,super_province,super_city,super_district,super_name};
-      }
+      // 编辑
+      const params = getDataParams({
+        "#eq":["_id"],
+        "#set":["reg_id","s_ids"]
+        },operateModel);
+      supervisorUpdate(params).then(data => {
+        this.selectSupervisor();
+        this.$message({
+          type: 'success',
+          message: '修改成功！!'
+        });
+        this.$refs.operateSupervisor.dialogVisible = false;
+      })
 
-      // console.log(this.operateModel);
-      if(this.operateTitle === '新增督导'){
-        superviseInsert(operateModel).then(data => {
-          this.selectSupervise();
-          this.$message({
-            type: 'success',
-            message: '保存成功！!'
-          });
-          this.$refs.operateSupervise.dialogVisible = false;
-        })
-      }else{
-        // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["super_code","super_name","super_province","super_city","super_district"],},operateModel);
-        superviseUpdate(params).then(data => {
-          this.selectSupervise();
-          this.$message({
-            type: 'success',
-            message: '修改成功！!'
-          });
-          this.$refs.operateSupervise.dialogVisible = false;
-        })
-      }
-
+    },
+    submitUserForm(){
+      console.log(this.userModel);
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","super_code": "","super_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","u_name": "","u_phone":"","reg_id":"", "createTime": "", "endTime": "", "c_valid": null};
     }
 
   }

@@ -108,18 +108,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path:'/supervise',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Supervise',
-        component: () => import('@/views/supervise/index'),
-        meta: { title: '督导管理', icon: 'supervise' }
-      }
-    ]
-  },
-  {
     path: '/device',
     component: Layout,
     children: [
@@ -161,28 +149,39 @@ export const constantRoutes = [
   {
     path: '/user',
     component: Layout,
-    redirect: '/user/index',
-    name: '用户权限',
-    meta: { title: '用户权限', icon: 'userMode' },
+    // name: '用户权限',
+    // meta: { title: '用户权限', icon: 'userMode' },
     children: [
-      {
-        path: 'power',
-        name: 'Power',
-        component: () => import('@/views/power/index'),
-        meta: { title: '权限管理', icon: 'power' }
-      },
-      {
-        path: 'role',
-        name: 'Role',
-        component: () => import('@/views/role/index'),
-        meta: { title: '角色管理', icon: 'role' }
-      },      
+      // {
+      //   path: 'power',
+      //   name: 'Power',
+      //   component: () => import('@/views/power/index'),
+      //   meta: { title: '权限管理', icon: 'power' }
+      // },
+      // {
+      //   path: 'role',
+      //   name: 'Role',
+      //   component: () => import('@/views/role/index'),
+      //   meta: { title: '角色管理', icon: 'role' }
+      // },      
       {
         path: 'index',
         name: 'User',
         component: () => import('@/views/user/index'),
         meta: { title: '用户管理', icon: 'user' }
       },
+    ]
+  },
+  {
+    path:'/supervisor',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Supervisor',
+        component: () => import('@/views/supervisor/index'),
+        meta: { title: '督导管理', icon: 'supervisor' }
+      }
     ]
   },
   {

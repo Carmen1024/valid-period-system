@@ -11,7 +11,7 @@
      <add-dialog 
       ref='operateUser'
       ruleForm="addUser"
-      width="30%"
+      width="20%"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
@@ -77,7 +77,7 @@ export default {
         {type:'_id',label:'ID'},
         {type:'u_name',label:'用户名'},
         {type:'u_phone',label:'手机号'},
-        {type:'c_desc',label:'用户类型'},
+        // {type:'c_desc',label:'用户类型'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
       ],
@@ -100,12 +100,12 @@ export default {
           type:"input",
           label:"手机号"
         },
-        {
-          prop:'u_desc',
-          type:"select",
-          label:"用户类型",
-          options:this.userList,
-        },
+        // {
+        //   prop:'u_desc',
+        //   type:"select",
+        //   label:"用户类型",
+        //   options:this.userList,
+        // },
         {
           prop:'c_valid',
           type:"select",
@@ -129,30 +129,35 @@ export default {
         prop:'u_name',
         type:"input",
         label:"用户名",
+        style:'width:100%',
         rules:[
           { required: true, message: '请输入用户名', trigger: 'blur' },
         ]
       },{
-        prop:'u_pass',
-        type:"input",
-        label:"初始密码"
-      },{
         prop:'u_phone',
         type:"input",
         label:"手机号",
+        style:'width:100%',
         rules:[
           { required: true, message: '请输入手机号', trigger: 'blur' },
         ]
       },{
-        prop:'u_desc',
-        type:"checkbox",
-        label:"用户类型",
-        options:this.userList,
-        style:"width:100%;height:auto",
-        rules:[
-          { required: true, message: '请选择用户类型', trigger: 'blur' },
-        ]
-      }]
+        prop:'u_pass',
+        type:"input",
+        label:"初始密码",
+        style:'width:100%',
+      },
+      // {
+      //   prop:'u_desc',
+      //   type:"checkbox",
+      //   label:"用户类型",
+      //   options:this.userList,
+      //   style:"width:100%;height:auto",
+      //   rules:[
+      //     { required: true, message: '请选择用户类型', trigger: 'blur' },
+      //   ]
+      // }
+      ]
     },
 
   },

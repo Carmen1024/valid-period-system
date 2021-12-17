@@ -1,59 +1,59 @@
 import request from '@/utils/request';
 
-export function superviseQuery(data){
+export function supervisorQuery(data){
     return request({
-        url: '/supervise/query',
+        url: '/supervisor/query',
         method: 'post',
         data
       })
 }
 
-export function superviseInsert(data){
+export function supervisorInsert(data){
   return request({
-      url: '/supervise/insert',
+      url: '/supervisor/insert',
       method: 'post',
       data
     })
 }
 
-export function superviseUpdate(data){
+export function supervisorUpdate(data){
   return request({
-      url: '/supervise/update',
+      url: '/supervisor/update',
       method: 'post',
       data
     })
 }
 
 // 状态变更 失效 有效
-export function superviseValid(data){
+export function supervisorValid(data){
   return request({
-      url: '/supervise/valid',
+      url: '/supervisor/valid',
       method: 'post',
       data
     })
 }
 
 // 删除
-export function superviseDelete(data){
+export function supervisorDelete(data){
   return request({
-      url: '/supervise/del',
+      url: '/supervisor/del',
       method: 'post',
       data
     })
 }
 
 // 物料-获取分类列表
-export function superviseQueryAll(){
+export function supervisorQueryAll(){
   return request({
-      url: '/supervise/query_all_valid',
+      url: '/supervisor/query_all_valid',
       method: 'post'
     })
 }
 
 // 查询所有门店-模糊查询
-export function superviseQueryValid(data){
+export function supervisorQueryValid(data){
   return request({
-      url: '/supervise/query_valid',
+      url: '/supervisor/query_valid',
       method: 'post',
       data
     })

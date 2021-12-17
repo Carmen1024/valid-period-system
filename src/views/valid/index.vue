@@ -199,10 +199,7 @@ export default {
         {
           prop:'m_t_tag',
           type:"input",
-          label:"物料标签",  
-          rules:[
-            { required: true, message: '请填写', trigger: 'blur' },
-          ]
+          label:"物料标签"
         }
       ]
     },

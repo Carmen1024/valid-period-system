@@ -66,6 +66,7 @@
                 :label="optionItem.label"
                 :value="optionItem.value"
                 clearable
+                
               >
               </el-option>
             </el-select>
@@ -84,7 +85,7 @@
               type:select
               options:[{label,value}]
             -->
-            <el-select v-if="item.type==='select'" :filterable="item.filterable || false" 
+            <el-select v-if="item.type==='select'" :filterable="item.filterable || true" 
               v-model="formModel[item.prop]" :placeholder="item.placeholder || '请选择'" @change="changeModel($event,item.prop)">
               <el-option 
                 v-for="(optionItem, optionIndex) in item.options"
@@ -94,8 +95,9 @@
                 clearable
               >
               </el-option>
+              
             </el-select>
-              <!-- 远程搜索 -->
+            <!-- 远程搜索 -->
             <el-select
               v-if="item.type==='selectRemote'" 
               v-model="formModel[item.prop]"
@@ -129,6 +131,21 @@
               >
               </el-option>
             </el-select>
+
+            <!-- 可以分页的搜索 -->
+            <el-select v-if="item.type==='selectByPage'" value-key="value" :filterable="item.filterable || false" 
+              v-model="formModel[item.prop]" :placeholder="item.placeholder || '请选择'" @change="changeModel($event,item.prop)">
+              <el-option 
+                v-for="(optionItem, optionIndex) in item.options"
+                :key="optionIndex"
+                :label="optionItem.label" 
+                :value="optionItem"
+                clearable
+              >
+              </el-option>
+
+            </el-select>
+            
             <el-switch 
               v-if="item.type=='switch'" 
               v-model="formModel[item.prop]"
@@ -204,21 +221,27 @@
                 class="selectKey"
                 :placeholder="item.placeholder || '请输入关键字'"
                 v-model="transferKey"
-                @change="changeTransferKey"
+                @input="changeTransferKey"
               ></el-input>
-              <span style="margin-left:10px;">已选择门店：{{formModel[item.prop].length}} 家</span>
+              <span style="margin-left:10px;">{{item.unitTip || '已选择'}}：{{formModel[item.prop].length}} {{item.unit || ''}}</span>
               <el-transfer 
                 :titles="['可选择', '已选择']"
                 v-model="formModel[item.prop]" 
                 :data="item.options"
                 >
                 <pagination
-                class="transfer-footer" 
-                slot="left-footer"
-                size="small"
-                @pageChangeFun="paginationChange"
-                :total="item.total || 0"
+                  class="transfer-footer" 
+                  slot="left-footer"
+                  size="small"
+                  @pageChangeFun="paginationChange"
+                  :total="item.total || 0"
                 />
+                <span 
+                  class="transferTip"
+                  slot="right-footer"
+                  size="small">
+                  {{item.transferTip || ''}}
+                </span>
               </el-transfer>
             </div>
 
@@ -234,7 +257,10 @@
               @click="handle(item.type)">{{item.label}}</el-button>
           </el-form-item>
         </el-form>
-
+      <!-- 开放一个入口用来做提示信息 -->
+      <template class="addDialogTip">
+        <span>{{addDialogTip}}</span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -282,6 +308,10 @@ export default {
           {label:"提交",type:"submit",buttonStyle:"primary"},
           {label:"取消",type:"cancel"},
         ]
+      },
+      addDialogTip:{
+        type:String,
+        default:''
       }
     },
     data(){
@@ -390,6 +420,11 @@ export default {
       }
       &.largeWidth{
         width: 100%;
+      }
+      .transferTip{
+        padding-left: 10px;
+        font-size: 12px;
+        color: #999;
       }
 
     }

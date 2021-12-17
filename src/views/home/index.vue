@@ -10,7 +10,7 @@
     <div class="home-content">
       <echart-line :echartData="lineData" />
       <echart-bar :echartData="barData" />
-      <dv-rank :dv-data="dvData" :dv-style="dvStyle" title="今日门店打印数排行" />
+      <dv-rank :dv-data="dvData" :dv-style="dvStyle" title="今日全国门店实时打印总数排行" />
     </div>
   </div>
 </template>
@@ -95,7 +95,7 @@ export default {
           rowNum:9,
       },
       tips:[
-        {label:"全国门店",value:'5471'},
+        {label:"全国门店",value:'5371'},
         {label:"今日有效物料",value:'79'},
         {label:"今日物料效期",value:'111'},
         {label:"打印订单",value:'15001'},
@@ -115,9 +115,9 @@ export default {
     getPrintList(){
 
       const lineData = {
-        title:"打印种类统计",
+        title:"日均物料统计",
         xName:"时间",
-        unit:'次数',
+        unit:'数量',
         xData:["前天","昨天","今天"],
         seriesData:[
             {
@@ -139,9 +139,9 @@ export default {
             {
                 "name": "罐头、果汁、果酱",
                 "data": [
-                    54812,
-                    54815,
-                    54821
+                    44812,
+                    43815,
+                    50821
                 ]
             },
             {
@@ -195,69 +195,48 @@ export default {
     getPrintByDay(){
 
       const data=[
-          {
-            "value": 417360,
-            "date": "2021-11-28"
-          },
-          {
-            "value": 385739,
-            "date": "2021-11-29"
-          },
-          {
-            "value": 393994,
-            "date": "2021-11-30"
-          },
-          {
-            "value": 397642,
-            "date": "2021-12-01"
-          },
-          {
-            "value": 405511,
-            "date": "2021-12-02"
-          },
-          {
-            "value": 428785,
-            "date": "2021-12-03"
-          },
-          {
-            "value": 440362,
-            "date": "2021-12-04"
-          },
-          {
-            "value": 419162,
-            "date": "2021-12-05"
-          },
-          {
-            "value": 388623,
-            "date": "2021-12-06"
-          },
+          
           {
             "value": 398498,
-            "date": "2021-12-07"
-          },
-          {
-            "value": 408247,
-            "date": "2021-12-08"
-          },
-          {
-            "value": 418724,
-            "date": "2021-12-09"
-          },
-          {
-            "value": 438672,
-            "date": "2021-12-10"
-          },
-          {
-            "value": 449891,
+            "value1": 308498,
+            "value2": 368498,
             "date": "2021-12-11"
           },
           {
-            "value": 424334,
+            "value": 508247,
+            "value1": 398498,
+            "value2": 428498,
             "date": "2021-12-12"
           },
           {
-            "value": 120379,
+            "value": 418724,
+            "value1": 328498,
+            "value2": 398498,
             "date": "2021-12-13"
+          },
+          {
+            "value": 438672,
+            "value1": 398498,
+            "value2": 498498,
+            "date": "2021-12-14"
+          },
+          {
+            "value": 349891,
+            "value1": 398498,
+            "value2": 298498,
+            "date": "2021-12-15"
+          },
+          {
+            "value": 404334,
+            "value1": 328498,
+            "value2": 388498,
+            "date": "2021-12-16"
+          },
+          {
+            "value": 220379,
+            "value1": 190379,
+            "value2": 170379,
+            "date": "2021-12-17"
           }
         ];
         const barData = {
@@ -266,7 +245,9 @@ export default {
           unit:'次数',
           xData:data.map(item=>item.date),
           seriesData:[
-            {name:"打印数",data:data.map(item=>item.value)}
+            {name:"总数",data:data.map(item=>item.value)},
+            {name:"报损",data:data.map(item=>item.value1)},
+            {name:"用完",data:data.map(item=>item.value2)}
           ]
         }
         // console.log(echartData);
