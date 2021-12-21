@@ -74,7 +74,7 @@ export default {
         {type:'_id',label:'ID'},
         {type:'tm_sn',label:'设备编号'},
         {type:'s_name',label:'所属门店'},
-        {type:'tm_key',label:'设备KEY'},
+        // {type:'tm_key',label:'设备KEY'},
         {type:'c_create_time',label:'创建时间'},
         {type:'tm_status',label:'在线状态',switchStatus:true,activeText:"在线",inactiveText:"离线"},
         {type:'c_valid',label:'状态',switch:true},
@@ -146,11 +146,12 @@ export default {
         type:"select",
         options:[{label:'在线',value:1},{label:'离线',value:0}],
         label:"设备状态",
-      },{
-        prop:'tm_key',
-        type:"input",
-        label:"设备Key"
       },
+      // {
+      //   prop:'tm_key',
+      //   type:"input",
+      //   label:"设备Key"
+      // },
       ]
     },
 
@@ -249,7 +250,7 @@ export default {
         if(prop=='c_valid') this.switchDevice(item);
         else{
           this.operateModel = item;
-          console.log(item);
+          // console.log(item);
           this.submitForm("update")
         };
       }

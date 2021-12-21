@@ -124,7 +124,7 @@ export default {
           type:"select",
           options:[
             {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},{label:'保温桶',value:8},
           ], 
           label:"物料状态",
         },

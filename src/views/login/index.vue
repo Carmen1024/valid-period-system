@@ -111,10 +111,10 @@ export default {
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'u_pass') {
+      if (this.passwordType === 'password') {
         this.passwordType = ''
       } else {
-        this.passwordType = 'u_pass'
+        this.passwordType = 'password'
       }
       this.$nextTick(() => {
         this.$refs.u_pass.focus()

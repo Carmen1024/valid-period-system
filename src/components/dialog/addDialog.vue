@@ -223,7 +223,7 @@
                 v-model="transferKey"
                 @input="changeTransferKey"
               ></el-input>
-              <span style="margin-left:10px;">{{item.unitTip || '已选择'}}：{{formModel[item.prop].length}} {{item.unit || ''}}</span>
+              <span style="margin-left:10px;">{{item.unitTip || '已选择'}}：{{formModel[item.prop] ? formModel[item.prop].length : 0}} {{item.unit || ''}}</span>
               <el-transfer 
                 :titles="['可选择', '已选择']"
                 v-model="formModel[item.prop]" 
@@ -391,7 +391,7 @@ export default {
         }
       },
       filterFun(query, item) {
-        console.log(query, item)
+        // console.log(query, item)
       },
       changeTransferKey(val){
         this.$emit("resetTransferByKey",val);

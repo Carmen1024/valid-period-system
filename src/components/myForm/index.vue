@@ -224,7 +224,7 @@ export default {
       },
       // 基础校验 先写在这里
       validate(){
-        console.log(this.formModel.createTime,this.formModel.endTime);
+        // console.log(this.formModel.createTime,this.formModel.endTime);
         return new Promise((resolve,reject)=>{
             if(this.formModel.createTime 
                 && this.formModel.endTime 

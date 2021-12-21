@@ -58,3 +58,11 @@ export function supervisorQueryValid(data){
       data
     })
 }
+
+export function supervisorInsertBatch(data){
+  return request({
+      url: '/supervisor/insert_batch',
+      method: 'post',
+      data
+    })
+}

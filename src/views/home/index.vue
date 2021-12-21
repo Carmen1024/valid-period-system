@@ -1,6 +1,5 @@
 <template>
   <div class="home-container">
-    <!-- <div class="home-text"> {{ name }},欢迎进入茶百道效期管理系统！</div> -->
     <div class="home-msg">
       <div v-for="(item,index) in tips" :key="index">
         <span>{{ item.label }}</span>
@@ -19,8 +18,6 @@
 import { mapGetters } from 'vuex'
 import echartLine from '@/components/ecahrts/echartLine'
 import dvRank from '@/components/datav/dvRank';
-import { printHistoryQuery } from '@/api/print';
-import { getContent } from '@/utils/dataParams';
 import EchartBar from '@/components/ecahrts/echartBar.vue';
 
 export default {
@@ -90,7 +87,7 @@ export default {
               "name": "茶百道广州GOGO新天地店"
             }
           ],
-          unit: '家',
+          unit: '次',
           waitTime:3000,
           rowNum:9,
       },
@@ -187,7 +184,7 @@ export default {
             }
         ],
       }
-      console.log(lineData);
+      // console.log(lineData);
       // console.log(echartData);
       this.lineData = lineData;
     },

@@ -4,6 +4,7 @@
       ruleForm="selectSupervisor"
       :formData="formData"
       :formModel="formModel"
+      :handles="formHandle"
       @addFun="importSupervisor"
       @selectFun="selectSupervisor"
       @cancelFun="cancelMethod"
@@ -11,7 +12,7 @@
      <add-dialog 
       ref='operateSupervisor'
       ruleForm="addSupervisor"
-      width="60%"
+      width="1050px"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
@@ -23,7 +24,7 @@
      <add-dialog 
       ref='importSupervisor'
       ruleForm="importSupervisor"
-      width="60%"
+      width="1050px"
       title="批量导入用户"
       addDialogTip="督导只能选择有效状态的用户，如查询不到请先到用户管理页面确认用户状态~"
       :formData=userFormData
@@ -51,7 +52,7 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { supervisorQuery,supervisorInsert,supervisorUpdate,supervisorValid,supervisorDelete } from '@/api/supervisor';
+import { supervisorQuery,supervisorInsert,supervisorUpdate,supervisorValid,supervisorDelete,supervisorInsertBatch } from '@/api/supervisor';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 import { getRegionCode } from '@/utils/region';
 import { storeQuery } from '@/api/store';
@@ -109,6 +110,11 @@ export default {
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
       ],
+      formHandle:[
+          {buttonStyle:"primary",label:"搜索",type:"select"},
+          {label:"批量导入",type:"add"},
+          {label:"清空",type:"cancel"}
+      ]
 
     }
   },
@@ -132,11 +138,11 @@ export default {
         },
         {
           prop:'reg_id',
-          type:"cascader",
+          type:"select",
           label:"所属区域",
           options:this.regionList,
           // filterable:true,
-          props:{"value":'_id',"label":'rg_name'},
+          // props:{"value":'_id',"label":'rg_name'},
         },
         {
           prop:'c_valid',
@@ -160,11 +166,11 @@ export default {
       return [
         {
           prop:'reg_id',
-          type:"cascader",
+          type:"select",
           label:"所属区域",
           options:this.regionList,
           // filterable:true,
-          props:{"value":'_id',"label":'rg_name'},
+          // props:{"value":'_id',"label":'rg_name'},
         },
         {
           prop:'s_ids',
@@ -208,7 +214,9 @@ export default {
     // 获取市级代码
     getRegionList(){
       getRegionCode("").then(data=>{
-        this.regionList = data;
+        this.regionList = data.map(item=>{
+          return {value:item._id,label:item.rg_name}
+        });
       });
     },
     getStoreListByName(val){
@@ -244,11 +252,13 @@ export default {
     },
     //批量导入用户成为督导
     importSupervisor(){
+      this.userModel.u_ids=[];
       this.$refs.importSupervisor.dialogVisible = true;
     },
     // 编辑督导
     editSupervisor(item){
-      // console.log("响应编辑");
+      item.reg_id = item.reg_id || "";
+      item.s_ids = item.s_ids || [];
       this.operateModel = item;
       // console.log(item);
       this.$refs.operateSupervisor.dialogVisible = true;
@@ -320,12 +330,11 @@ export default {
     // 提交
     submitForm(){
 
-      let operateModel = this.operateModel
       // 编辑
       const params = getDataParams({
         "#eq":["_id"],
         "#set":["reg_id","s_ids"]
-        },operateModel);
+        },this.operateModel);
       supervisorUpdate(params).then(data => {
         this.selectSupervisor();
         this.$message({
@@ -337,7 +346,14 @@ export default {
 
     },
     submitUserForm(){
-      console.log(this.userModel);
+      supervisorInsertBatch(this.userModel).then(data => {
+        this.selectSupervisor();
+        this.$message({
+          type: 'success',
+          message: '导入用户完成!'
+        });
+        this.$refs.importSupervisor.dialogVisible = false;
+      })
     },
     // 清空
     cancelMethod(){

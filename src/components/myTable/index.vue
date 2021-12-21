@@ -100,7 +100,7 @@ export default {
   computed:{
     handleWidth:function(){
       const width = this.handles.length * 100;
-      console.log(this.handles.length,width);
+      // console.log(this.handles.length,width);
       return width;
     }
   },

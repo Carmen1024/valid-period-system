@@ -20,12 +20,20 @@
     <my-table 
       :tableData=list 
       :columnList=columnList 
+      :handles="handle"
       @handleFun = "handleMethod"
     />
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
      />
+    <description-dialog 
+      ref="printDescription" 
+      :descriptModel="descriptModel"
+      :descriptions="descripOptions"
+      :tableList="deviceList"
+      title = "门店设备详情"
+    />
 
   </div>
 </template>
@@ -39,13 +47,18 @@ import { storeQuery,storeInsert,storeUpdate,storeValid,storeDelete } from '@/api
 import { classifyQueryAll } from '@/api/sort';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 import { getRegionCode } from '@/utils/region';
+import descriptionDialog from '@/components/dialog/descriptionTableDialog';
+import { printerQuery } from '@/api/print';
+import { deviceQuery } from '@/api/device';
+
 
 export default {
   components:{
     myForm,
     addDialog,
     myTable,
-    pagination
+    pagination,
+    descriptionDialog
   },
   data() {
     return {
@@ -88,6 +101,25 @@ export default {
         {type:'c_create_time',label:'创建时间',width:220},
         {type:'c_valid',label:'状态',switch:true},
       ],
+      handle:[
+        {type:'edit',label:'编辑'},
+        {type:'delete',label:'删除'},
+        {type:'deviceDetail',label:'设备详情'}
+      ],
+      descriptModel:{},
+      descripOptions:[
+        {type:'_id',label:'ID',span:2},
+        {type:'s_city_code',label:'市级代码'},
+        {type:'s_code',label:'门店编码'},
+        {type:'s_name',label:'门店名称'},
+        {type:'s_addr',label:'门店地址'},
+        {type:'c_create_time',label:'创建时间'},
+      ],
+      deviceList:[
+
+      ],
+      deviceData:null,
+      printData:null
     }
   },
   computed:{
@@ -98,14 +130,6 @@ export default {
           type:"input",
           label:"ID"
         },
-        // {
-        //   prop:'s_city_code',
-        //   type:"select",
-        //   label:"市级代码",
-        //   options:this.RegionCodeList,
-        //   filterable:true,
-        //   props:{"value":'rg_code',"label":'rg_name'},
-        // },
         {
           prop:'c_valid',
           type:"select",
@@ -158,7 +182,7 @@ export default {
         },
         {
           prop:'s_city_code',
-          type:"cascader",
+          type:"select",
           label:"门店区域",
           options:this.RegionCodeList,
           props:{"value":'rg_code',"label":'rg_name'},
@@ -272,6 +296,73 @@ export default {
       if(type==='switch'){
         this.switchStore(item);
       }
+      if(type==='deviceDetail'){
+        this.showDeviceDetail(item);
+      }
+    },
+    selectDevice(s_id){
+      this.deviceData = [];
+      const dataParams = getPageParams({"#eq":["s_id"]},{ s_id },10,0);
+      return new Promise((resolve, reject) => {
+        deviceQuery(dataParams).then(data => {
+          this.deviceData = getContent(data).map(item=>{
+            item.tm_status = item.tm_status==1 ? "在线":"离线";
+            item.c_valid = item.c_valid ? "有效":"无效";
+            return item;
+          });
+          resolve();
+        })
+      })
+
+    },
+    selectPrinter(s_id){
+      this.printData = [];
+      const dataParams = getPageParams({"#eq":["s_id"]},{ s_id },10,0);
+      return new Promise((resolve, reject) => {
+        printerQuery(dataParams).then(data => {
+          // return getContent(data);
+          this.printData = getContent(data).map(item=>{
+            item.pt_status = item.pt_status==1 ? "在线":"离线";
+            item.c_valid = item.c_valid ? "有效":"无效";
+            return item;
+          });
+          resolve();
+        })
+      });
+
+    },
+    async showDeviceDetail(item){
+      //根据_id获取设备详情
+        this.descriptModel = item;
+        this.$refs.printDescription.dialogVisible = true;
+
+        await this.selectPrinter(item._id);
+        await this.selectDevice(item._id);        
+        this.deviceList=[
+          {
+            className:"printList",
+            title:"打印机一览",
+            columnList:[
+              {type:'_id',label:'ID'},
+              {type:'pt_sn',label:'打印机序列号'},
+              {type:'pt_key',label:'打印机密钥'},
+              {type:'pt_status',label:'在线状态'},
+              {type:'c_valid',label:'状态'},
+            ],
+            data:this.printData
+          },
+          {
+            className:"deviceList",
+            title:"其他设备一览",
+            columnList:[
+              {type:'_id',label:'ID'},
+              {type:'tm_sn',label:'设备编号'},
+              {type:'tm_status',label:'在线状态'},
+              {type:'c_valid',label:'状态'},
+            ],
+            data:this.deviceData
+          }
+        ];
     },
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
@@ -329,13 +420,14 @@ export default {
       
     },
     changeModel(data,prop){
-      // console.log(data,prop);
       if(prop === 's_city_code'){
         const { s_province,s_city,s_district } = this.regionCodeJson[data]
         this.operateModel.s_province = s_province;
         this.operateModel.s_city = s_city;
         this.operateModel.s_district = s_district;
       }
+      // console.log(data,prop,this.operateModel);
+
     }
 
   }

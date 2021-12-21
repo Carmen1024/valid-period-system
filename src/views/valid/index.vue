@@ -122,7 +122,7 @@ export default {
           label:"物料状态",
           options:[
             {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},{label:'保温桶',value:8},
           ],  
         },
         {
@@ -160,7 +160,7 @@ export default {
           label:"物料状态",
           options:[
             {label:'室温',value:1},{label:'冷藏',value:2},{label:'冷冻',value:3},{label:'常温密封',value:4},
-            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},
+            {label:'其它',value:5},{label:'台面',value:6},{label:'解冻',value:7},{label:'保温桶',value:8},
           ],  
           rules:[
             { required: true, message: '请选择物料名', trigger: 'blur' },
@@ -229,7 +229,7 @@ export default {
           return {value:item._id,label:item.m_name};
         });
         // resolve();
-        console.log(this.materialList);
+        // console.log(this.materialList);
       });
       this.selectValid();
     },
