@@ -17,7 +17,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
-
+      :page-index="pageIndex"
      />
      <description-dialog 
       ref="printDescription" 
@@ -153,7 +153,7 @@ export default {
   },
   mounted() {
     this.getClfList();
-    this.selectPrintHistory(false);
+    this.selectPrintHistory({refresh:false});
   },
   methods: {
         // 获取物料分类
@@ -180,12 +180,13 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectPrintHistory(false);
+      this.selectPrintHistory({refresh:false});
     },
     // 搜索
-    selectPrintHistory(refresh){
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectPrintHistory(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       printHistoryQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);

@@ -298,7 +298,7 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","s_id":null,"tm_key": "",tm_status:null,tm_sn:"", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","s_id":null,"c_valid": "", "tm_status": null,"tm_sn": "", "endTime": "", "c_valid": null};
       
     }
 

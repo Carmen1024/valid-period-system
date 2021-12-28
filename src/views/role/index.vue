@@ -272,7 +272,7 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","role_id":null,"m_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","c_name":"","c_desc":"","createTime": "", "endTime": "", "c_valid": null};
       
     }
 

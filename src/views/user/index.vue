@@ -11,7 +11,7 @@
      <add-dialog 
       ref='operateUser'
       ruleForm="addUser"
-      width="20%"
+      width="30%"
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
@@ -51,7 +51,7 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","u_desc":null,"u_name": "","u_phone": "", "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "","u_name": "","u_phone": "", "createTime": "", "endTime": "", "c_valid": null},
       selectRule: {
         "#eq":["_id","c_valid","u_desc"],
         "#like":["u_name","u_phone"],
@@ -101,12 +101,6 @@ export default {
           type:"input",
           label:"手机号"
         },
-        // {
-        //   prop:'u_desc',
-        //   type:"select",
-        //   label:"用户类型",
-        //   options:this.userList,
-        // },
         {
           prop:'c_valid',
           type:"select",
@@ -127,37 +121,27 @@ export default {
     },
     operateFormData:function(){
       return [{
-        prop:'u_name',
-        type:"input",
-        label:"用户名",
-        style:'width:100%',
-        rules:[
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-        ]
-      },{
-        prop:'u_phone',
-        type:"input",
-        label:"手机号",
-        style:'width:100%',
-        rules:[
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-        ]
-      },{
-        prop:'u_pass',
-        type:"input",
-        label:"初始密码",
-        style:'width:100%',
-      },
-      // {
-      //   prop:'u_desc',
-      //   type:"checkbox",
-      //   label:"用户类型",
-      //   options:this.userList,
-      //   style:"width:100%;height:auto",
-      //   rules:[
-      //     { required: true, message: '请选择用户类型', trigger: 'blur' },
-      //   ]
-      // }
+          prop:'u_name',
+          type:"input",
+          label:"用户名",
+          style:'width:100%',
+          rules:[
+            { required: true, message: '请输入用户名', trigger: 'blur' },
+          ]
+        },{
+          prop:'u_phone',
+          type:"input",
+          label:"手机号",
+          style:'width:100%',
+          rules:[
+            { required: true, message: '请输入手机号', trigger: 'blur' },
+          ]
+        },{
+          prop:'u_pass',
+          type:"input",
+          label:"初始密码",
+          style:'width:100%',
+        }
       ]
     },
 
@@ -184,7 +168,7 @@ export default {
     // 新增
     addUser(){
       // console.log("响应新增");
-      this.operateModel = {u_phone:'',u_name:'',u_desc:"",u_pass:""};
+      this.operateModel = {u_phone:'',u_name:'',u_pass:""};
       this.$refs.operateUser.dialogVisible = true;
       this.operateTitle='新增用户';
     },
@@ -268,7 +252,7 @@ export default {
         })
       }else{
         // 编辑
-        const params = getDataParams({"#eq":["_id"],"#set":["m_name","user_id"]},this.operateModel);
+        const params = getDataParams({"#eq":["_id"],"#set":["u_name","u_phone"]},this.operateModel);
         userUpdate(params).then(data => {
           this.selectUser();
           this.$message({
@@ -282,7 +266,7 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","user_id":null,"m_name": "", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","u_name": "","u_phone": "", "createTime": "", "endTime": "", "c_valid": null};
       
     }
 

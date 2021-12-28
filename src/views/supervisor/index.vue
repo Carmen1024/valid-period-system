@@ -71,7 +71,7 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","u_name": "","u_phone":"","reg_id":"", "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "","u_name": "","u_phone":"","reg_id":null, "createTime": "", "endTime": "", "c_valid": null},
       selectRule: {
         "#eq":["_id","c_valid","reg_id"],
         "#like":["u_name","u_phone"],
@@ -365,7 +365,7 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","u_name": "","u_phone":"","reg_id":"", "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","u_name": "","u_phone":"","reg_id":null, "createTime": "", "endTime": "", "c_valid": null};
     }
 
   }

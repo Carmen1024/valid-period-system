@@ -1,15 +1,15 @@
 <template>
   <div class="home-container">
     <div class="home-msg">
-      <div v-for="(item,index) in tips" :key="index">
-        <span>{{ item.label }}</span>
-        <span>{{ item.value }}</span>
-      </div>
+      <div><span>全国门店</span><span>{{storeCount}}</span></div>
+      <div><span>物料种类</span><span>{{materialCount}}</span></div>
+      <div><span>打印记录</span><span>{{printCount}}</span></div>
+      <div><span>督导数量</span><span>{{supervisorCount}}</span></div>
     </div>
     <div class="home-content">
       <echart-line :echartData="lineData" />
       <echart-bar :echartData="barData" />
-      <dv-rank :dv-data="dvData" :dv-style="dvStyle" title="今日全国门店实时打印总数排行" />
+      <dv-rank :dv-data="dvData" :dv-style="dvStyle" title="全国门店实时打印总数排行" />
     </div>
   </div>
 </template>
@@ -19,6 +19,12 @@ import { mapGetters } from 'vuex'
 import echartLine from '@/components/ecahrts/echartLine'
 import dvRank from '@/components/datav/dvRank';
 import EchartBar from '@/components/ecahrts/echartBar.vue';
+import { getPageParams, getPageTotal } from '@/utils/dataParams';
+import { printHistoryQuery } from '@/api/print';
+import { materialQuery } from '@/api/material';
+import { supervisorQuery } from '@/api/supervisor';
+import { storeQuery } from '@/api/store';
+
 
 export default {
   name: 'Home',
@@ -91,12 +97,10 @@ export default {
           waitTime:3000,
           rowNum:9,
       },
-      tips:[
-        {label:"全国门店",value:'5371'},
-        {label:"今日有效物料",value:'79'},
-        {label:"今日物料效期",value:'111'},
-        {label:"打印订单",value:'15001'},
-      ],
+      storeCount:null,
+      materialCount:null,
+      printCount:null,
+      supervisorCount:null,
       dvStyle:"width:100%;height:100%;",
       lineData:{},
       barData:{},
@@ -105,9 +109,41 @@ export default {
   mounted() {
     this.getPrintList();
     this.getPrintByDay();
+    this.getMaterialCount();
+    this.getPrintCount();
+    this.getStoreCount();
+    this.getSupervisorCount();
+
   },
   methods:{
 
+    // 获取订单数
+    getPrintCount(){
+      const dataParams = getPageParams({},{},10,0,true);
+      printHistoryQuery(dataParams).then(data => {
+        this.printCount = getPageTotal(data);
+        console.log(this.printCount);
+      })
+    },
+    // 获取物料总数
+    getMaterialCount(){
+      const dataParams = getPageParams({},{},10,0,true);
+      materialQuery(dataParams).then(data => {
+        this.materialCount = getPageTotal(data);
+      })
+    },
+    getSupervisorCount(){
+      const dataParams = getPageParams({},{},10,0,true);
+      supervisorQuery(dataParams).then(data => {
+        this.supervisorCount = getPageTotal(data);
+      })
+    },
+    getStoreCount(){
+      const dataParams = getPageParams({},{},10,0,true);
+      storeQuery(dataParams).then(data => {
+        this.storeCount = getPageTotal(data);
+      })
+    },
     // 临时用一下
     getPrintList(){
 
