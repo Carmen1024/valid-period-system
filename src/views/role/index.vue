@@ -25,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -141,15 +142,15 @@ export default {
 
   },
   mounted() {
-    this.selectRole(false);
+    this.selectRole({refresh:false});
     // this.getPowerList();
   },
   methods: {
     // 搜索
-    selectRole(refresh){
-      // console.log(refresh);
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectRole(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       // console.log(this.formModel,dataParams);
       roleQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
@@ -240,7 +241,7 @@ export default {
       else 
         this.pageIndex = val;
 
-      this.selectRole(false);
+      this.selectRole({refresh:false});
     },
     // 提交
     submitForm(){

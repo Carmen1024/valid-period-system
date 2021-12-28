@@ -24,6 +24,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -210,10 +211,10 @@ export default {
   },
   methods: {
     // 搜索
-    selectValid(refresh){
-      // console.log(this.clfObj);
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectValid(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       // console.log(this.formModel,dataParams);
       validQuery(dataParams).then(data => {
         this.list = getContent(data);
@@ -221,17 +222,18 @@ export default {
       })
     },
     // 获取归属分类
-    async getValidList(){
-      await materialQueryAll().then(data => {
+    getValidList(){
+      materialQueryAll().then(data => {
         // this.materialList = getContent(data);
         this.materialList = getContent(data).map(item => {
           this.materialJson[item._id] = item.m_name;
           return {value:item._id,label:item.m_name};
         });
         // resolve();
+        return Promise.resolve();
         // console.log(this.materialList);
       });
-      this.selectValid();
+      this.selectValid({refresh:false});
     },
     // 新增
     addValid(){
@@ -308,7 +310,7 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectValid(false);
+      this.selectValid({refresh:false});
     },
     // 提交 
     submitForm(){

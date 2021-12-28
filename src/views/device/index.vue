@@ -26,6 +26,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -158,15 +159,16 @@ export default {
   },
   created() {
     // this.getStoreList();
-    this.selectDevice(false);
+    this.selectDevice({refresh:false});
   },
   methods: {
     // 搜索
-    selectDevice(refresh){
-      // console.log(refresh);
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
-      // console.log(this.formModel,dataParams);
+    selectDevice(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
+      
       deviceQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
           item.store_name = this.storeJson[item.s_id];
@@ -262,7 +264,7 @@ export default {
       else 
         this.pageIndex = val;
 
-      this.selectDevice(false);
+      this.selectDevice({refresh:false});
     },
     // 提交
     submitForm(type="add"){

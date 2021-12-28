@@ -26,6 +26,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
     <description-dialog 
       ref="printDescription" 
@@ -96,9 +97,9 @@ export default {
         {type:'_id',label:'ID',width:220},
         {type:'s_city_code',label:'市级代码'},
         {type:'s_code',label:'门店编码'},
-        {type:'s_name',label:'门店名称'},
+        {type:'s_name_k',label:'门店名称'},
         {type:'s_addr',label:'门店地址'},
-        {type:'c_create_time',label:'创建时间',width:220},
+        {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
       ],
       handle:[
@@ -200,7 +201,7 @@ export default {
   },
   mounted() {
     this.getRegionCodeList();
-    this.selectStore(false);
+    this.selectStore({refresh:false});
 
   },
   methods: {
@@ -367,12 +368,13 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectStore(false);
+      this.selectStore({refresh:false});
     },
     // 搜索
-    selectStore(refresh){
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectStore(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       storeQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);

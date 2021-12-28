@@ -23,7 +23,7 @@ export function getDataParams(rule,data){
 export function getPageParams(rule,data,pageSize,pageIndex,refresh=true){
     let dataParams = {"#content":getDataParams(rule,data)};
     
-    if(refresh) dataParams["#cache"] = "refresh"; //强制刷新后台缓存
+    if(refresh || refresh=="true") dataParams["#cache"] = "refresh"; //强制刷新后台缓存
     
     dataParams["#content"]["#size"] = pageSize || 10;
     dataParams["#content"]["#start"] = pageIndex || 0;

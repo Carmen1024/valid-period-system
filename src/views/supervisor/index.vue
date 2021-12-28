@@ -42,6 +42,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -179,7 +180,7 @@ export default {
           style:'width:100%',
           options:this.storeList,
           total:this.storeTotal,
-          placeholder:'请输入关键字搜索门店，例如：成都',
+          placeholder:'请输入关键字,并按下回车键',
           transferTip:'只展示分页已选择门店',
           style:"width:100%;",
           unitTip:'已选择门店',
@@ -195,7 +196,7 @@ export default {
           style:'width:100%',
           options:this.userList,
           total:this.userTotal,
-          placeholder:'可输入手机号查询用户',
+          placeholder:'请输入手机号,并按下回车键',
           transferTip:'只展示分页已选择用户',
           style:"width:100%;",
           unitTip:'已选择用户',
@@ -204,7 +205,7 @@ export default {
       }
   },
   mounted() {
-    this.selectSupervisor(false);
+    this.selectSupervisor({refresh:false});
     this.getRegionList();
     this.getStoreList();
     this.getUserList();
@@ -223,7 +224,7 @@ export default {
       this.storeName = val;
       this.getStoreList();
     },
-    getStoreList(storeIndex=this.storeIndex){
+    getStoreList(storeIndex){
       // 搜索
       const selectRule = {"#like":["s_name"]};
       const formModel = {"s_name":this.storeName};
@@ -235,7 +236,7 @@ export default {
         this.storeTotal = getPageTotal(data);
       })
     },
-    getUserList(userIndex=this.userIndex){
+    getUserList(userIndex){
       const selectRule = {"#eq": ["c_valid"],"#like":["u_phone"]};
       const formModel = {"u_phone":this.userPhone,"c_valid":true};
       const dataParams = getPageParams(selectRule,formModel,this.userSize,--userIndex,true);
@@ -261,6 +262,11 @@ export default {
       item.s_ids = item.s_ids || [];
       this.operateModel = item;
       // console.log(item);
+      // if(this.storeIndex!=1 || this.storeName!=""){
+      //   this.storeIndex=1;
+      //   this.storeName="";
+      //   this.getStoreList();
+      // }
       this.$refs.operateSupervisor.dialogVisible = true;
       this.operateTitle=`编辑督导（手机号: ${item.u_phone ||''})`;
     },
@@ -315,12 +321,14 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectSupervisor(false);
+      console.log(this.pageSize);
+      this.selectSupervisor({refresh:false});
     },
     // 搜索
-    selectSupervisor(refresh){
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectSupervisor(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       supervisorQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);

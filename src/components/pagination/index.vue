@@ -17,8 +17,6 @@ export default {
 
     data() {
         return {
-            pageSize:10,
-            pageIndex:1,
         }
     },
     props:{
@@ -30,9 +28,17 @@ export default {
             type:String,
             default:'total, sizes, prev, pager, next, jumper'
         },
+        pageSize:{
+            type:Number,
+            default:10
+        },
         pageSizes:{
             type:Array,
             default:() => [10, 20, 50]
+        },
+        pageIndex:{
+            type:Number,
+            default:1
         }
         
     },
@@ -43,6 +49,12 @@ export default {
             },
             deep:true
         },
+        pageIndex:{
+            handler: function (val, oldVal) {
+
+            },
+            deep:true
+        }
     },
     methods:{
         handleSizeChange(val) {

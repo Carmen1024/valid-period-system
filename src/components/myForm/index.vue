@@ -214,7 +214,7 @@ export default {
         this.$refs[this.ruleForm].validate((valid) => {
           if (valid) {
             this.validate().then(data=>{
-              this.$emit("selectFun","false");
+              this.$emit("selectFun",{ refresh:"false",newIndex:1 });
             })
           } else {
             console.log('error submit!!');

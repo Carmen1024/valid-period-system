@@ -25,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -161,15 +162,16 @@ export default {
     },
 
   },
-  created() {
-    this.getUserList();
+  mounted() {
+    this.selectUser({refresh:false});
   },
   methods: {
     // 搜索
-    selectUser(refresh){
+    selectUser(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
       // console.log(refresh);
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       // console.log(this.formModel,dataParams);
       userQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
@@ -178,19 +180,6 @@ export default {
         });
         this.total = getPageTotal(data);
       })
-    },
-    // 获取归属分类
-    getUserList(){
-      // classifyQueryAll().then(data => {
-      //   // this.userList = getContent(data);
-      //   this.userList = getContent(data).map(item => {
-      //     this.userJson[item._id] = item.user_name;
-      //     return {value:item._id,label:item.user_name};
-      //   });
-      //   // resolve();
-      // }).then(()=>{
-        this.selectUser(false);
-      // })
     },
     // 新增
     addUser(){
@@ -262,7 +251,7 @@ export default {
       else 
         this.pageIndex = val;
 
-      this.selectUser(false);
+      this.selectUser({refresh:false});
     },
     // 提交
     submitForm(){

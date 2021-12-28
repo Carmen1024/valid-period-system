@@ -25,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -148,7 +149,7 @@ export default {
   },
   mounted() {
     this.getRegionList();
-    this.selectArea(false);
+    this.selectArea({refresh:false});
   },
   methods: {
     // 搜索省市区代码
@@ -232,12 +233,13 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectArea(false);
+      this.selectArea({refresh:false});
     },
     // 搜索
-    selectArea(refresh){
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectArea(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       areaQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);

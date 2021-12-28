@@ -25,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -107,7 +108,7 @@ export default {
     }
   },
   mounted() {
-    this.selectSort(false);
+    this.selectSort({refresh:false});
   },
   methods: {
     // 新增
@@ -175,12 +176,13 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectSort(false);
+      this.selectSort({refresh:false});
     },
     // 搜索
-    selectSort(refresh){
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectSort(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       classifyQuery(dataParams).then(data => {
         this.list = getContent(data);
         this.total = getPageTotal(data);

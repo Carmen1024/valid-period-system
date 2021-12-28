@@ -38,6 +38,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -212,7 +213,7 @@ export default {
 
   },
   mounted(){
-    this.selectPrintTemp(false);
+    this.selectPrintTemp({refresh:false});
 
   },
   methods: {
@@ -227,9 +228,10 @@ export default {
       });
     },
     // 搜索
-    selectPrintTemp(refresh){
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectPrintTemp(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       // console.log(this.formModel,dataParams);
       printTempQuery(dataParams).then(data => {
         this.list = getContent(data);
@@ -311,7 +313,7 @@ export default {
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;
       else this.pageIndex = val;
-      this.selectPrintTemp(false);
+      this.selectPrintTemp({refresh:false});
     },
     // 提交
     submitForm(){

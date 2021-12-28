@@ -9,6 +9,7 @@
       @cancelFun="cancelMethod"
      />
      <add-dialog 
+      width="30%"
       ref='operateMaterial'
       ruleForm="addMaterial"
       :title='operateTitle'
@@ -24,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -121,6 +123,7 @@ export default {
         prop:'m_name',
         type:"input",
         label:"物料名",
+        style:"width:100%",
         rules:[
           { required: true, message: '请输入物料名', trigger: 'blur' },
         ]
@@ -128,6 +131,7 @@ export default {
         prop:'clf_id',
         type:"select",
         label:"归属分类",
+        style:"width:100%",
         options:this.clfList,
         filterable:true,
         props:{"value":'_id',"label":'clf_name'},
@@ -143,10 +147,10 @@ export default {
   },
   methods: {
     // 搜索
-    selectMaterial(refresh){
-      // console.log(refresh);
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectMaterial(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       // console.log(this.formModel,dataParams);
       materialQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
@@ -166,7 +170,7 @@ export default {
         });
         // resolve();
       }).then(()=>{
-        this.selectMaterial(false);
+        this.selectMaterial({refresh:false});
       })
     },
     // 新增
@@ -238,7 +242,7 @@ export default {
       else 
         this.pageIndex = val;
 
-      this.selectMaterial(false);
+      this.selectMaterial({refresh:false});
     },
     // 提交
     submitForm(){

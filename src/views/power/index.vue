@@ -25,6 +25,7 @@
     <pagination
       @pageChangeFun="paginationChange"
       :total="total"
+      :page-index="pageIndex"
      />
 
   </div>
@@ -138,14 +139,14 @@ export default {
 
   },
   created() {
-    this.selectPower(false);
+    this.selectPower({refresh:false});
   },
   methods: {
     // 搜索
-    selectPower(refresh){
-      // console.log(refresh);
-      const pageIndex = this.pageIndex - 1;
-      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,pageIndex,refresh);
+    selectPower(params={}){
+      let { refresh=true,newIndex=this.pageIndex } = params;
+      this.pageIndex = newIndex;
+      const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       // console.log(this.formModel,dataParams);
       powerQuery(dataParams).then(data => {
         this.list = getContent(data).map(item => {
@@ -225,7 +226,7 @@ export default {
       else 
         this.pageIndex = val;
 
-      this.selectPower(false);
+      this.selectPower({refresh:false});
     },
     // 提交
     submitForm(){

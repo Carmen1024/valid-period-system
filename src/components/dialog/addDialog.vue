@@ -221,7 +221,7 @@
                 class="selectKey"
                 :placeholder="item.placeholder || '请输入关键字'"
                 v-model="transferKey"
-                @input="changeTransferKey"
+                @change="changeTransferKey"
               ></el-input>
               <span style="margin-left:10px;">{{item.unitTip || '已选择'}}：{{formModel[item.prop] ? formModel[item.prop].length : 0}} {{item.unit || ''}}</span>
               <el-transfer 

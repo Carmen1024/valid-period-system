@@ -102,11 +102,10 @@ export default {
 </script>
 
 <style scoped lang='scss'>
-    // .timeUtl{
-    //     display: flex;
-    //     span{
-    //         padding: 0 5px;
-    //     }
-    // }
+    .timeUtl{
+        .el-input__inner{
+            text-align: center;
+        }
+    }
 
 </style>
