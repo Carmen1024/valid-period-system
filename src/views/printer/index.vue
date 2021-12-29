@@ -72,13 +72,13 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'s_name',label:'门店名称'},
         {type:'pt_sn',label:'打印机序列号'},
         {type:'pt_key',label:'打印机密钥'},
         {type:'c_create_time',label:'创建时间'},
         {type:'pt_status',label:'在线状态',switchStatus:true,activeText:"在线",inactiveText:"离线"},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },

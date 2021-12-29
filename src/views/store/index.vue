@@ -69,13 +69,12 @@ export default {
         "_id": "",
         "s_name": "",  //可选，门店名称
         "s_code": "",  //可选，门店编码
-        "s_addr":"",//门店地址
         "createTime": "", "endTime": "", "c_valid": null
       },
       selectRule: {
         "#eq":["_id","c_valid"],
         "#like":[
-          "s_name","s_code","s_addr"
+          "s_name","s_code"
         ],
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
@@ -93,13 +92,12 @@ export default {
       total:10,
       list: null,
       columnList:[
-        {type:'_id',label:'ID',width:220},
+        {type:'_id',label:'ID',width:300},
         {type:'s_city_code',label:'市级代码'},
         {type:'s_code',label:'门店编码'},
-        {type:'s_name',label:'门店名称'},
-        {type:'s_addr',label:'门店地址'},
+        {type:'s_name',label:'门店名称',width:260},
         {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
       handle:[
         {type:'edit',label:'编辑'},
@@ -108,11 +106,10 @@ export default {
       ],
       descriptModel:{},
       descripOptions:[
-        {type:'_id',label:'ID',span:2},
+        {type:'_id',label:'ID',width:300,span:2},
         {type:'s_city_code',label:'市级代码'},
         {type:'s_code',label:'门店编码'},
         {type:'s_name',label:'门店名称'},
-        {type:'s_addr',label:'门店地址'},
         {type:'c_create_time',label:'创建时间'},
       ],
       deviceList:[
@@ -145,11 +142,6 @@ export default {
           prop:'s_code',
           type:"input",
           label:"门店编码"
-        },
-        {
-          prop:'s_addr',
-          type:"input",
-          label:"门店地址"
         },
         {
           prop:'createTime',
@@ -189,12 +181,6 @@ export default {
           rules:[
             { required: true, message: '请选择门店区域获得市级代码', trigger: 'change' },
           ]
-        },
-        {
-          prop:'s_addr',
-          type:"input",
-          label:"门店地址",
-          style:"width:100%;"
         }]
     },
   },
@@ -230,7 +216,6 @@ export default {
         "_id": "",
         "s_name": "",  //可选，门店名称
         "s_code": "",  //可选，门店编码
-        "s_addr":"",//门店地址
         "s_province": "",  //必填，省
         "s_city": "",  //必填，市
         "s_district": "",  //必填，区
@@ -343,7 +328,7 @@ export default {
             className:"printList",
             title:"打印机一览",
             columnList:[
-              {type:'_id',label:'ID'},
+              {type:'_id',label:'ID',width:300},
               {type:'pt_sn',label:'打印机序列号'},
               {type:'pt_key',label:'打印机密钥'},
               {type:'pt_status',label:'在线状态'},
@@ -355,7 +340,7 @@ export default {
             className:"deviceList",
             title:"其他设备一览",
             columnList:[
-              {type:'_id',label:'ID'},
+              {type:'_id',label:'ID',width:300},
               {type:'tm_sn',label:'设备编号'},
               {type:'tm_status',label:'在线状态'},
               {type:'c_valid',label:'状态'},
@@ -415,7 +400,6 @@ export default {
         "_id": "",
         "s_name": "",  //可选，门店名称
         "s_code": "",  //可选，门店编码
-        "s_addr":"",//门店地址
         "createTime": "", "endTime": "", "c_valid": null
       };
       

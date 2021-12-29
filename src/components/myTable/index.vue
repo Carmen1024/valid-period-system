@@ -14,7 +14,7 @@
         :key='item.type + index'
         :prop="item.type"
         :label="item.label"
-         
+        :width="item.width"
         align="center"
         >
           <template slot-scope="scope">

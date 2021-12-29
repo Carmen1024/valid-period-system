@@ -219,16 +219,19 @@
             <div v-if="item.type==='transferandpage'" class="transferandpage">
               <div v-show="item.transferKey" class="transferKey">
                 <div class="transferCondition" v-for="condition in item.transferForm" :key="condition.prop">
-                  <el-select filterable
+                  <el-select filterable clearable="true"
                     v-if="condition.type=='select'"
                     v-model="item.transferModel[condition.prop]" 
                     :placeholder="condition.placeholder || '请选择'">
+                    <el-option 
+                      label="全部"
+                      :value="valueNull"
+                    />
                     <el-option 
                       v-for="(optionCondition,optionIndex) in condition.options"
                       :key="optionIndex"
                       :label="optionCondition.label"
                       :value="optionCondition.value"
-                      clearable
                     >
                     </el-option>
                   </el-select>
@@ -337,7 +340,8 @@ export default {
         formRule : {
             
         },
-        loading:false
+        loading:false,
+        valueNull:null
       }
     },
     watch: {

@@ -45,10 +45,9 @@
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">点我登录</el-button>
 
       <div class="tips">
-        <span>没有账号？先</span>
-        <router-link to="/register">去注册</router-link>
-        <!-- <span style="margin-right:20px;">u_phone: admin</span> -->
-        <!-- <span> u_pass: any</span> -->
+        <!-- <span>没有账号？先</span>
+        <router-link to="/register">去注册</router-link> -->
+        <span>账号问题请联系管理员</span>
       </div>
 
     </el-form>

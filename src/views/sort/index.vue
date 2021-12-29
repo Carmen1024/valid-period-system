@@ -100,10 +100,10 @@ export default {
       total:10,
       list: null,
       columnList:[
-        {type:'_id',label:'ID',width:220},
-        {type:'clf_name',label:'名称',width:200},
-        {type:'c_create_time',label:'创建时间',width:220},
-        {type:'c_valid',label:'状态',switch:true,width:200},
+        {type:'_id',label:'ID',width:300},
+        {type:'clf_name',label:'名称'},
+        {type:'c_create_time',label:'创建时间'},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },

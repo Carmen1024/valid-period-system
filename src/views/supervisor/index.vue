@@ -83,7 +83,7 @@ export default {
       storeList:[],
       storeName:"",
       storeModel:{
-        s_city_code:"",
+        s_city_code:null,
         s_name:""
       },
       storeIndex:1,
@@ -105,12 +105,12 @@ export default {
       total:10,
       list: null,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'u_name',label:'姓名'},
         {type:'u_phone',label:'电话'},
         {type:'ids',label:'管理门店数量'},
         {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
       formHandle:[
           {buttonStyle:"primary",label:"搜索",type:"select"},

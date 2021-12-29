@@ -75,12 +75,12 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'u_name',label:'用户名'},
         {type:'u_phone',label:'手机号'},
         // {type:'c_desc',label:'用户类型'},
         {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },
@@ -136,11 +136,6 @@ export default {
           rules:[
             { required: true, message: '请输入手机号', trigger: 'blur' },
           ]
-        },{
-          prop:'u_pass',
-          type:"input",
-          label:"密码",
-          style:'width:100%',
         }
       ]
     },
@@ -168,7 +163,7 @@ export default {
     // 新增
     addUser(){
       // console.log("响应新增");
-      this.operateModel = {u_phone:'',u_name:'',u_pass:""};
+      this.operateModel = {u_phone:'',u_name:'',u_pass:"cbdCBD"};
       this.$refs.operateUser.dialogVisible = true;
       this.operateTitle='新增用户';
     },

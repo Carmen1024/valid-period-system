@@ -79,12 +79,12 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'pt_save_type_desc',label:'模板类型'},
         {type:'pt_desc',label:'描述'},
         {type:'c_create_time',label:'创建时间'},
         {type:'pt_default',label:'是否默认',switch:true,activeText:"是",inactiveText:"否"},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
       handle:[
         {type:'edit',label:'编辑'},

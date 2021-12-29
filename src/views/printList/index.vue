@@ -68,7 +68,7 @@ export default {
       total:10,
       list: null,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'pt_h_sn',label:'打印序列号'},
         {type:'s_name',label:'门店名称'},
         {type:'m_name',label:'物料名称'},
@@ -79,7 +79,7 @@ export default {
       ],
       descriptModel:null,
       descripOptions:[
-        {type:'_id',label:'ID',span:2},
+        {type:'_id',label:'ID',width:300,span:2},
         {type:'s_name',label:'门店名称'},
         {type:'m_name',label:'物料名称'},
         {type:'clf_name',label:'物料分类'},

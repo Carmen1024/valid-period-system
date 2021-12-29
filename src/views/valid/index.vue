@@ -92,14 +92,14 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'m_t_name',label:'归属物料'},
         {type:'m_t_tag',label:'物料标签'},
         {type:'m_t_type_desc',label:'物料状态'},
         {type:'m_t_zl_time_desc',label:'质量效期'},
         {type:'m_t_fw_time_desc',label:'赏味效期'},
         {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },

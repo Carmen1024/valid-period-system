@@ -68,12 +68,12 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'u_name',label:'权限名'},
         {type:'c_desc',label:'权限路径'},
         {type:'c_desc',label:'权限描述'},
         {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },

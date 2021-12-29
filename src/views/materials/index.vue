@@ -70,12 +70,12 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'m_code',label:'物料编号'},
         {type:'m_name',label:'物料名称'},
         {type:'clf_name',label:'归属分类'},
         {type:'c_create_time',label:'创建时间'},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },

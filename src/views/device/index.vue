@@ -72,13 +72,13 @@ export default {
       pageIndex:1,
       total:10,
       columnList:[
-        {type:'_id',label:'ID'},
+        {type:'_id',label:'ID',width:300},
         {type:'tm_sn',label:'设备编号'},
         {type:'s_name',label:'所属门店'},
         // {type:'tm_key',label:'设备KEY'},
         {type:'c_create_time',label:'创建时间'},
         {type:'tm_status',label:'在线状态',switchStatus:true,activeText:"在线",inactiveText:"离线"},
-        {type:'c_valid',label:'状态',switch:true},
+        {type:'c_valid',label:'状态',switch:true,width:160},
       ],
     }
   },
