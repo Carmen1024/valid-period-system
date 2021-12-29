@@ -139,7 +139,7 @@ export default {
         },{
           prop:'u_pass',
           type:"input",
-          label:"初始密码",
+          label:"密码",
           style:'width:100%',
         }
       ]

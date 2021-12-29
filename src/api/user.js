@@ -94,11 +94,3 @@ export function userDelete(data){
       data
     })
 }
-
-// 物料-获取物料列表
-export function userQueryAll(){
-  return request({
-      url: '/user/query_all_valid',
-      method: 'post'
-    })
-}

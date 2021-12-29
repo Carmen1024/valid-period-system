@@ -66,3 +66,12 @@ export function supervisorInsertBatch(data){
       data
     })
 }
+
+// 用户-查询（督导绑定）
+export function userQueryAll(data){
+  return request({
+      url: '/supervisor/query_user_valid',
+      method: 'post',
+      data
+    })
+}

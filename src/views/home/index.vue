@@ -119,7 +119,7 @@ export default {
 
     // 获取订单数
     getPrintCount(){
-      const dataParams = getPageParams({},{},10,0,true);
+      const dataParams = getPageParams({},{},10,0,false);
       printHistoryQuery(dataParams).then(data => {
         this.printCount = getPageTotal(data);
         console.log(this.printCount);
@@ -127,19 +127,19 @@ export default {
     },
     // 获取物料总数
     getMaterialCount(){
-      const dataParams = getPageParams({},{},10,0,true);
+      const dataParams = getPageParams({},{},10,0,false);
       materialQuery(dataParams).then(data => {
         this.materialCount = getPageTotal(data);
       })
     },
     getSupervisorCount(){
-      const dataParams = getPageParams({},{},10,0,true);
+      const dataParams = getPageParams({},{},10,0,false);
       supervisorQuery(dataParams).then(data => {
         this.supervisorCount = getPageTotal(data);
       })
     },
     getStoreCount(){
-      const dataParams = getPageParams({},{},10,0,true);
+      const dataParams = getPageParams({},{},10,0,false);
       storeQuery(dataParams).then(data => {
         this.storeCount = getPageTotal(data);
       })
@@ -233,43 +233,43 @@ export default {
             "value": 398498,
             "value1": 308498,
             "value2": 368498,
-            "date": "2021-12-11"
+            "date": "2021-12-23"
           },
           {
             "value": 508247,
             "value1": 398498,
             "value2": 428498,
-            "date": "2021-12-12"
+            "date": "2021-12-24"
           },
           {
             "value": 418724,
             "value1": 328498,
             "value2": 398498,
-            "date": "2021-12-13"
+            "date": "2021-12-25"
           },
           {
             "value": 438672,
             "value1": 398498,
             "value2": 498498,
-            "date": "2021-12-14"
+            "date": "2021-12-26"
           },
           {
             "value": 349891,
             "value1": 398498,
             "value2": 298498,
-            "date": "2021-12-15"
+            "date": "2021-12-27"
           },
           {
             "value": 404334,
             "value1": 328498,
             "value2": 388498,
-            "date": "2021-12-16"
+            "date": "2021-12-28"
           },
           {
             "value": 220379,
             "value1": 190379,
             "value2": 170379,
-            "date": "2021-12-17"
+            "date": "2021-12-29"
           }
         ];
         const barData = {

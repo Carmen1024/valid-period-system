@@ -16,10 +16,9 @@
       :title='operateTitle'
       :formData=operateFormData
       :formModel=operateModel
-      :transferKey="storeName"
       @submitFun="submitForm"
       @resetTransfer="getStoreList"
-      @resetTransferByKey="getStoreListByName"
+      @resetTransferByKey="getStoreList"
      />
      <add-dialog 
       ref='importSupervisor'
@@ -29,10 +28,9 @@
       addDialogTip="督导只能选择有效状态的用户，如查询不到请先到用户管理页面确认用户状态~"
       :formData=userFormData
       :formModel=userModel
-      :transferKey="userPhone"
       @submitFun="submitUserForm"
       @resetTransfer="getUserList"
-      @resetTransferByKey="getUserListByPhone"
+      @resetTransferByKey="getUserList"
      />
     <my-table 
       :tableData=list 
@@ -53,11 +51,10 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { supervisorQuery,supervisorInsert,supervisorUpdate,supervisorValid,supervisorDelete,supervisorInsertBatch } from '@/api/supervisor';
+import { supervisorQuery,userQueryAll,supervisorUpdate,supervisorValid,supervisorDelete,supervisorInsertBatch } from '@/api/supervisor';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 import { getRegionCode } from '@/utils/region';
 import { storeQuery } from '@/api/store';
-import { userQuery } from '@/api/user';
 
 export default {
   components:{
@@ -71,20 +68,24 @@ export default {
       list: null,
       listLoading: true,
       // 搜索展示
-      formModel: {"_id": "","u_name": "","u_phone":"","reg_id":null, "createTime": "", "endTime": "", "c_valid": null},
+      formModel: {"_id": "","u_name": "","u_phone":"", "createTime": "", "endTime": "", "c_valid": null},
       selectRule: {
-        "#eq":["_id","c_valid","reg_id"],
+        "#eq":["_id","c_valid"],
         "#like":["u_name","u_phone"],
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
       // 新增
       operateTitle:'编辑督导信息',
-      operateModel:{"reg_id":"","s_ids":[]},
+      operateModel:{"s_ids":[]},
       regionList:[],
       // 搜索门店
       storeList:[],
       storeName:"",
+      storeModel:{
+        s_city_code:"",
+        s_name:""
+      },
       storeIndex:1,
       storeSize:10,
       storeTotal:0,
@@ -93,7 +94,7 @@ export default {
       userModel:{
         "u_ids": [],  //必填，用户ID
       },
-      userPhone:"",
+      userFormModel:{u_phone:"137"},
       userIndex:1,
       userSize:10,
       userTotal:0,
@@ -107,7 +108,7 @@ export default {
         {type:'_id',label:'ID'},
         {type:'u_name',label:'姓名'},
         {type:'u_phone',label:'电话'},
-        {type:'reg_name',label:'所属区域'},
+        {type:'ids',label:'管理门店数量'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
       ],
@@ -137,14 +138,14 @@ export default {
           type:"input",
           label:"电话",
         },
-        {
-          prop:'reg_id',
-          type:"select",
-          label:"所属区域",
-          options:this.regionList,
-          // filterable:true,
-          // props:{"value":'_id',"label":'rg_name'},
-        },
+        // {
+        //   prop:'reg_id',
+        //   type:"select",
+        //   label:"所属区域",
+        //   options:this.regionList,
+        //   // filterable:true,
+        //   // props:{"value":'_id',"label":'rg_name'},
+        // },
         {
           prop:'c_valid',
           type:"select",
@@ -165,14 +166,12 @@ export default {
     },
     operateFormData:function(){
       return [
-        {
-          prop:'reg_id',
-          type:"select",
-          label:"所属区域",
-          options:this.regionList,
-          // filterable:true,
-          // props:{"value":'_id',"label":'rg_name'},
-        },
+        // {
+        //   prop:'reg_id',
+        //   type:"select",
+        //   label:"所属区域",
+        //   options:this.regionList,
+        // },
         {
           prop:'s_ids',
           type:"transferandpage",
@@ -180,8 +179,14 @@ export default {
           style:'width:100%',
           options:this.storeList,
           total:this.storeTotal,
-          placeholder:'请输入关键字,并按下回车键',
+          // placeholder:'请输入关键字,并按下回车键',
           transferTip:'只展示分页已选择门店',
+          transferKey:true,
+          transferForm:[
+            {placeholder:"门店区域",prop:'s_city_code',options:this.regionList,type:"select"},
+            {placeholder:"门店名称",prop:'s_name'}
+          ],
+          transferModel:this.storeModel,
           style:"width:100%;",
           unitTip:'已选择门店',
           unit:'家'
@@ -200,7 +205,13 @@ export default {
           transferTip:'只展示分页已选择用户',
           style:"width:100%;",
           unitTip:'已选择用户',
-          unit:'人'
+          unit:'人',
+          // placeholder:'请输入关键字,并按下回车键',
+          transferKey:true,
+          transferForm:[
+            {placeholder:"请输入用户手机号",prop:'u_phone'}
+          ],
+          transferModel:this.userFormModel,
         }]
       }
   },
@@ -216,19 +227,14 @@ export default {
     getRegionList(){
       getRegionCode("").then(data=>{
         this.regionList = data.map(item=>{
-          return {value:item._id,label:item.rg_name}
+          return {value:item.rg_code,label:item.rg_name}
         });
       });
     },
-    getStoreListByName(val){
-      this.storeName = val;
-      this.getStoreList();
-    },
-    getStoreList(storeIndex){
+    getStoreList(storeIndex=this.storeIndex){
       // 搜索
-      const selectRule = {"#like":["s_name"]};
-      const formModel = {"s_name":this.storeName};
-      const dataParams = getPageParams(selectRule,formModel,this.storeSize,--storeIndex,true);
+      const selectRule = {"#eq":["s_city_code"],"#like":["s_name"]};
+      const dataParams = getPageParams(selectRule,this.storeModel,this.storeSize,--storeIndex,true);
       storeQuery(dataParams).then(data => {
         this.storeList = getContent(data).map(item=>{
           return {key:item._id,label:item.s_name};
@@ -236,37 +242,26 @@ export default {
         this.storeTotal = getPageTotal(data);
       })
     },
-    getUserList(userIndex){
-      const selectRule = {"#eq": ["c_valid"],"#like":["u_phone"]};
-      const formModel = {"u_phone":this.userPhone,"c_valid":true};
-      const dataParams = getPageParams(selectRule,formModel,this.userSize,--userIndex,true);
-      userQuery(dataParams).then(data => {
+    getUserList(userIndex=this.userIndex){
+      this.userIndex = userIndex;
+      const dataParams = getPageParams({"#like":["u_phone"]},this.userFormModel,this.userSize,--userIndex,true);
+      userQueryAll(dataParams).then(data => {
         this.userList = getContent(data).map(item=>{
           return {key:item._id,label:`${item.u_phone}${item.u_name?' ('+item.u_name+')':''}`};
         });
         this.userTotal = getPageTotal(data);
       })
     },
-    getUserListByPhone(val){
-      this.userPhone = val;
-      this.getUserList();
-    },
     //批量导入用户成为督导
     importSupervisor(){
+      this.getUserList(0);
       this.userModel.u_ids=[];
       this.$refs.importSupervisor.dialogVisible = true;
     },
     // 编辑督导
     editSupervisor(item){
-      item.reg_id = item.reg_id || "";
       item.s_ids = item.s_ids || [];
       this.operateModel = item;
-      // console.log(item);
-      // if(this.storeIndex!=1 || this.storeName!=""){
-      //   this.storeIndex=1;
-      //   this.storeName="";
-      //   this.getStoreList();
-      // }
       this.$refs.operateSupervisor.dialogVisible = true;
       this.operateTitle=`编辑督导（手机号: ${item.u_phone ||''})`;
     },
@@ -330,7 +325,10 @@ export default {
       this.pageIndex = newIndex;
       const dataParams = getPageParams(this.selectRule,this.formModel,this.pageSize,--newIndex,refresh);
       supervisorQuery(dataParams).then(data => {
-        this.list = getContent(data);
+        this.list = getContent(data).map(item=>{
+          item.ids = item.s_ids ? item.s_ids.length : 0;
+          return item;
+        });
         this.total = getPageTotal(data);
       })
       // console.log("响应搜索，发送请求ing");
@@ -341,7 +339,7 @@ export default {
       // 编辑
       const params = getDataParams({
         "#eq":["_id"],
-        "#set":["reg_id","s_ids"]
+        "#set":["s_ids"]
         },this.operateModel);
       supervisorUpdate(params).then(data => {
         this.selectSupervisor();
@@ -365,7 +363,7 @@ export default {
     },
     // 清空
     cancelMethod(){
-      this.formModel = {"_id": "","u_name": "","u_phone":"","reg_id":null, "createTime": "", "endTime": "", "c_valid": null};
+      this.formModel = {"_id": "","u_name": "","u_phone":"", "createTime": "", "endTime": "", "c_valid": null};
     }
 
   }

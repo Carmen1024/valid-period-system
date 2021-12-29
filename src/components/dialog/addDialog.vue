@@ -217,12 +217,29 @@
             </el-transfer>
             <!-- 穿梭框带分页 -->
             <div v-if="item.type==='transferandpage'" class="transferandpage">
-              <el-input 
-                class="selectKey"
-                :placeholder="item.placeholder || '请输入关键字'"
-                v-model="transferKey"
-                @change="changeTransferKey"
-              ></el-input>
+              <div v-show="item.transferKey" class="transferKey">
+                <div class="transferCondition" v-for="condition in item.transferForm" :key="condition.prop">
+                  <el-select filterable
+                    v-if="condition.type=='select'"
+                    v-model="item.transferModel[condition.prop]" 
+                    :placeholder="condition.placeholder || '请选择'">
+                    <el-option 
+                      v-for="(optionCondition,optionIndex) in condition.options"
+                      :key="optionIndex"
+                      :label="optionCondition.label"
+                      :value="optionCondition.value"
+                      clearable
+                    >
+                    </el-option>
+                  </el-select>
+                  <el-input 
+                      v-else
+                      :placeholder="condition.placeholder || '请输入关键字'"
+                      v-model="item.transferModel[condition.prop]"
+                    ></el-input>
+                </div>
+                <el-button type="primary" @click="changeTransferKey">搜索</el-button>
+              </div>
               <span style="margin-left:10px;">{{item.unitTip || '已选择'}}：{{formModel[item.prop] ? formModel[item.prop].length : 0}} {{item.unit || ''}}</span>
               <el-transfer 
                 :titles="['可选择', '已选择']"
@@ -320,8 +337,7 @@ export default {
         formRule : {
             
         },
-        loading:false,
-        transferKey:""
+        loading:false
       }
     },
     watch: {
@@ -393,8 +409,8 @@ export default {
       filterFun(query, item) {
         // console.log(query, item)
       },
-      changeTransferKey(val){
-        this.$emit("resetTransferByKey",val);
+      changeTransferKey(){
+        this.$emit("resetTransferByKey");
       },
       paginationChange(val){
         this.storeIndex = val;
@@ -425,6 +441,14 @@ export default {
         padding-left: 10px;
         font-size: 12px;
         color: #999;
+      }
+      .transferKey{
+        display: flex;
+        width: 80%;
+        .transferCondition{
+          width: 200px;
+          margin-right:10px;
+        }
       }
 
     }

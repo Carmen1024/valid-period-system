@@ -45,7 +45,6 @@ import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
 import { storeQuery,storeInsert,storeUpdate,storeValid,storeDelete } from '@/api/store';
-import { classifyQueryAll } from '@/api/sort';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 import { getRegionCode } from '@/utils/region';
 import descriptionDialog from '@/components/dialog/descriptionTableDialog';
@@ -97,7 +96,7 @@ export default {
         {type:'_id',label:'ID',width:220},
         {type:'s_city_code',label:'市级代码'},
         {type:'s_code',label:'门店编码'},
-        {type:'s_name_k',label:'门店名称'},
+        {type:'s_name',label:'门店名称'},
         {type:'s_addr',label:'门店地址'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true},
