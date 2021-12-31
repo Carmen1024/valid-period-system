@@ -20,6 +20,7 @@
     <my-table 
       :tableData=list 
       :columnList=columnList 
+      :handles="handle"
       @handleFun = "handleMethod"
     />
     <pagination
@@ -36,7 +37,7 @@ import myForm from '@/components/myForm';
 import addDialog from '@/components/dialog/addDialog';
 import myTable from '@/components/myTable';
 import pagination from '@/components/pagination';
-import { userQuery,userInsert,userUpdate,userValid,userDelete } from '@/api/user';
+import { userQuery,userInsert,userUpdate,userValid,userDelete,userResetPassword } from '@/api/user';
 import { getPageParams,getContent, getDataParams, getPageTotal } from '@/utils/dataParams';
 
 export default {
@@ -58,7 +59,6 @@ export default {
         "#gte":["c_create_time"],
         "#lte":["c_create_time"]
       },
-
       // 新增
       operateTitle:'新增用户',
       operateModel:{},
@@ -81,6 +81,11 @@ export default {
         // {type:'c_desc',label:'用户类型'},
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true,width:160},
+      ],
+      handle:[
+        {type:'edit',label:'编辑'},
+        {label:"密码重置",type:"resetPass"},
+        {type:'delete',label:'删除'}
       ],
     }
   },
@@ -209,6 +214,18 @@ export default {
         });
       })
     },
+    resetPass(item){
+      const operateModel = {"_id":item._id};
+      const params = getDataParams({"#eq":["_id"]},operateModel);
+      // console.log(item,params);
+      userResetPassword(params).then(data => {
+        // this.selectUser();
+        this.$message({
+          type: 'success',
+          message: '密码重置成功！!'
+        });
+      })
+    },
     // 表格操作：编辑 删除
     handleMethod(type,item){
       item = JSON.parse(JSON.stringify(item));
@@ -221,6 +238,9 @@ export default {
       }
       if(type==='switch'){
         this.switchUser(item);
+      }
+      if(type==='resetPass'){
+        this.resetPass(item);
       }
     },
     paginationChange(type,val){

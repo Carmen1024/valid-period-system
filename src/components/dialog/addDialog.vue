@@ -66,7 +66,6 @@
                 :label="optionItem.label"
                 :value="optionItem.value"
                 clearable
-                
               >
               </el-option>
             </el-select>
@@ -219,7 +218,7 @@
             <div v-if="item.type==='transferandpage'" class="transferandpage">
               <div v-show="item.transferKey" class="transferKey">
                 <div class="transferCondition" v-for="condition in item.transferForm" :key="condition.prop">
-                  <el-select filterable clearable="true"
+                  <el-select filterable clearable
                     v-if="condition.type=='select'"
                     v-model="item.transferModel[condition.prop]" 
                     :placeholder="condition.placeholder || '请选择'">

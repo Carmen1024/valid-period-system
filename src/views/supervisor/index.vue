@@ -35,6 +35,7 @@
     <my-table 
       :tableData=list 
       :columnList=columnList 
+      :handles="handle"
       @handleFun = "handleMethod"
     />
     <pagination
@@ -89,12 +90,17 @@ export default {
       storeIndex:1,
       storeSize:10,
       storeTotal:0,
+      formHandle:[
+        {buttonStyle:"primary",label:"搜索",type:"select"},
+        {label:"批量导入",type:"add"},
+        {label:"清空",type:"cancel"}
+      ],
       // 批量导入用户
       userList:[],
       userModel:{
         "u_ids": [],  //必填，用户ID
       },
-      userFormModel:{u_phone:"137"},
+      userFormModel:{u_phone:""},
       userIndex:1,
       userSize:10,
       userTotal:0,
@@ -112,11 +118,11 @@ export default {
         {type:'c_create_time',label:'创建时间'},
         {type:'c_valid',label:'状态',switch:true,width:160},
       ],
-      formHandle:[
-          {buttonStyle:"primary",label:"搜索",type:"select"},
-          {label:"批量导入",type:"add"},
-          {label:"清空",type:"cancel"}
-      ]
+      handle:[
+        {type:'edit',label:'编辑'},
+        {type:'detail',label:'查看门店'},
+        {type:'delete',label:'删除'}
+      ],
 
     }
   },
@@ -312,6 +318,12 @@ export default {
       if(type==='switch'){
         this.switchSupervisor(item);
       }
+      if(type==='detail'){
+        this.showStoreDetail(item);
+      }
+    },
+    showStoreDetail(item){
+      
     },
     paginationChange(type,val){
       if(type === 'handleSizeChange') this.pageSize = val;

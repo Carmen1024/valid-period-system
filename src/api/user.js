@@ -94,3 +94,11 @@ export function userDelete(data){
       data
     })
 }
+// 重置密码
+export function userResetPassword(data){
+  return request({
+      url: '/user/reset_password',
+      method: 'post',
+      data
+    })
+}

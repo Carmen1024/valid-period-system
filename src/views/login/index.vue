@@ -55,26 +55,12 @@
 </template>
 
 <script>
-import { validPhone } from '@/utils/validate'
+import { validatePhone } from '@/utils/validate'
 import loginBg from '@/styles/images/loginBg.png'
 
 export default {
   name: 'Login',
   data() {
-    const validatePhone = (rule, value, callback) => {
-      if (!validPhone(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 3) {
-        callback(new Error('The u_pass can not be less than 3 digits'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
         // u_phone: '17828019562',
@@ -83,11 +69,14 @@ export default {
         u_pass: ''
       },
       loginRules: {
-        u_phone: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { required: true,min: 11, max: 11, message: '请输入正确的手机号',validator:validatePhone, trigger: 'change' }
+        u_pass: [
+          { required: true, message: '请输入密码', trigger: 'blur'},
+          { required: true,min: 6, max: 16, message: '请输入6-16位的密码', trigger: 'blur' },
         ],
-        u_pass: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        u_phone:[
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { required: true,max: 11, message: '请输入正确的11位手机号',validator:validatePhone, trigger: 'blur' }
+        ]
       },
       loading: false,
       passwordType: 'password',
