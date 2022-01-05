@@ -7,8 +7,8 @@
       <div><span>督导数量</span><span>{{supervisorCount}}</span></div>
     </div>
     <div class="home-content">
-      <echart-line :echartData="lineData" />
       <echart-bar :echartData="barData" />
+      <echart-line :echartData="lineData" />
       <dv-rank :dv-data="dvData" :dv-style="dvStyle" title="全国门店实时打印总数排行" />
     </div>
   </div>
@@ -19,12 +19,12 @@ import { mapGetters } from 'vuex'
 import echartLine from '@/components/ecahrts/echartLine'
 import dvRank from '@/components/datav/dvRank';
 import EchartBar from '@/components/ecahrts/echartBar.vue';
-import { getPageParams, getPageTotal } from '@/utils/dataParams';
+import { getPageParams, getPageTotal, getContent } from '@/utils/dataParams';
 import { printHistoryQuery } from '@/api/print';
 import { materialQuery } from '@/api/material';
 import { supervisorQuery } from '@/api/supervisor';
 import { storeQuery } from '@/api/store';
-
+import { queryClassifyList,queryPrintList,queryStoreRank } from '@/api/home';
 
 export default {
   name: 'Home',
@@ -40,63 +40,7 @@ export default {
   },
   data() {
     return {
-      dvData:{
-          data:[
-            {
-              "value": 427,
-              "store_id": "3611",
-              "name": "茶百道上海长岛路店"
-            },
-            {
-              "value": 403,
-              "store_id": "681",
-              "name": "茶百道上海大木桥路店"
-            },
-            {
-              "value": 399,
-              "store_id": "441",
-              "name": "茶百道北京魏公村店"
-            },
-            {
-              "value": 368,
-              "store_id": "390",
-              "name": "茶百道上海中原欧尚店"
-            },
-            {
-              "value": 359,
-              "store_id": "3118",
-              "name": "茶百道哈尔滨乐松广场店"
-            },
-            {
-              "value": 356,
-              "store_id": "561",
-              "name": "茶百道上海绿地缤纷城店"
-            },
-            {
-              "value": 352,
-              "store_id": "504",
-              "name": "茶百道上海惠南二店"
-            },
-            {
-              "value": 342,
-              "store_id": "385",
-              "name": "茶百道曹杨路地铁站店"
-            },
-            {
-              "value": 336,
-              "store_id": "307",
-              "name": "茶百道上海福州路店"
-            },
-            {
-              "value": 328,
-              "store_id": "592",
-              "name": "茶百道广州GOGO新天地店"
-            }
-          ],
-          unit: '次',
-          waitTime:3000,
-          rowNum:9,
-      },
+      dvData:{},
       storeCount:null,
       materialCount:null,
       printCount:null,
@@ -113,10 +57,27 @@ export default {
     this.getPrintCount();
     this.getStoreCount();
     this.getSupervisorCount();
-
+    this.getRank();
   },
   methods:{
-
+    getRank(){
+      queryStoreRank().then(response=>{
+        const data = getContent(response).filter(item=>{
+            return item.s_name!= "unkown";
+        }).map(item=>{
+          return {name:item.s_name,value:item.print_count}
+        });
+        console.log(data);
+        //     "print_count": 49,
+        //     "s_name": "茶百道安庆八佰伴店",
+        this.dvData={
+            data:data,
+            unit: '次',
+            waitTime:3000,
+            rowNum:9,
+        };
+      })
+    },
     // 获取订单数
     getPrintCount(){
       const dataParams = getPageParams({},{},10,0,false);
@@ -144,147 +105,61 @@ export default {
         this.storeCount = getPageTotal(data);
       })
     },
-    // 临时用一下
+    //物料统计
     getPrintList(){
 
-      const lineData = {
-        title:"日均物料统计",
-        xName:"时间",
-        unit:'数量',
-        xData:["前天","昨天","今天"],
-        seriesData:[
-            {
-                "name": "半成品原料",
-                "data": [
-                    26897,
-                    36896,
-                    39899
-                ]
-            },
-            {
-                "name": "开封冷冻冷藏原料",
-                "data": [
-                    6996,
-                    19961,
-                    8001
-                ]
-            },
-            {
-                "name": "罐头、果汁、果酱",
-                "data": [
-                    44812,
-                    43815,
-                    50821
-                ]
-            },
-            {
-                "name": "粉末",
-                "data": [
-                    6547,
-                    6553,
-                    6598
-                ]
-            },
-            {
-                "name": "不锈钢奶油瓶",
-                "data": [
-                    12379,
-                    16380,
-                    19455
-                ]
-            },
-            {
-                "name": "鲜果",
-                "data": [
-                    6965,
-                    6470,
-                    5550
-                ]
-            },
-
-            {
-                "name": "茶叶",
-                "data": [
-                    8410,
-                    8412,
-                    8499
-                ]
-            },
-            {
-                "name": "糖类",
-                "data": [
-                    1418,
-                    1421,
-                    1477
-                ]
-            }
-        ],
-      }
-      // console.log(lineData);
-      // console.log(echartData);
-      this.lineData = lineData;
+      const dataParams = getPageParams({},{},10,0,true);
+      queryClassifyList(dataParams).then(response=>{
+        let {today,yesterday,before_yesterday} = getContent(response);
+        let middleData={}
+        today.map(item=>{
+          middleData[item.clf_name]={
+            today:item.print_count
+          };
+        })
+        yesterday.map(item=>{
+          if(middleData[item.clf_name]) middleData[item.clf_name]["yesterday"] = item.print_count
+        })
+        before_yesterday.map(item=>{
+          if(middleData[item.clf_name]) middleData[item.clf_name]["before_yesterday"] = item.print_count
+        })
+        const seriesData = [];
+        for(let i in middleData){
+          const iData = middleData[i];
+          seriesData.push({
+            name:i,
+            data:[iData.before_yesterday || 0,iData.yesterday || 0,iData.today || 0]
+          })
+        }
+        const lineData = {
+          title:"物料打印统计",
+          xName:"时间",
+          unit:'数量',
+          xData:["前天","昨天","今天"],
+          seriesData:seriesData,
+        }
+        this.lineData = lineData;
+      });
     },
     // 日均打印统计
     getPrintByDay(){
-
-      const data=[
-          
-          {
-            "value": 398498,
-            "value1": 308498,
-            "value2": 368498,
-            "date": "2021-12-23"
-          },
-          {
-            "value": 508247,
-            "value1": 398498,
-            "value2": 428498,
-            "date": "2021-12-24"
-          },
-          {
-            "value": 418724,
-            "value1": 328498,
-            "value2": 398498,
-            "date": "2021-12-25"
-          },
-          {
-            "value": 438672,
-            "value1": 398498,
-            "value2": 498498,
-            "date": "2021-12-26"
-          },
-          {
-            "value": 349891,
-            "value1": 398498,
-            "value2": 298498,
-            "date": "2021-12-27"
-          },
-          {
-            "value": 404334,
-            "value1": 328498,
-            "value2": 388498,
-            "date": "2021-12-28"
-          },
-          {
-            "value": 220379,
-            "value1": 190379,
-            "value2": 170379,
-            "date": "2021-12-29"
-          }
-        ];
+      queryPrintList().then(response=>{
+        const data = getContent(response).reverse();
         const barData = {
-          title:"日均打印统计",
+          title:"物料总数统计",
           xName:"时间",
           unit:'次数',
-          xData:data.map(item=>item.date),
+          xData:data.map(item=>item._id),
           seriesData:[
-            {name:"总数",data:data.map(item=>item.value)},
-            {name:"报损",data:data.map(item=>item.value1)},
-            {name:"用完",data:data.map(item=>item.value2)}
+            {name:"打印",data:data.map(item=>item.print_count)},
+            {name:"报损",data:data.map(item=>item.break_count)},
+            {name:"用完",data:data.map(item=>item.finish_count)}
           ]
         }
         // console.log(echartData);
         this.barData = barData;
+      })
+
     }
 
 
